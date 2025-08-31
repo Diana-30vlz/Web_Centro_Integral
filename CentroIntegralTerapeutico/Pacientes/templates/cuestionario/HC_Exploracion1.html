@@ -1,0 +1,180 @@
+
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Exploración de Columna Vertebral y MMSS{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Exploración de Columna Vertebral</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Región</th>
+                            <th>Ascendente:</th>
+                            <th>Descendente:</th>
+                            <th>Observaciones:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cervical</td>
+                            <td>{{ form.ecv_cervical_asc }}</td>
+                            <td>{{ form.ecv_cervical_desc }}</td>
+                            <td>{{ form.ecv_cervical_obs }}</td>
+                        </tr>
+                        <tr>
+                            <td>Dorsal</td>
+                            <td>{{ form.ecv_dorsal_asc }}</td>
+                            <td>{{ form.ecv_dorsal_desc }}</td>
+                            <td>{{ form.ecv_dorsal_obs }}</td>
+                        </tr>
+                        <tr>
+                            <td>Lumbo Sacra</td>
+                            <td>{{ form.ecv_lumbosacra_asc }}</td>
+                            <td>{{ form.ecv_lumbosacra_desc }}</td>
+                            <td>{{ form.ecv_lumbosacra_obs }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Exploración de Miembros Superiores - Hombros</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>AD</th>
+                            <th>AB</th>
+                            <th>F</th>
+                            <th>E</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hombros CS</td>
+                            <td>{{ form.mmss_hombros_cs_ad }}</td>
+                            <td>{{ form.mmss_hombros_cs_ab }}</td>
+                            <td>{{ form.mmss_hombros_cs_f }}</td>
+                            <td>{{ form.mmss_hombros_cs_e }}</td>
+                        </tr>
+                        <tr>
+                            <td>Hombros CV</td>
+                            <td>{{ form.mmss_hombros_cv_ad }}</td>
+                            <td>{{ form.mmss_hombros_cv_ab }}</td>
+                            <td>{{ form.mmss_hombros_cv_f }}</td>
+                            <td>{{ form.mmss_hombros_cv_e }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Evaluación articular de MMSS Codo y Muñeca:</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>E</th>
+                            <th>F</th>
+                            <th>P</th>
+                            <th>S</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Codo</td>
+                            <td>{{ form.art_codo_e }}</td>
+                            <td>{{ form.art_codo_f }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Muñeca</td>
+                            <td>{{ form.art_muneca_e }}</td>
+                            <td>{{ form.art_muneca_f }}</td>
+                            <td>{{ form.art_muneca_p }}</td>
+                            <td>{{ form.art_muneca_s }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Evaluación articular de MMSS del Pulgar:</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>AB</th>
+                                <th>AD</th>
+                                <th>E</th>
+                                <th>F</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Pulgar</td>
+                                <td>{{ form.art_pulgar_ab }}</td>
+                                <td>{{ form.art_pulgar_ad }}</td>
+                                <td>{{ form.art_pulgar_e }}</td>
+                                <td>{{ form.art_pulgar_f }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Evaluación articular de MMSS Dedos:</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>F</th>
+                                <th>E</th>
+                                <th>IFP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dedos</td>
+                                <td>{{ form.art_dedos_f }}</td>
+                                <td>{{ form.art_dedos_e }}</td>
+                                <td>{{ form.art_dedos_ifp }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+</div>
+        
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,249 @@
+{# Inventario/templates/inventario/punto_de_venta.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Punto de Venta{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-5">
+    <div class="row g-4">
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Inventario de Productos</h4>
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="search-input" placeholder="Buscar medicamento por nombre...">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                    </div>
+
+                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicamentos-list">
+                                {% for medicamento in medicamentos %}
+                                <tr class="medicamento-row" data-name="{{ medicamento.nombre|lower }}">
+                                    <td>{{ medicamento.nombre }}</td>
+                                    <td>{{ medicamento.cantidad_disponible }}</td>
+                                    <td>${{ medicamento.precio_unitario }}</td>
+                                    <td class="text-center">
+                                        {% if medicamento.cantidad_disponible > 0 %}
+                                        <button class="btn btn-success btn-sm agregar-btn" data-id="{{ medicamento.pk }}" data-nombre="{{ medicamento.nombre }}" data-precio="{{ medicamento.precio_unitario }}">
+                                            <i class="fa fa-plus"></i> Agregar
+                                        </button>
+                                        {% else %}
+                                        <span class="badge bg-danger">Agotado</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay medicamentos en el inventario.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Venta Actual</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="venta-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items_venta %}
+                                <tr id="item-{{ item.pk }}">
+                                    <td>{{ item.medicamento.nombre }}</td>
+                                    <td class="text-center">{{ item.cantidad }}</td>
+                                    <td class="text-end">${{ item.precio_unitario_venta }}</td>
+                                    <td class="text-end">${{ item.subtotal }}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-danger btn-sm eliminar-btn" data-id="{{ item.pk }}">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end fw-bold">
+                    <h5>Total: <span id="total-venta">${{ venta_actual.total }}</span></h5>
+                    <button class="btn btn-success w-100 mt-2" id="finalizar-btn" {% if not items_venta %}disabled{% endif %}>Finalizar Venta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="agregarModal" tabindex="-1" aria-labelledby="agregarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agregarModalLabel">Agregar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Producto: <span id="producto-modal-nombre" class="fw-bold"></span></p>
+                <div class="mb-3">
+                    <label for="cantidad-input" class="form-label">Cantidad a agregar</label>
+                    <input type="number" class="form-control" id="cantidad-input" value="1" min="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmar-agregar-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    $('#search-input').on('keyup', function() {
+        const searchText = $(this).val().toLowerCase();
+        $('.medicamento-row').each(function() {
+            const nombre = $(this).data('name');
+            if (nombre.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    let currentMedId = null;
+    let currentMedNombre = '';
+    let currentMedPrecio = '';
+    
+    $(document).on('click', '.agregar-btn', function() {
+        currentMedId = $(this).data('id');
+        currentMedNombre = $(this).data('nombre');
+        currentMedPrecio = $(this).data('precio');
+        
+        $('#producto-modal-nombre').text(currentMedNombre);
+        $('#cantidad-input').val(1);
+        var agregarModal = new bootstrap.Modal(document.getElementById('agregarModal'));
+        agregarModal.show();
+    });
+
+    $('#confirmar-agregar-btn').on('click', function() {
+        const cantidad = $('#cantidad-input').val();
+        if (cantidad <= 0) {
+            alert("La cantidad debe ser mayor a 0.");
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'ajax_agregar_a_venta' %}",
+            type: 'POST',
+            data: {
+                'med_id': currentMedId,
+                'cantidad': cantidad,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response) {
+                location.reload();
+            },
+            error: function(response) {
+                alert(response.responseJSON.error);
+            }
+        });
+    });
+
+    $(document).on('click', '.eliminar-btn', function() {
+        const itemId = $(this).data('id');
+        if (confirm("¿Estás seguro de que quieres eliminar este producto de la venta?")) {
+            $.ajax({
+                url: "{% url 'ajax_eliminar_de_venta' %}",
+                type: 'POST',
+                data: {
+                    'item_id': itemId,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(response) {
+                    alert(response.responseJSON.error);
+                }
+            });
+        }
+    });
+
+    // -------- LÓGICA DE FINALIZAR VENTA ACTUALIZADA --------
+    $('#finalizar-btn').on('click', function() {
+        if (confirm("¿Confirmar el cierre de la venta?")) {
+            $.ajax({
+                url: "{% url 'ajax_finalizar_venta' %}",
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                success: function(response) {
+                    // Al finalizar la venta, preguntamos si se desea imprimir el recibo
+                    const venta_id = response.venta_id;
+                    const imprimir = confirm("Venta finalizada con éxito. ¿Deseas imprimir el recibo?");
+                    
+                    if (imprimir) {
+                        // Si el usuario acepta, abrimos la URL del recibo en una nueva ventana
+                        window.open(`{% url 'imprimir_recibo' 99999 %}`.replace('99999', venta_id), '_blank');
+                    }
+                    
+                    // Redirigimos al punto de venta para una nueva transacción
+                    window.location.href = "{% url 'punto_venta' %}";
+                },
+                error: function(response) {
+                    alert(response.responseJSON.error);
+                }
+            });
+        }
+    });
+    // --------------------------------------------------------
+});
+</script>
+{% endblock %}

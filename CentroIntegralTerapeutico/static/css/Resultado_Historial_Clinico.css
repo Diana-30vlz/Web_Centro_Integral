@@ -1,0 +1,296 @@
+body{
+    background-color: #828385;
+}
+
+.header {
+    background-color: #247d7f;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    margin: 20px 100px; 
+    border-radius: 10px;
+}
+
+.patient-info {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; 
+  padding: 0; 
+  margin: 20px auto; 
+  max-width: 800px; /* Limita el ancho para mejor lectura */
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: #333;
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+}
+
+.patient-info #patient-presentation {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #44916f; /* Un verde azulado profesional */
+  text-align: center;
+  padding: 15px; /* Espaciado interno para el título */
+  margin: 0; /* Elimina márgenes extra para un look limpio */
+  border-bottom: 2px solid #25443f;
+}
+
+/* Estilos para el contenido de los párrafos */
+.patient-info p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 20px; /* Padding interno para las líneas de información */
+  border-bottom: 1px solid #eee; /* Líneas divisorias suaves */
+  display: flex;
+
+}
+/* Estilo para la última línea para quitar el borde inferior */
+.patient-info p:last-child {
+  border-bottom: none;
+}
+
+/* Estilos al pasar el mouse por encima de los párrafos para un toque interactivo */
+.patient-info p:hover {
+  background-color: #d2dfd5;
+  transition: background-color 0.3s ease;
+}
+
+
+
+
+
+
+
+
+
+
+/*Nuevo estilo de los contenedores*/
+
+.contenedor {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; 
+  padding: 0; 
+  margin: 20px auto; 
+  max-width: 800px; /* Limita el ancho para mejor lectura */
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: #333;
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+}
+
+.contenedor #presentation {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #00796b; /* Un verde azulado profesional */
+  text-align: center;
+  padding: 15px; /* Espaciado interno para el título */
+  margin: 0; /* Elimina márgenes extra para un look limpio */
+  border-bottom: 2px solid #000000;
+}
+
+/* Estilos para el contenido de los párrafos */
+.contenedor p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 12px 20px; /* Padding interno para las líneas de información */
+  border-bottom: 1px solid #eee; /* Líneas divisorias suaves */
+  display: flex;
+  padding-left: 70px;
+
+}
+/* Estilo para la última línea para quitar el borde inferior */
+.contenedor p:last-child {
+  border-bottom: none;
+}
+
+/* Estilos al pasar el mouse por encima de los párrafos para un toque interactivo */
+.contenedor p:hover {
+  background-color: #d6fadf;
+  transition: background-color 0.3s ease;
+}
+/* Este selector es más específico y asegura que solo se aplique a los h3 dentro de esa sección */
+.contenedor h3{
+    font-size: 30px; 
+    font-weight: 600; 
+    color: #575757; 
+    margin: 30px 0 10px 0;
+    padding-left: 80px;
+}
+.h3{
+    font-size: 350px; 
+    font-weight: 600; 
+    color: #575757; 
+    margin: 30px 0 10px 0;
+    padding-left: 120px;
+    
+}
+/* Elimina los puntos y el padding predeterminado de la lista <ul> */
+.contenedor ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Agrega un poco de espaciado y formato a cada elemento <li> */
+.contenedor li {
+    font-size: 16px;
+    padding: 8px 20px; /* Espaciado interno arriba/abajo y a los lados */
+    border-bottom: 1px solid #eee; /* Una línea divisoria sutil */
+    color: #333; /* Color de texto oscuro para legibilidad */
+    padding-left: 110px;
+}
+
+
+/*Estilos específicos para cada contenedor*/
+
+/*Datos generales y vivienda*/
+.Datos_generales_vivienda #presentation {
+  background-color: #80b9c8;
+  border-bottom: 2px solid #447581;
+}
+.Datos_generales_vivienda p:hover {
+  background-color: #ccdce4;
+  transition: background-color 0.3s ease;
+}
+
+/*Cuestionario Ginecologico*/
+.CuestionarioGinecologico #presentation {
+  background-color: #b2d9c4;
+  border-bottom: 2px solid #4e7560;
+}
+.CuestionarioGinecologico p:hover {
+  background-color: #d8e9e1;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioDigestivo*/
+.CuestionarioDigestivo #presentation {
+  background-color: #c29470;
+  border-bottom: 2px solid #886042;
+}
+.CuestionarioDigestivo p:hover {
+  background-color: #ece0cc;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioRespiratorio*/
+.CuestionarioCardioRespiratorio #presentation {
+  background-color: #80b9c8;
+  border-bottom: 2px solid #447581;
+}
+.CuestionarioCardioRespiratorio p:hover {
+  background-color: #ccdce4;
+  transition: background-color 0.3s ease;
+}   
+/*CuestionarioGenitalUrinario*/
+.CuestionarioGenitalUrinario #presentation {
+  background-color: #b2d9c4;
+  border-bottom: 2px solid #4e7560;
+}
+.CuestionarioGenitalUrinario p:hover {
+  background-color: #d8e9e1;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioEndocrinoCuello*/
+.CuestionarioEndocrinoCuello #presentation {
+  background-color: #c29470;
+  border-bottom: 2px solid #886042;
+}
+.CuestionarioEndocrinoCuello p:hover {
+  background-color: #ece0cc;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioExploracion1*/
+.CuestionarioExploracion1 #presentation {
+  background-color: #80b9c8;
+  border-bottom: 2px solid #447581;
+}
+.CuestionarioExploracion1 p:hover {
+  background-color: #ccdce4;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioExploracion2*/
+.CuestionarioExploracion2 #presentation {
+  background-color: #b2d9c4;
+  border-bottom: 2px solid #4e7560;
+}
+.CuestionarioExploracion2 p:hover {
+  background-color: #d8e9e1;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioPulsosConciencia*/
+.CuestionarioPulsosConciencia #presentation {
+  background-color: #c29470;
+  border-bottom: 2px solid #886042;
+}
+.CuestionarioPulsosConciencia p:hover {
+  background-color: #ece0cc;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioGlasgowVisual*/
+.CuestionarioGlasgowVisual  #presentation {
+  background-color: #80b9c8;
+  border-bottom: 2px solid #447581;
+}
+.CuestionarioGlasgowVisual p:hover {
+  background-color: #ccdce4;
+  transition: background-color 0.3s ease;
+}
+/*CuestionarioExploracionFinal*/
+.CuestionarioExploracionFinal #presentation {
+  background-color: #b2d9c4;
+  border-bottom: 2px solid #4e7560;
+}
+.CuestionarioExploracionFinal p:hover {
+  background-color: #d8e9e1;
+  transition: background-color 0.3s ease;
+}
+
+
+
+
+/* Estilo para las tablas dentro de un contenedor */
+.contenedor table {
+    width: 100%;
+    border-collapse: collapse; /* Elimina los bordes dobles entre celdas */
+    margin-top: 5px; /* Pequeño margen superior para separación */
+    font-size: 16px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #333;
+}
+
+/* Estilo para las filas (tr) de la tabla */
+.contenedor tr {
+    border-bottom: 1px solid #eee; /* Línea divisoria suave entre filas */
+}
+
+/* Estilo para la última fila para quitar el borde inferior */
+.contenedor tr:last-child {
+    border-bottom: none;
+}
+
+/* Estilo para las celdas (td) de la tabla */
+.contenedor td {
+    padding: 12px 20px; /* Espaciado interno para las celdas */
+    padding-left: 70px; /* Alinea con los párrafos */
+}
+
+/* Estilo para la primera celda de cada fila (el título del pulso) */
+.contenedor td:first-child {
+    font-weight: bold; /* Hace el texto del título más fuerte */
+    width: 50%; /* Ocupa la mitad del espacio para alineación */
+    padding-left: 70px; /* Alinea los títulos con los demás párrafos */
+}
+
+/* Estilos al pasar el mouse por encima de las filas */
+.contenedor tr:hover {
+    background-color: #d6fadf;
+    transition: background-color 0.3s ease;
+}
+.contenedor td:hover {
+    background-color: #d6fadf;
+    transition: background-color 0.3s ease;
+}

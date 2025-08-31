@@ -1,0 +1,57 @@
+{# CentroIntegralTerapeutico/Pacientes/templates/Agenda/crear_cita.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Crear Nueva Cita{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/CrearPaciente.css' %}"> {# Puedes reutilizar el CSS si es genérico para formularios #}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Agendar Nueva Cita</h1>
+
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="card p-4 shadow-sm">
+        <h4 class="card-title text-center mb-4">Detalles de la Cita</h4>
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary w-100 mt-3">Guardar Cita</button>
+            <a href="{% url 'agenda' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

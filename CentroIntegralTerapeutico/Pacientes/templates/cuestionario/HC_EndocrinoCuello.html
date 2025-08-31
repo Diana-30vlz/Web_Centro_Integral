@@ -1,0 +1,248 @@
+{# Pacientes/templates/cuestionario/historia_clinica_endocrino_cuello.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Hematológico, Endocrino y Cuello{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+<div class="form-body">
+    <h3>Aparato Hematológico</h3>
+    <h2 id = 'sub'>Datos clínicos de Anemia</h2>
+    <div class="form-switch-group">
+        <div class="form-group-horizontal">
+            <label id='campo'>{{ form.Palidez.label }}</label>
+            <div class="form-switch">
+                {{ form.Palidez }}
+                <label for="{{ form.Palidez.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group-horizontal">
+            <label id='campo'>{{ form.Astenia.label }}</label>
+            <div class="form-switch">
+                {{ form.Astenia }}
+                <label for="{{ form.Astenia.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group-horizontal">
+            <label id='campo'>{{ form.Adinamia.label }}</label>
+            <div class="form-switch">
+                {{ form.Adinamia }}
+                <label for="{{ form.Adinamia.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-switch-group">
+        <div class="form-group-horizontal">
+            <label id='campo'>Hemorragias</label>
+            <div class="form-switch">
+                {{ form.hemato_hemorragias }}
+                <label for="{{ form.hemato_hemorragias.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group-horizontal">
+            <label id='campo'>Adenopatías</label>
+            <div class="form-switch">
+                {{ form.hemato_adenopatias }}
+                <label for="{{ form.hemato_adenopatias.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group-horizontal">
+            <label id='campo'>Esplenomegalia</label>
+            <div class="form-switch">
+                {{ form.hemato_esplenomegalia }}
+                <label for="{{ form.hemato_esplenomegalia.id_for_label }}">
+                    <span class="switch-toggle"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group-horizontal">
+            <label id = 'campo'>Comentarios&nbsp;</label> 
+            {{ form.Comentarios_anemia }}
+    </div>
+
+
+    <h3>Aparato Endocornio</h3>
+        <div class="form-switch-group">
+            <div class="form-group-horizontal">
+                <label id='campo'>Bocio</label>
+                <div class="form-switch">
+                    {{ form.endocr_bocio }}
+                    <label for="{{ form.endocr_bocio.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Letargia</label>
+                <div class="form-switch">
+                    {{ form.endocr_letargia }}
+                    <label for="{{ form.endocr_letargia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Bradipsiquia</label>
+                <div class="form-switch">
+                    {{ form.endocr_bradipsiquia_idia }}
+                    <label for="{{ form.endocr_bradipsiquia_idia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Intolerancia al calor/frío</label>
+                <div class="form-switch">
+                    {{ form.endocr_intolerancia_calor_frio }}
+                    <label for="{{ form.endocr_intolerancia_calor_frio.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Nerviosismo</label>
+                <div class="form-switch">
+                    {{ form.endocr_nerviosismo }}
+                    <label for="{{ form.endocr_nerviosismo.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Hiperquinesis</label>
+                <div class="form-switch">
+                    {{ form.endocr_hiperquinesis }}
+                    <label for="{{ form.endocr_hiperquinesis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Caracteres sexuales</label>
+                <div class="form-switch">
+                    {{ form.endocr_caracteres_sexuales }}
+                    <label for="{{ form.endocr_caracteres_sexuales.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Galactorrea</label>
+                <div class="form-switch">
+                    {{ form.endocr_galactorrea }}
+                    <label for="{{ form.endocr_galactorrea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Amenorrea</label>
+                <div class="form-switch">
+                    {{ form.endocr_amenorrea }}
+                    <label for="{{ form.endocr_amenorrea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Ginecomastia</label>
+                <div class="form-switch">
+                    {{ form.endocr_ginecomastia }}
+                    <label for="{{ form.endocr_ginecomastia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Obesidad</label>
+                <div class="form-switch">
+                    {{ form.endocr_obesidad }}
+                    <label for="{{ form.endocr_obesidad.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Ruborización</label>
+                <div class="form-switch">
+                    {{ form.endocr_ruborizacion }}
+                    <label for="{{ form.endocr_ruborizacion.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    <div class="form-group-horizontal">
+            <label id = 'campo'>Comentarios&nbsp;</label> 
+            {{ form.Comentarios_endocrino }}
+    </div>
+
+
+    <h3>Exploración de Cuello</h3>
+<h2 id = 'sub'>Exploración de Cuello</h2>
+<div class="table-container">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Hallazgos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tiroides</td>
+                <td>{{ form.cuello_tiroides }}</td>
+            </tr>
+            <tr>
+                <td>Músculos</td>
+                <td>{{ form.cuello_musculos }}</td>
+            </tr>
+            <tr>
+                <td>Ganglios Linfáticos</td>
+                <td>{{ form.cuello_ganglios_linfaticos }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    </div>
+       <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

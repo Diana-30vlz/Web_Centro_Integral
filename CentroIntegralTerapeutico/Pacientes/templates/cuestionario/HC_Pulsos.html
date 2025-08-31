@@ -1,0 +1,103 @@
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Pulsos{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Exploración del cardio vascular</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Derecho</th>
+                            <th>Izquierdo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pulso Carotídeo</td>
+                            <td>{{ form.me_pulso_carotideo_derecho }}</td>
+                            <td>{{ form.me_pulso_carotideo_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Humeral</td>
+                            <td>{{ form.me_pulso_humeral_derecho }}</td>
+                            <td>{{ form.me_pulso_humeral_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Radial</td>
+                            <td>{{ form.me_pulso_radial_derecho }}</td>
+                            <td>{{ form.me_pulso_radial_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Femoral</td>
+                            <td>{{ form.me_pulso_femoral_derecho }}</td>
+                            <td>{{ form.me_pulso_femoral_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Poplíteo</td>
+                            <td>{{ form.me_pulso_popliteo_derecho }}</td>
+                            <td>{{ form.me_pulso_popliteo_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Tibial Posterior</td>
+                            <td>{{ form.me_pulso_tibial_posterior_derecho }}</td>
+                            <td>{{ form.me_pulso_tibial_posterior_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Pedio</td>
+                            <td>{{ form.me_pulso_pedio_derecho }}</td>
+                            <td>{{ form.me_pulso_pedio_izquierdo }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="form-group-horizontal">
+                <label id='campo'>{{ form.ascitis.label }}</label>
+                <div class="form-switch">
+                    {{ form.ascitis }}
+                    <label for="{{ form.ascitis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <h3>Sistema Nervioso</h3>
+            <p>
+                <label for="{{ form.Estado_Conciencia.id_for_label }}">Estado de Conciencia:</label>
+                {{ form.Estado_Conciencia }}
+            </p>
+        </div>
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

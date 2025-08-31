@@ -1,0 +1,105 @@
+{# Inventario/templates/inventario/recibo.html #}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo Venta #{{ venta.pk }}</title>
+    <style>
+        /* Estilos minimalistas para impresora térmica */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10px;
+            width: 80mm; /* Ancho típico de un recibo térmico */
+            margin: 0 auto;
+            padding: 5mm;
+        }
+        .header, .footer {
+            text-align: center;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .item-table td, .item-table th {
+            padding: 2px 0;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .divider {
+            border-top: 1px dashed black;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h4>Centro Integral Terapéutico</h4>
+        <p>Tu dirección aquí</p>
+        <p>Teléfono: 55-XXXX-XXXX</p>
+        <div class="divider"></div>
+        <h4>RECIBO DE VENTA</h4>
+        <p>Venta #{{ venta.pk }}</p>
+        <div class="divider"></div>
+    </div>
+    
+    <p>Fecha: {{ venta.fecha_creacion|date:"d/m/Y H:i" }}</p>
+    <p>Atendió: {{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</p>
+    <div class="divider"></div>
+
+    <table class="item-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Producto</th>
+                <th style="width: 15%;" class="text-right">Cant</th>
+                <th style="width: 15%;" class="text-right">P/U</th>
+                <th style="width: 20%;" class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.medicamento.nombre }}</td>
+                <td class="text-right">{{ item.cantidad }}</td>
+                <td class="text-right">${{ item.precio_unitario_venta|floatformat:2 }}</td>
+                <td class="text-right">${{ item.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="divider"></div>
+    
+    <div class="text-right">
+        <strong>Total: ${{ venta.total|floatformat:2 }}</strong>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+        <p>¡Gracias por tu compra!</p>
+        <p>Visita nuestro sitio web</p>
+    </div>
+
+    <script>
+        // Esta función se ejecuta cuando el navegador termina de imprimir o se cancela la impresión.
+        window.addEventListener('afterprint', (event) => {
+            // Cierra la ventana después de un pequeño retraso
+            setTimeout(() => {
+                window.close();
+            }, 1000); // Espera 1 segundo antes de cerrar
+        });
+
+        // Esta línea activa la impresión al cargar la página
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

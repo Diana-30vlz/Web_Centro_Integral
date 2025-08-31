@@ -1,0 +1,100 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid">
+        <a class="navbar-brand">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" width="80" height="50" class="d-inline-block align-text-top me-2">
+            
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                    {# Enlaces para el grupo 'Doctora' #}
+                    {% if is_doctora %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'doctor_home' %}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_medicamentos' %}"><i class="bi bi-box-seam me-1"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agenda' %}"><i class="bi bi-calendar-check me-1"></i> Agenda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_pacientes' %}"><i class="bi bi-person-fill me-1"></i> Pacientes</a>
+                    </li>
+                    {% endif %}
+
+                    {# Enlaces para el grupo 'Farmacia' #}
+                    {% if is_farmacia %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard_farmacia' %}"><i class="bi bi-speedometer2 me-1"></i> Inicio Farmacia</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_medicamentos' %}"><i class="bi bi-box-seam me-1"></i> Inventario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agenda' %}"><i class="bi bi-calendar-check me-1"></i> Agenda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_pacientes' %}"><i class="bi bi-person-fill me-1"></i> Pacientes</a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    {# Enlaces para cuando NO hay usuario logueado #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'HomeSinInicio' %}">Home</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Hola, {{ user.first_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Cambiar Contraseña</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                    Cerrar Sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="logoutModalLabel">Advertencia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas cerrar tu sesión actual?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="logout-form" method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,230 @@
+/* CentroIntegralTerapeutico/Pacientes/static/Pacientes/css/mi_estilo.css */
+
+/* --- Contenedores y Layout General --- */
+.my-container {
+    max-width: 960px; /* Ancho máximo para el contenido */
+    margin: 40px auto; /* Centrar y añadir espacio arriba/abajo */
+    padding: 20px;
+}
+
+.my-heading {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50; /* Un color oscuro para el texto */
+    font-size: 2.2em;
+    font-weight: 600;
+}
+
+.my-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra más pronunciada */
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* --- Estilos para párrafos de texto explicativo --- */
+p.text-justified {
+    text-align: justify;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+/* --- Grupos de Formulario (análogo a Bootstrap mb-3) --- */
+.my-form-group {
+    margin-bottom: 20px;
+}
+
+/* --- Etiquetas de Campos (Labels) --- */
+.my-label {
+    display: block; /* Cada etiqueta en su propia línea */
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #34495e;
+    font-size: 1.05em;
+}
+
+/* --- Estilos de Inputs de Texto y Números (text, number, date) --- */
+.my-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da; /* Borde gris claro */
+    border-radius: 5px;
+    box-sizing: border-box; /* Asegura que el padding no incremente el ancho total */
+    font-size: 1em;
+    color: #495057;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.my-input:focus {
+    border-color: #80bdff; /* Borde azul al enfocar */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Sombra azul al enfocar */
+}
+
+/* --- Estilos de Áreas de Texto (Textarea) --- */
+.my-textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1em;
+    color: #495057;
+    min-height: 90px; /* Altura mínima para textareas */
+    resize: vertical; /* Permitir redimensionar solo verticalmente */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.my-textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* --- Estilos para Grupos de Radio Buttons (Sí/No) --- */
+.my-radio-group {
+    display: flex; /* Para que las opciones de radio estén en línea */
+    align-items: center;
+    gap: 20px; /* Espacio entre las opciones de radio */
+    margin-top: 5px;
+}
+
+.my-radio-item {
+    display: flex;
+    align-items: center;
+}
+
+.my-radio-item input[type="radio"] {
+    appearance: none; /* Oculta el radio button por defecto */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #6c757d; /* Borde del radio */
+    border-radius: 50%;
+    margin-right: 8px; /* Espacio entre el radio y la etiqueta */
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.my-radio-item input[type="radio"]:checked {
+    background-color: #007bff; /* Fondo azul cuando está seleccionado */
+    border-color: #007bff;
+}
+
+.my-radio-item input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #fff; /* Círculo blanco central */
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.my-radio-item label {
+    font-weight: normal; /* Asegura que la etiqueta del radio no sea bold si .my-label es más general */
+    cursor: pointer;
+    margin-bottom: 0; /* Elimina margen inferior extra */
+    color: #34495e;
+}
+
+/* --- Estilos para Checkboxes --- */
+.my-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #6c757d;
+    border-radius: 3px;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-right: 8px;
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.my-checkbox:checked {
+    background-color: #28a745; /* Fondo verde cuando está marcado */
+    border-color: #28a745;
+}
+
+.my-checkbox:checked::before {
+    content: '\2713'; /* Símbolo de "tick" Unicode */
+    display: block;
+    color: white;
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* --- Mensajes de Error de Campo --- */
+.my-error-message {
+    color: #dc3545; /* Rojo */
+    font-size: 0.875em;
+    margin-top: 5px;
+    display: block; /* Asegura que ocupe su propia línea */
+}
+
+/* --- Alertas (para non_field_errors) --- */
+.my-alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+}
+
+.my-alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* --- Botones --- */
+.my-button-group {
+    display: flex;
+    justify-content: flex-end; /* Alinear botones a la derecha */
+    gap: 15px; /* Espacio entre botones */
+    margin-top: 30px;
+}
+
+.my-button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    text-decoration: none; /* Para el botón "Cancelar" que es un enlace */
+    display: inline-block;
+    text-align: center;
+}
+
+.my-button-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.my-button-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.my-button-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.my-button-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}

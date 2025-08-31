@@ -1,0 +1,33 @@
+{# Inventario/templates/inventario/confirmar_eliminar_medicamento.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center text-danger">Confirmar Eliminación de Medicamento</h2>
+
+    {# Mensaje de advertencia #}
+    <div class="alert alert-warning text-center mx-auto" role="alert" style="max-width: 600px;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> {# Ícono de Bootstrap Icons #}
+        ¿Estás seguro de que deseas eliminar el medicamento **"{{ medicamento.nombre }}"** del inventario?
+        Esta acción es irreversible.
+    </div>
+
+    {# Detalles del medicamento a eliminar #}
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <p><strong>Nombre:</strong> {{ medicamento.nombre }}</p>
+        <p><strong>Fabricante:</strong> {{ medicamento.fabricante|default:"N/A" }}</p>
+        <p><strong>Cantidad:</strong> {{ medicamento.cantidad_disponible }} {{ medicamento.unidad_medida }}</p>
+        <p><strong>Fecha de Caducidad:</strong> {% if medicamento.fecha_caducidad %}{{ medicamento.fecha_caducidad|date:"d M Y" }}{% else %}N/A{% endif %}</p>
+
+        {# Formulario de confirmación #}
+        <form method="post" action="{% url 'eliminar_medicamento' medicamento.pk %}" class="d-flex justify-content-center mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-3">Sí, Eliminar</button>
+            <a href="{% url 'lista_medicamentos' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
