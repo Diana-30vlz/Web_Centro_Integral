@@ -1,0 +1,224 @@
+{# Pacientes/templates/consentimiento_form.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %} {# Asegúrate de que esta línea esté presente para cargar archivos estáticos #}
+
+{% block title %}Consentimiento Informado{% endblock %}
+
+{% block extra_head %}
+    {# Aquí es donde se enlaza tu archivo CSS personalizado #}
+    <link rel="stylesheet" href="{% static 'css/consentimiento.css' %}">
+    
+
+{% endblock %}
+
+{% block content %}
+<div class="my-container"> {# Reemplaza 'container' por 'my-container' #}
+    <h1 class="my-heading">CONSENTIMIENTO INFORMATIVO DE TRATAMIENTO</h1> {# Reemplaza 'mb-4 text-center' por 'my-heading' #}
+
+    <div class="my-card"> {# Reemplaza 'card p-4 shadow-sm' por 'my-card' #}
+        <form method="post">
+            {% csrf_token %}
+
+            {# Mensajes de error globales del formulario #}
+            {% if consentimiento_form.non_field_errors %}
+                <div class="my-alert my-alert-danger" role="alert"> {# Clases personalizadas para alerta #}
+                    {% for error in consentimiento_form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <p class="text-justified">
+                La ley general de salud en su reglamento en materia de prestación de servicios de atención medica en los artículos 80 y 81, requiere que el medico solicite a su paciente por escrito de la cirugía y / o tratamiento (s) en el que serán sometidos.
+            </p>
+
+            <div class="my-form-group"> {# Reemplaza 'row mb-3 align-items-end' por 'my-form-group' y ajusta el layout con CSS #}
+                <div class="my-form-group"> {# Para la columna izquierda #}
+                    <label for="{{ consentimiento_form.nombre_medico.id_for_label }}" class="my-label">Yo Medico(s)</label>
+                    {{ consentimiento_form.nombre_medico }} {# Renderizado simple, las clases se aplican desde forms.py #}
+                    {% for error in consentimiento_form.nombre_medico.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+                {# Si necesitas un layout de 2 columnas sin Bootstrap, tendrías que usar flexbox/grid en tu CSS y envolver los campos #}
+                <p class="text-justified">en mi derecho autorizo el (los) a realizar los tratamientos que a continuación se detallan</p>
+            </div>
+
+            <div class="my-form-group"> {# Reemplaza 'mb-3' por 'my-form-group' #}
+                <label for="{{ consentimiento_form.descripcion_procedimiento.id_for_label }}" class="my-label">Que se realizara (n) el día:</label>
+                {{ consentimiento_form.descripcion_procedimiento }}
+                {% for error in consentimiento_form.descripcion_procedimiento.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <p class="text-justified">
+                Ademas autorizo el equipo medico a realizar cualquier otro procedimiento que a su juicio sea en mi beneficio.
+            </p>
+
+            <p class="text-justified">
+                El o los tratamientos descritos me han sido completamente explicados, así como los alcances, diagnósticos y pronósticos terapéuticos. Estoy enterado (a) de los métodos alternativos, sus ventajas y desventajas de cada uno de ellos.
+            </p>
+
+            <p class="text-justified">
+                He sido además advertido, que aunque se esperan buenos resultados fruto de la preparación profesional del medico, la posibilidad y naturaleza de probables complicaciones no pueden ser anticipadas y por lo tanto no puede haber una garantía de que estas no se presentaran, ya que todos los organismos reaccionan de forma diferente.
+            </p>
+
+            <p class="text-justified">
+                He tenido la oportunidad de hacer preguntas diferentes al tratamiento que me han de practicar y estas me han sido contestadas a mi entera satisfacción por lo que no me queda duda al respecto. Se ha valorado el riesgo beneficio del tratamiento y deseo someterme a el (ellos) de forma voluntaria.
+            </p>
+
+            <p class="text-justified">
+                También estoy enterado (a) de los riesgos inherentes a todo procedimiento de este tipo de tratamiento (s) que aunque poco frecuente puede presentarse, como son: infecciones, reacciones alérgicas, cicatrices patológicos, entre otras.
+            </p>
+
+            <h5 class="my-heading">Mi historia clínica básica es:</h5> {# Reemplaza 'mt-4 mb-3' por 'my-heading' (o una clase similar) #}
+            <div class="my-form-group">
+                <label class="my-label">He recibido algún tratamiento similar a Cirugías Estéticas, Implante Facial y / o Mesoterapia Homeopática, Alopática y / o terapia celular y / u otro importante de informar al medico:</label>
+                <div class="my-radio-group"> {# Reemplaza 'd-flex align-items-center' #}
+                    {% for radio in consentimiento_form.tratamiento_similar_si_no %}
+                        <div class="my-radio-item"> {# Reemplaza 'form-check me-3' #}
+                            {{ radio.tag }} {# Simplemente el tag, la clase 'my-radio-input' viene de forms.py #}
+                            <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                    {% if consentimiento_form.tratamiento_similar_si_no.errors %}<div class="my-error-message">{{ consentimiento_form.tratamiento_similar_si_no.errors }}</div>{% endif %}
+                </div>
+            </div>
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.tratamiento_similar_cual.id_for_label }}" class="my-label">Cual</label>
+                {{ consentimiento_form.tratamiento_similar_cual }}
+                {% for error in consentimiento_form.tratamiento_similar_cual.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.cuanto_tiempo.id_for_label }}" class="my-label">Hace Cuanto tiempo</label>
+                {{ consentimiento_form.cuanto_tiempo }}
+                {% for error in consentimiento_form.cuanto_tiempo.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.nombre_medico_atendio.id_for_label }}" class="my-label">El nombre del medico que me atendió fue:</label>
+                {{ consentimiento_form.nombre_medico_atendio }}
+                {% for error in consentimiento_form.nombre_medico_atendio.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+
+
+            <div class="my-form-group"> {# Reemplaza 'row mb-3 align-items-end' #}
+                <div class="my-form-group"> {# Columna izquierda #}
+                    <label for="{{ consentimiento_form.nombre_producto_aplico.id_for_label }}" class="my-label">El nombre del producto que me aplico fue</label>
+                    {{ consentimiento_form.nombre_producto_aplico }}
+                    {% for error in consentimiento_form.nombre_producto_aplico.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="my-form-group"> {# Columna derecha #}
+                    <label class="my-label">Tuve el producto a la vista:</label>
+                    <div class="my-radio-group">
+                        {% for radio in consentimiento_form.producto_a_vista_si_no %}
+                            <div class="my-radio-item">
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                        {% if consentimiento_form.producto_a_vista_si_no.errors %}<div class="my-error-message">{{ consentimiento_form.producto_a_vista_si_no.errors }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.reaccion_tiempo.id_for_label }}" class="my-label">En caso de si la reaccion me duro:</label>
+                {{ consentimiento_form.reaccion_tiempo }}
+                {% for error in consentimiento_form.reaccion_tiempo.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.alergico_medicamento.id_for_label }}" class="my-label">Soy alérgico al medicamento:</label>
+                {{ consentimiento_form.alergico_medicamento }}
+                {% for error in consentimiento_form.alergico_medicamento.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group"> {# Reemplaza 'row mb-3 align-items-center' #}
+                <div class="my-form-group"> {# Columna izquierda #}
+                    <label class="my-label">Sufro de insuficiencia hepática:</label>
+                    <div class="my-radio-group">
+                        {% for radio in consentimiento_form.insuficiencia_hepatica_si_no %}
+                            <div class="my-radio-item">
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                        {% if consentimiento_form.insuficiencia_hepatica_si_no.errors %}<div class="my-error-message">{{ consentimiento_form.insuficiencia_hepatica_si_no.errors }}</div>{% endif %}
+                    </div>
+                </div>
+                <div class="my-form-group"> {# Columna derecha #}
+                    <label class="my-label">Sufro de Insuficiencia renal:</label>
+                    <div class="my-radio-group">
+                        {% for radio in consentimiento_form.insuficiencia_renal_si_no %}
+                            <div class="my-radio-item">
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                        {% if consentimiento_form.insuficiencia_renal_si_no.errors %}<div class="my-error-message">{{ consentimiento_form.insuficiencia_renal_si_no.errors }}</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-form-group"> {# Reemplaza 'row mb-3' #}
+                <div class="my-form-group"> {# Columna izquierda #}
+                    <label for="{{ consentimiento_form.emergencia_llamar_a.id_for_label }}" class="my-label">En caso de emergencia llamar a:</label>
+                    {{ consentimiento_form.emergencia_llamar_a }}
+                    {% for error in consentimiento_form.emergencia_llamar_a.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="my-form-group"> {# Columna derecha #}
+                    <label for="{{ consentimiento_form.telefono_emergencia.id_for_label }}" class="my-label">Teléfono: y/o</label>
+                    {{ consentimiento_form.telefono_emergencia }}
+                    {% for error in consentimiento_form.telefono_emergencia.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <p class="text-justified">
+                Bajo protesta de decir la verdad, declaro que lo aquí informado con mi puño y letra es absolutamente cierto, que no oculto información que pudiera ser importante para el diagnostico del medico que no hay vicio oculta en mi aceptación al tratamiento y que estoy conciente de los beneficios y riesgos que de su aceptación resulte.
+            </p>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.nombre_paciente_completo.id_for_label }}" class="my-label">Paciente: Nombre completo:</label>
+                {{ consentimiento_form.nombre_paciente_completo }}
+                {% for error in consentimiento_form.nombre_paciente_completo.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.domicilio.id_for_label }}" class="my-label">Domicilio:</label>
+                {{ consentimiento_form.domicilio }}
+                {% for error in consentimiento_form.domicilio.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.identificacion_oficial.id_for_label }}" class="my-label">Identificación Oficial:</label>
+                {{ consentimiento_form.identificacion_oficial }}
+                {% for error in consentimiento_form.identificacion_oficial.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-form-group"> {# Reemplaza 'row mb-4' #}
+                <div class="my-form-group"> {# Columna izquierda #}
+                    <label for="{{ consentimiento_form.firma_paciente.id_for_label }}" class="my-label">Firma:</label>
+                    {{ consentimiento_form.firma_paciente }}
+                    {% for error in consentimiento_form.firma_paciente.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="my-form-group"> {# Columna derecha #}
+                    <label for="{{ consentimiento_form.nombre_y_firma_testigo.id_for_label }}" class="my-label">Nombre y Firma del Testigo:</label>
+                    {{ consentimiento_form.nombre_y_firma_testigo }}
+                    {% for error in consentimiento_form.nombre_y_firma_testigo.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="my-form-group">
+                <label for="{{ consentimiento_form.fecha.id_for_label }}" class="my-label">Fecha:</label>
+                {{ consentimiento_form.fecha }}
+                {% for error in consentimiento_form.fecha.errors %}<div class="my-error-message">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="my-button-group"> {# Reemplaza 'd-flex justify-content-end' #}
+                <button type="submit" class="my-button my-button-primary">Guardar Consentimiento</button>
+                <a href="{% url 'lista_pacientes' %}" class="my-button my-button-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{# Inventario/templates/inventario/historial_ventas.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Historial de Ventas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">{{ titulo }}</h2>
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+    <div class="card shadow-sm p-3 mb-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
+                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio|default_if_none:'' }}">
+            </div>
+            <div class="col-md-5">
+                <label for="fecha_fin" class="form-label">Fecha de fin</label>
+                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin|default_if_none:'' }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID de Venta</th>
+                    <th>Fecha y Hora</th>
+                    <th>Encargado</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.pk }}</td>
+                    <td>{{ venta.fecha_finalizacion|date:"d M Y, H:i" }}</td>
+                    <td>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</td>
+                    <td class="text-end">${{ venta.total|floatformat:2 }}</td>
+                    <td class="text-center">
+                        <a href="{% url 'imprimir_recibo' venta.pk %}" target="_blank" class="btn btn-info btn-sm" title="Ver Recibo">
+                            <i class="bi bi-receipt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No se encontraron ventas finalizadas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

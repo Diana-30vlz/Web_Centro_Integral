@@ -1,0 +1,71 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Crear Receta{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Crear Receta para {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+        Regresar a la página anterior
+    </a>
+
+    <form method="post" class="card p-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Diagnóstico</label>
+            {{ form.diagnostico }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Medicamento</label>
+            {{ form.medicamento }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Indicaciones</label>
+            {{ form.indicaciones }}
+        </div>
+        <hr>
+        
+        <div class="row">
+            <h5 class="mb-3">Signos Vitales</h5>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">Peso (kg)</label>
+                    <input type="number" step="0.01" name="peso" value="{{ paciente.peso|default:'' }}" class="form-control" id="id_peso">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">Estatura (cm)</label>
+                    <input type="number" step="0.01" name="talla" value="{{ paciente.talla|default:'' }}" class="form-control" id="id_talla">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">Edad (años)</label>
+                    <input type="number" name="edad" value="{{ paciente.edad|default:'' }}" class="form-control" id="id_edad">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">T/A</label>
+                    <input type="text" name="ta" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">F.C.</label>
+                    <input type="number" name="fc" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="form-label">SAT. O2</label>
+                    <input type="number" name="sat_o2" class="form-control">
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Guardar Receta</button>
+    </form>
+</div>
+{% endblock %}

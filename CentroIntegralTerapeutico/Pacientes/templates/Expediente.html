@@ -1,0 +1,55 @@
+{# CentroIntegralTerapeutico/Pacientes/templates/Expediente.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/expediente.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/expediente.css' %}">
+{% endblock %}
+
+
+{% block title %}Registros de {{ paciente.nombre }}{% endblock %}
+    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+        Regresar a la página anterior
+    </a>
+{% block content %}
+<div class="expediente-container">
+    <h1 class="expediente-titulo">Registros de Paciente: {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+
+    <div class="expediente-card">
+        <h4 class="card-titulo">Datos del Paciente</h4>
+        <ul class="lista-info">
+            <li><strong>Nombre Completo:</strong> {{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno|default:"" }}</li>
+            <li><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento|date:"d M Y" }}</li>
+            <li><strong>Género:</strong> {{ paciente.get_genero_display }}</li>
+            <li><strong>Teléfono:</strong> {{ paciente.telefono|default:"N/A" }}</li>
+            <li><strong>Email:</strong> {{ paciente.email|default:"N/A" }}</li>
+            <li><strong>Dirección:</strong> {{ paciente.direccion|default:"N/A" }}</li>
+            <li><strong>Fecha de Registro:</strong> {{ paciente.fecha_registro|date:"d M Y H:i" }}</li>
+            <li><strong>Ocupación:</strong> {{ paciente.ocupacion|default:"N/A" }}</li>
+            <li><strong>Estado Civil:</strong> {{ paciente.estado_civil|default:"N/A" }}</li>
+            <li><strong>Nacionalidad:</strong> {{ paciente.nacionalidad|default:"N/A" }}</li>
+            <li><strong>Religión:</strong> {{ paciente.religion|default:"N/A" }}</li>
+            <li><strong>Pasatiempo:</strong> {{ paciente.pasatiempo|default:"N/A" }}</li>
+            <li><strong>Deporte que Practica:</strong> {{ paciente.deporte_que_practica|default:"N/A" }}</li>
+        </ul>
+    </div>
+
+    <div class="botones-container">
+        <a href="{% url 'historia_clinica_paciente' paciente.pk %}" class="btn btn-primario">
+            <i class="bi bi-file-earmark-text me-1"></i> Historia Clínica General
+        </a>
+        <a href="{% url 'historia_clinica_paciente_me' paciente.pk %}" class="btn btn-info">
+            <i class="bi bi-person-bounding-box me-1"></i> Historia Clínica Musculo Esquelética
+        </a>
+        <a href="{% url 'consentimiento_list_by_paciente' paciente.pk %}" class="btn btn-advertencia">
+            <i class="bi bi-file-earmark-check me-1"></i> Lista Consentimientos
+        </a>
+
+    </div>
+
+    <div class="pie-pagina-botones">
+        <a href="{% url 'lista_pacientes' %}" class="btn btn-secundario">Volver a la Lista</a>
+        <a href="{% url 'editar_paciente' paciente.pk %}" class="btn btn-primario">Editar Paciente</a>
+    </div>
+</div>
+{% endblock %}

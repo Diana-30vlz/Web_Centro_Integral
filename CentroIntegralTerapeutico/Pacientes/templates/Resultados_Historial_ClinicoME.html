@@ -1,0 +1,134 @@
+{% extends "BaseSinInicio.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resultados Historial Clínico</title>
+    {% load static %} 
+    <link rel="stylesheet" href="{% static 'css/Resultado_Historial_Clinico.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+</head>
+<body>
+
+    <header class="header">
+        <h1>Resumen del historial Clinico Músculo Esquelética <h1 class="patient-name"></h1> 
+    </header> 
+    <main>
+        <section class="patient-info">
+            <h2 id = "patient-presentation">Información del Paciente</h2>
+            <p><strong>Nombre: </strong>&nbsp;{{  paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</p>
+            <p><strong>Fecha de nacimiento:</strong>&nbsp;{{ paciente.fecha_nacimiento }}</p>
+            <p><strong>Género:</strong>&nbsp;{{ paciente.genero }}</p>
+            <p><strong>Motivo de consulta:</strong>&nbsp;{{ historia_clinicaME.motivo_consulta }}</p>
+            <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinicaME.comentarios }}</p>
+            <p><strong>Fecha de registro:</strong>&nbsp;{{ historia_clinicaME.fecha_registro }}</p>
+            </section>
+
+            <section class="contenedor Datos_generales_vivienda">
+                <h2 id='presentation'>Datos Generales y Vivienda</h2>
+                
+                <p><strong>Grado de instrucción:</strong>&nbsp;{{ historia_clinicaME.GradoInstruccion }}</p>
+                <p><strong>Inmunizaciones o vacunas:</strong>&nbsp;{{ historia_clinicaME.inmunizaciones_o_vacunas }}</p>
+                <p><strong>Baño diario:</strong>&nbsp;{{ historia_clinicaME.baño_diario }}</p>
+                <p><strong>Aseo dental:</strong>&nbsp;{{ historia_clinicaME.aseo_dental }}</p>
+                <p><strong>Lavado de manos antes de comer:</strong>&nbsp;{{ historia_clinicaME.lavado_manos_antes_comer }}</p>
+                <p><strong>Lavado de manos después:</strong>&nbsp;{{ historia_clinicaME.lavado_manos_despues }}</p>
+                <p><strong>Tamaño de vivienda:</strong>&nbsp;{{ historia_clinicaME.tamanio_vivienda }}</p>
+                <p><strong>Tipo de vivienda:</strong>&nbsp;{{ historia_clinicaME.tipo_vivienda }}</p>
+
+                <p><strong>Servicios con los que cuenta la vivienda:</strong>&nbsp;</p>
+                <ul>
+                    {% for servicio in historia_clinicaME.servicio_vivienda %}
+                        <li>{{ servicio }}</li>
+                    {% endfor %}
+                </ul>
+
+                <p><strong>Enfermedad actual:</strong>&nbsp;{{ historia_clinicaME.enfermedad_actual }}</p>
+                <p><strong>Antecedentes familiares:</strong>&nbsp;</p>
+                <ul>
+                    {% for antecedente in historia_clinicaME.Antecedentes_familiares %}
+                        <li>{{ antecedente }}</li>
+                    {% endfor %}
+                </ul>
+                <h3>Hábitos tóxicos</h3>
+                <p><strong>Hábitos tóxicos:</strong>&nbsp;</p>
+                <ul>
+                    {% for habito in historia_clinicaME.habitos_toxicos %}
+                        <li>{{ habito }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h3>Fisiológicos: </h3>
+                <p><strong>Alimentaciónn:</strong>&nbsp;{{ historia_clinicaME.Allimentación }}</p>
+                <p><strong>Ingesta de agua:</strong>&nbsp;{{ historia_clinicaME.Ingesta_Agua }} litros</p>
+                <p><strong>Cantidad de veces que orina:</strong>&nbsp;{{ historia_clinicaME.Cantidad_veces_Orina }} veces</p>
+                <p><strong>Catarsis:</strong>&nbsp;{{ historia_clinicaME.Catarsis }}</p>
+                <p><strong>Somnia:</strong>&nbsp;{{ historia_clinicaME.Somnia }}</p>
+
+                <h3>Patológicos</h3>
+                <p><strong>Infancia:</strong>&nbsp;{{ historia_clinicaME.Infancia }}</p>
+                <p><strong>Adulto:</strong>&nbsp;{{ historia_clinicaME.Adulto }}</p>
+                <p><strong>Patologías:</strong>&nbsp;</p>
+                <ul>
+                    {% for patologia in historia_clinicaME.Patologias %}
+                        <li>{{ patologia }}</li>
+                    {% endfor %}
+                </ul>
+
+                <p><strong>Ha sido operado:</strong>&nbsp;{{ historia_clinicaME.ha_sido_operado }}</p>
+                <p><strong>Fecha de operación:</strong>&nbsp;{{ historia_clinicaME.fecha_operacion }}</p>
+                <p><strong>Traumatismo o fractura:</strong>&nbsp;{{ historia_clinicaME.traumatismo_o_fractura }}</p>
+                <p><strong>Otros antecedentes:</strong>&nbsp;{{ historia_clinicaME.Otro }}</p>
+</section>
+
+            <section class="contenedor Examen_Fisico">
+                <h2 id='presentation'>Examen Físico</h2>
+
+                <p><strong>Constitucional:</strong>&nbsp;{{ historia_clinicaME.Constitucional }}</p>
+                <p><strong>Marcha:</strong>&nbsp;{{ historia_clinicaME.Marcha }}</p>
+                <p><strong>Actitud:</strong>&nbsp;{{ historia_clinicaME.Actitud }}</p>
+                <p><strong>Ubicacion:</strong>&nbsp;{{ historia_clinicaME.Ubicacion }}</p>
+                <p><strong>Impresion general:</strong>&nbsp;{{ historia_clinicaME.Impresion_general }}</p>
+                
+                <h3>Signos vitales</h3>
+                <p><strong>Frecuencia Cardiaca:</strong> {{ historia_clinicaME.FC }}</p>
+                <p><strong>Tensión Arterial:</strong> {{ historia_clinicaME.TA }}</p>
+                <p><strong>Frecuencia Respiratoria:</strong> {{ historia_clinicaME.FR }}</p>
+                <p><strong>Temperatura Auxiliar:</strong> {{ historia_clinicaME.T_Auxiliar }}</p>
+                <p><strong>Temperatura Rectal:</strong> {{ historia_clinicaME.T_rectal }}</p>
+                <p><strong>Peso Habitual:</strong> {{ historia_clinicaME.Peso_Habitual }}</p>
+                <p><strong>Peso Actual:</strong> {{ historia_clinicaME.Peso_Actual }}</p>
+                <p><strong>Talla:</strong> {{ historia_clinicaME.Talla }}</p>
+                <p><strong>Índice de Masa Corporal:</strong> {{ historia_clinicaME.IMC }}</p>
+
+                <h3>Piel, Faneras y Tejido celular subcutáneo</h3>
+                <p><strong>Aspecto:</strong> {{ historia_clinicaME.Aspecto }}</p>
+                <p><strong>Distribución pilosa:</strong> {{ historia_clinicaME.Distribuición_pilosa }}</p>
+                <p><strong>Lesiones:</strong> {{ historia_clinicaME.Lesiones }}</p>
+                <p><strong>Faneras:</strong> {{ historia_clinicaME.Faneras }}</p>
+                <p><strong>Tejido celular subcutáneo:</strong> {{ historia_clinicaME.Tejido_celular_subcutaneo }}</p>
+                <p><strong>Tejido celular subcutáneo:</strong> {{ historia_clinicaME.Tejido_celular_subcutaneo }}</p>
+                <p>Valor de Tejido celular: {{ historia_clinicaME.Tejido_celular }}</p>
+                <p><strong>Tejido celular:</strong>&nbsp;</p>
+                <ul>
+                    {% for patologia in historia_clinicaME.Tejido_celular %}
+                        <li>{{ patologia }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+
+        <a href="{% url 'historia_clinica_paciente_me' pk=paciente.pk %}" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+    </main>
+    <footer>
+        
+    </footer>
+</body>
+</html>
+{% endblock %}

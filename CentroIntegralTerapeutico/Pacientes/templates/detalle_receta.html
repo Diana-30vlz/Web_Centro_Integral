@@ -1,0 +1,39 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Detalle de Receta{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Detalle de Receta</h1>
+    <a href="{% if request.user.user_type == 'doctor' %}{% url 'doctor_home' %}{% else %}{% url 'dashboard_farmacia' %}{% endif %}" class="btn btn-secondary mb-3">
+        Regresar al Inicio
+    </a>
+    
+    <div class="card p-4">
+        <h5 class="card-title">Paciente: {{ receta.paciente.nombre }} {{ receta.paciente.apellido_paterno }}</h5>
+        <p class="card-text"><strong>Médico:</strong> {{ receta.medico.username }}</p>
+        <p class="card-text"><strong>Fecha:</strong> {{ receta.fecha }}</p>
+
+        <hr>
+        <h6>Datos del Paciente:</h6>
+        <p class="card-text"><strong>Edad:</strong> {{ receta.edad|default:"N/A" }} años</p>
+        <p class="card-text"><strong>Estatura:</strong> {{ receta.talla|default:"N/A" }} cm</p>
+        <p class="card-text"><strong>Peso:</strong> {{ receta.peso|default:"N/A" }} kg</p>
+        <hr>
+
+        <h6>Signos Vitales:</h6>
+        <p class="card-text"><strong>T/A:</strong> {{ receta.ta|default:"N/A" }}</p>
+        <p class="card-text"><strong>F.C.:</strong> {{ receta.fc|default:"N/A" }}</p>
+        <p class="card-text"><strong>SAT. O2:</strong> {{ receta.sat_o2|default:"N/A" }}</p>
+
+        <hr>
+        <h6 class="mt-3">Prescripción:</h6>
+        <p class="card-text"><strong>Diagnóstico:</strong> {{ receta.diagnostico }}</p>
+        <p class="card-text"><strong>Medicamento:</strong> {{ receta.medicamento }}</p>
+        <p class="card-text"><strong>Indicaciones:</strong> {{ receta.indicaciones|linebreaksbr }}</p>
+        
+        <a href="{% url 'imprimir_receta_pdf' receta.pk %}" class="btn btn-danger mt-4">Imprimir en PDF</a>
+    </div>
+</div>
+{% endblock %}

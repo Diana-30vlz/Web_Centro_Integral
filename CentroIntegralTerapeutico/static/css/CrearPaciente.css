@@ -1,0 +1,218 @@
+/* Estilos para la página de Crear Paciente - Versión Profesional */
+
+/* --------------------
+   Estilos Generales
+   -------------------- */
+body {
+    background-color: #f0f2f5; /* Un gris muy claro, suave y moderno */
+    font-family: 'Inter', sans-serif; /* Puedes importar una fuente de Google Fonts si lo deseas, por ejemplo, Inter */
+    color: #333;
+}
+
+.container.my-5 {
+    padding-top: 3rem; /* Espaciado superior */
+    padding-bottom: 3rem; /* Espaciado inferior */
+}
+
+/* --------------------
+   Encabezados y Títulos
+   -------------------- */
+h1 {
+    color: #2c3e50; /* Un azul oscuro/gris para los títulos */
+    font-weight: 700; /* Negrita para el título principal */
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+h4.card-title {
+    color: #34495e; /* Un tono un poco más claro para el título del formulario */
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* --------------------
+   Contenedor del Formulario (Tarjeta)
+   -------------------- */
+.card {
+    border: none; /* Eliminar el borde predeterminado de la tarjeta */
+    border-radius: 1rem; /* Bordes más redondeados */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra suave para un efecto flotante */
+    overflow: hidden; /* Asegura que el contenido no se desborde con el border-radius */
+    background-color: #ffffff; /* Fondo blanco para la tarjeta */
+}
+
+/* --------------------
+   Estilos de Formulario
+   -------------------- */
+.form-control,
+.form-select {
+    border: 1px solid #ced4da; /* Borde estándar para los campos */
+    border-radius: 0.5rem; /* Bordes redondeados para los inputs */
+    padding: 0.75rem 1rem; /* Más padding para una mejor estética */
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Transición suave al enfocar */
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff; /* Borde azul al enfocar (similar al de Bootstrap) */
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra azul al enfocar */
+    outline: none; /* Eliminar el contorno por defecto del navegador */
+}
+
+.form-label { /* Estilo para las etiquetas de los campos */
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.5rem;
+    display: block; /* Asegura que la etiqueta esté en su propia línea */
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem !important; /* Aumentar el margen inferior de los campos para mejor separación */
+}
+
+/* --------------------
+   Botón de Enviar
+   -------------------- */
+.btn-primary {
+    background-color: #007bff; /* Azul primario de Bootstrap */
+    border-color: #007bff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    transform: translateY(-1px); /* Ligero efecto de levantamiento al pasar el ratón */
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.btn-primary:active {
+    background-color: #004085;
+    border-color: #00306c;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* --------------------
+   Mensajes de Alerta (Django Messages)
+   -------------------- */
+.messages {
+    list-style: none; /* Quitar viñetas de la lista */
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+}
+
+.messages li {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    display: flex; /* Para alinear el texto y el botón de cerrar */
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+}
+
+.alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+}
+
+/* Estilo para el botón de cerrar en los mensajes */
+.btn-close {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+}
+
+/* --------------------
+   Errores de Campo
+   -------------------- */
+.alert-danger.mt-1 { /* Errores específicos de campo */
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem !important;
+    background-color: #f8d7da; /* Rojo más suave */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb;
+    border-radius: 0.4rem;
+}
+
+/* --------------------
+   Responsive Design (para pantallas más pequeñas)
+   -------------------- */
+@media (max-width: 768px) {
+    .card {
+        margin: 0 1rem; /* Margen en los lados para pantallas pequeñas */
+    }
+}
+
+/* --------------------
+   Estilos de Formulario (Cajas de Texto)
+   -------------------- */
+.form-control,
+.form-select {
+    display: block; /* Asegura que ocupen todo el ancho disponible */
+    width: 100%; /* Ocupar el 100% del ancho del contenedor */
+    padding: 0.75rem 1rem; /* Padding interno */
+    font-size: 1rem; /* Tamaño de fuente */
+    font-weight: 400; /* Peso de la fuente */
+    line-height: 1.5; /* Altura de línea */
+    color: #495057; /* Color del texto dentro del input */
+    background-color: #fff; /* Fondo blanco */
+    background-clip: padding-box;
+    border: 1px solid #ced4da; /* Borde gris claro */
+    border-radius: 0.5rem; /* Bordes redondeados */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Transición suave */
+    -webkit-appearance: none; /* Resetea estilos nativos en algunos navegadores */
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Estado de enfoque (cuando el input está activo) */
+.form-control:focus,
+.form-select:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff; /* Borde azul al enfocar */
+    outline: 0; /* Elimina el outline por defecto del navegador */
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra azul al enfocar */
+}
+
+/* Estilo para los placeholders (texto dentro del input antes de escribir) */
+.form-control::placeholder {
+    color: #6c757d; /* Gris más oscuro para el placeholder */
+    opacity: 0.7; /* Ligeramente transparente */
+}
+
+/* Estilo para los campos deshabilitados */
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+/* Estilos específicos para Textareas */
+textarea.form-control {
+    min-height: calc(1.5em + 0.75rem + 2px); /* Altura mínima para textarea */
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+/* ... (resto de tu CSS para labels, botones, etc.) ... */

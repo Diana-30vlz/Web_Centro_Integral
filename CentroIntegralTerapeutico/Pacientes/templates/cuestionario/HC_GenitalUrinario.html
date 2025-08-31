@@ -1,0 +1,313 @@
+{# Pacientes/templates/cuestionario/historia_clinica_genital_urinario.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Aparato Genital y Urinario{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Aparato Genital</h3>
+            <div class="form-group-horizontal">
+                <label id='campo'>Criptorquidea</label>
+                <div class="form-switch">
+                    {{ form.genital_criptorquidea }}
+                    <label for="{{ form.genital_criptorquidea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Fimosis</label>
+                <div class="form-switch">
+                    {{ form.genital_fimosis }}
+                    <label for="{{ form.genital_fimosis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Función Sexual</label>
+                <div class="form-switch">
+                    {{ form.genital_funcion_sexual }}
+                    <label for="{{ form.genital_funcion_sexual.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Sangrado Genital</label>
+                <div class="form-switch">
+                    {{ form.genital_sangrado_genital }}
+                    <label for="{{ form.genital_sangrado_genital.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Flujo Leucorrea</label>
+                <div class="form-switch">
+                    {{ form.genital_flujo_leucorrea }}
+                    <label for="{{ form.genital_flujo_leucorrea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Dolor ginecológico</label>
+                <div class="form-switch">
+                    {{ form.genital_dolor_ginecologico }}
+                    <label for="{{ form.genital_dolor_ginecologico.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Prurito Vulvar</label>
+                <div class="form-switch">
+                    {{ form.genital_prurito_vulvar }}
+                    <label for="{{ form.genital_prurito_vulvar.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group-horizontal">
+                <label id = 'campo'>Comentarios&nbsp;</label> 
+                {{ form.Comentarios_genital }}
+            </div>
+
+            <h3>Aparato Urinario</h3>
+            <h2 id = 'sub'>Alteraciones de la Micción</h2>
+            <div class="form-switch-group">
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Poliuria.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Poliuria }}
+                        <label for="{{ form.Poliuria.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Anuria.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Anuria }}
+                        <label for="{{ form.Anuria.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Oliguria.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Oliguria }}
+                        <label for="{{ form.Oliguria.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Nicturia.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Nicturia }}
+                        <label for="{{ form.Nicturia.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Opsuria.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Opsuria }}
+                        <label for="{{ form.Opsuria.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Disuria.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Disuria }}
+                        <label for="{{ form.Disuria.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Tenesmo_vesical.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Tenesmo_vesical }}
+                        <label for="{{ form.Tenesmo_vesical.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Urgencia.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Urgencia }}
+                        <label for="{{ form.Urgencia.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Chorro.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Chorro }}
+                        <label for="{{ form.Chorro.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Enuresis.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Enuresis }}
+                        <label for="{{ form.Enuresis.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Incontinencia.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Incontinencia }}
+                        <label for="{{ form.Incontinencia.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>{{ form.Ninguna.label }}</label>
+                    <div class="form-switch">
+                        {{ form.Ninguna }}
+                        <label for="{{ form.Ninguna.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id = 'sub'>Características de la Orina</h2>
+            <div class="form-section-group">
+                <p>
+                    <label for="{{ form.urin_volumen_orina.id_for_label }}">Volumen de Orina:</label>
+                    {{ form.urin_volumen_orina }}
+                </p>
+                <p>
+                    <label for="{{ form.urin_color_orina.id_for_label }}">Color de Orina:</label>
+                    {{ form.urin_color_orina }}
+                </p>
+                <p>
+                    <label for="{{ form.urin_olor_orina.id_for_label }}">Olor de Orina:</label>
+                    {{ form.urin_olor_orina }}
+                </p>
+                <p>
+                    <label for="{{ form.urin_aspecto_orina.id_for_label }}">Aspecto de Orina:</label>
+                    {{ form.urin_aspecto_orina }}
+                </p>
+                <p>
+                    <label for="{{ form.Comentarios_urinario.id_for_label }}">Comentarios:</label>
+                    {{ form.Comentarios_urinario }}
+                </p>
+            </div>
+
+
+
+            <h2 id = 'sub'>Otros Signos</h2>
+            <div class="form-switch-group">
+                <div class="form-group-horizontal">
+                    <label id='campo'>Dolor Lumbar</label>
+                    <div class="form-switch">
+                        {{ form.urin_dolor_lumbar }}
+                        <label for="{{ form.urin_dolor_lumbar.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>Edema palpebral Superior</label>
+                    <div class="form-switch">
+                        {{ form.urin_edema_palpebral_sup }}
+                        <label for="{{ form.urin_edema_palpebral_sup.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>Edema palpebral Inferior</label>
+                    <div class="form-switch">
+                        {{ form.urin_edema_palpebral_inf }}
+                        <label for="{{ form.urin_edema_palpebral_inf.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>Edema renal</label>
+                    <div class="form-switch">
+                        {{ form.urin_edema_renal }}
+                        <label for="{{ form.urin_edema_renal.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>Hipertensión Arterial</label>
+                    <div class="form-switch">
+                        {{ form.urin_hipertension_arterial }}
+                        <label for="{{ form.urin_hipertension_arterial.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id='campo'>Datos Clínicos de Anemia</label>
+                    <div class="form-switch">
+                        {{ form.urin_datos_clinicos_anemia }}
+                        <label for="{{ form.urin_datos_clinicos_anemia.id_for_label }}">
+                            <span class="switch-toggle"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id = 'campo'>Comentarios&nbsp;</label> 
+                {{ form.Comentarios_urinario }}
+            </div>
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Crear Paciente{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/CrearPaciente.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Bienvenido al área para crear pacientes</h1>
+<a href="#" onclick="history.back()" class="btn btn-secondary mb-3">
+    Regresar a la página anterior
+</a>
+    {# Mostrar mensajes de Django (success, error, info) #}
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="card p-4 shadow-sm">
+        <h4 class="card-title text-center mb-4">Formulario de Nuevo Paciente</h4>
+        <form method="post">
+            {% csrf_token %}
+            
+            {# Campos de Nombre, Apellido Paterno y Apellido Materno #}
+            <div class="mb-3">
+                <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
+                <input type="text"
+                       class="form-control"
+                       name="{{ form.nombre.name }}"
+                       id="{{ form.nombre.id_for_label }}"
+                       value="{{ form.nombre.value|default_if_none:'' }}"
+                       {% if form.nombre.field.required %}required{% endif %}
+                       {% if form.nombre.field.widget.attrs.placeholder %}placeholder="{{ form.nombre.field.widget.attrs.placeholder }}"{% endif %}>
+                {% for error in form.nombre.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.apellido_paterno.id_for_label }}" class="form-label">{{ form.apellido_paterno.label }}</label>
+                <input type="text"
+                       class="form-control"
+                       name="{{ form.apellido_paterno.name }}"
+                       id="{{ form.apellido_paterno.id_for_label }}"
+                       value="{{ form.apellido_paterno.value|default_if_none:'' }}"
+                       {% if form.apellido_paterno.field.required %}required{% endif %}
+                       {% if form.apellido_paterno.field.widget.attrs.placeholder %}placeholder="{{ form.apellido_paterno.field.widget.attrs.placeholder }}"{% endif %}>
+                {% for error in form.apellido_paterno.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.apellido_materno.id_for_label }}" class="form-label">{{ form.apellido_materno.label }}</label>
+                <input type="text"
+                       class="form-control"
+                       name="{{ form.apellido_materno.name }}"
+                       id="{{ form.apellido_materno.id_for_label }}"
+                       value="{{ form.apellido_materno.value|default_if_none:'' }}"
+                       {% if form.apellido_materno.field.required %}required{% endif %}
+                       {% if form.apellido_materno.field.widget.attrs.placeholder %}placeholder="{{ form.apellido_materno.field.widget.attrs.placeholder }}"{% endif %}>
+                {% for error in form.apellido_materno.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {# Resto de los campos (fecha de nacimiento, género, etc.) - sin cambios #}
+            <div class="mb-3">
+                <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">{{ form.fecha_nacimiento.label }}</label>
+                <input type="date"
+                       class="form-control"
+                       name="{{ form.fecha_nacimiento.name }}"
+                       id="{{ form.fecha_nacimiento.id_for_label }}"
+                       value="{{ form.fecha_nacimiento.value|date:'Y-m-d'|default_if_none:'' }}"
+                       {% if form.fecha_nacimiento.field.required %}required{% endif %}>
+                {% for error in form.fecha_nacimiento.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.genero.id_for_label }}" class="form-label">{{ form.genero.label }}</label>
+                <select class="form-select"
+                        name="{{ form.genero.name }}"
+                        id="{{ form.genero.id_for_label }}"
+                        {% if form.genero.field.required %}required{% endif %}>
+                    <option value="">---------</option>
+                    {% for choice_value, choice_label in form.genero.field.choices %}
+                        <option value="{{ choice_value }}" {% if form.genero.value == choice_value %}selected{% endif %}>{{ choice_label }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in form.genero.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
+                <input type="tel"
+                       class="form-control"
+                       name="{{ form.telefono.name }}"
+                       id="{{ form.telefono.id_for_label }}"
+                       value="{{ form.telefono.value|default_if_none:'' }}"
+                       {% if form.telefono.field.required %}required{% endif %}
+                       {% if form.telefono.field.widget.attrs.placeholder %}placeholder="{{ form.telefono.field.widget.attrs.placeholder }}"{% endif %}>
+                {% for error in form.telefono.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                <input type="email"
+                       class="form-control"
+                       name="{{ form.email.name }}"
+                       id="{{ form.email.id_for_label }}"
+                       value="{{ form.email.value|default_if_none:'' }}"
+                       {% if form.email.field.required %}required{% endif %}
+                       {% if form.email.field.widget.attrs.placeholder %}placeholder="{{ form.email.field.widget.attrs.placeholder }}"{% endif %}>
+                {% for error in form.email.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.direccion.id_for_label }}" class="form-label">{{ form.direccion.label }}</label>
+                <textarea class="form-control"
+                          name="{{ form.direccion.name }}"
+                          id="{{ form.direccion.id_for_label }}"
+                          {% if form.direccion.field.required %}required{% endif %}
+                          {% if form.direccion.field.widget.attrs.rows %}rows="{{ form.direccion.field.widget.attrs.rows }}"{% endif %}
+                          {% if form.direccion.field.widget.attrs.placeholder %}placeholder="{{ form.direccion.field.widget.attrs.placeholder }}"{% endif %}>{{ form.direccion.value|default_if_none:'' }}</textarea>
+                {% for error in form.direccion.errors %}
+                    <div class="alert alert-danger mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {# Mensajes de error no específicos de un campo #}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary w-100 mt-3">Guardar Paciente</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Dashboard de Farmacia{% endblock %}
+
+{% block content %}
+<div class="dashboard-container py-5">
+    <div class="container">
+        <h1 class="welcome-text mb-4">Bienvenido, {{ request.user.username }}</h1>
+        <p class="lead text-secondary mb-5">Un vistazo rápido a las actividades clave de la farmacia.</p>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+
+            <div class="col dashboard-card-wrapper">
+                <a href="{% url 'lista_medicamentos' %}" class="card dashboard-card h-100 shadow-sm border-0 text-decoration-none text-dark">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa fa-cubes fa-4x text-primary mb-3 icon-card"></i>
+                        <h5 class="card-title fw-bold">Inventario</h5>
+                        <p class="card-text text-muted mb-0">Gestión de productos y existencias.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col dashboard-card-wrapper">
+                <a href="{% url 'punto_venta' %}" class="card dashboard-card h-100 shadow-sm border-0 text-decoration-none text-dark">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa fa-credit-card fa-4x text-info mb-3 icon-card"></i>
+                        <h5 class="card-title fw-bold">Punto de Venta</h5>
+                        <p class="card-text text-muted mb-0">Gestionar transacciones de venta.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col dashboard-card-wrapper">
+                <a href="{% url 'agenda' %}" class="card dashboard-card h-100 shadow-sm border-0 text-decoration-none text-dark">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa fa-calendar fa-4x text-warning mb-3 icon-card"></i>
+                        <h5 class="card-title fw-bold">Agenda</h5>
+                        <p class="card-text text-muted mb-0">Consulta de citas programadas.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col dashboard-card-wrapper">
+                <a href="{% url 'lista_pacientes' %}" class="card dashboard-card h-100 shadow-sm border-0 text-decoration-none text-dark">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa fa-users fa-4x text-success mb-3 icon-card"></i>
+                        <h5 class="card-title fw-bold">Pacientes</h5>
+                        <p class="card-text text-muted mb-0">Directorio de pacientes.</p>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos CSS personalizados para el dashboard */
+    .dashboard-container {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .dashboard-card-wrapper {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .dashboard-card-wrapper:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .dashboard-card {
+        border-radius: 15px;
+        background-color: #ffffff;
+        cursor: pointer;
+    }
+
+    .icon-card {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .dashboard-card-wrapper:hover .icon-card {
+        transform: scale(1.1);
+    }
+
+    .welcome-text {
+        font-weight: 300;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const welcomeText = document.querySelector('.welcome-text');
+        if(welcomeText) {
+            welcomeText.style.animationPlayState = 'running';
+        }
+    });
+</script>
+{% endblock %}

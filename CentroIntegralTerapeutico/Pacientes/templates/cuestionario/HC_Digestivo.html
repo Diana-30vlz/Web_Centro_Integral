@@ -1,0 +1,283 @@
+{# Pacientes/templates/cuestionario/historia_clinica_digestivo.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Sistema Digestivo{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Aparato Digestivo</h3>
+            <div class="form-group-horizontal">
+                <label id='campo'>Halitosis</label>
+                <div class="form-switch">
+                    {{ form.digest_halitosis }}
+                    <label for="{{ form.digest_halitosis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Boca Seca</label>
+                <div class="form-switch">
+                    {{ form.digest_boca_seca }}
+                    <label for="{{ form.digest_boca_seca.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id='campo'>Masticación</label>
+                <div class="form-switch">
+                    {{ form.digest_masticacion }}
+                    <label for="{{ form.digest_masticacion.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Disfagia</label>
+                <div class="form-switch">
+                    {{ form.digest_disfagia }}
+                    <label for="{{ form.digest_disfagia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Pirosis</label>
+                <div class="form-switch">
+                    {{ form.digest_pirosis }}
+                    <label for="{{ form.digest_pirosis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Náuseas</label>
+                <div class="form-switch">
+                    {{ form.digest_nausea }}
+                    <label for="{{ form.digest_nausea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Vómito (Hematemesis)</label>
+                <div class="form-switch">
+                    {{ form.digest_vomito_hematemesis }}
+                    <label for="{{ form.digest_vomito_hematemesis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Colitis</label>
+                <div class="form-switch">
+                    {{ form.digest_colicos }}
+                    <label for="{{ form.digest_colicos.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Dolor abdominal</label>
+                <div class="form-switch">
+                    {{ form.digest_dolor_abdominal }}
+                    <label for="{{ form.digest_dolor_abdominal.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Meteorismo</label>
+                <div class="form-switch">
+                    {{ form.digest_meteorismo }}
+                    <label for="{{ form.digest_meteorismo.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Flatulencias</label>
+                <div class="form-switch">
+                    {{ form.digest_flatulencias }}
+                    <label for="{{ form.digest_flatulencias.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Constipación</label>
+                <div class="form-switch">
+                    {{ form.digest_constipacion }}
+                    <label for="{{ form.digest_constipacion.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Diarrea</label>
+                <div class="form-switch">
+                    {{ form.digest_diarrea }}
+                    <label for="{{ form.digest_diarrea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Rectorragias</label>
+                <div class="form-switch">
+                    {{ form.digest_rectorragias }}
+                    <label for="{{ form.digest_rectorragias.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Melenas</label>
+                <div class="form-switch">
+                    {{ form.digest_melenas }}
+                    <label for="{{ form.digest_melenas.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Pujo</label>
+                <div class="form-switch">
+                    {{ form.digest_pujo }}
+                    <label for="{{ form.digest_pujo.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Tenesmo</label>
+                <div class="form-switch">
+                    {{ form.digest_tenesmo }}
+                    <label for="{{ form.digest_tenesmo.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Icterica</label>
+                <div class="form-switch">
+                    {{ form.digest_ictericia }}
+                    <label for="{{ form.digest_ictericia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Coluria</label>
+                <div class="form-switch">
+                    {{ form.digest_coluria }}
+                    <label for="{{ form.digest_coluria.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>acolita</label>
+                <div class="form-switch">
+                    {{ form.digest_acolia }}
+                    <label for="{{ form.digest_acolia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Prurito cutáneo</label>
+                <div class="form-switch">
+                    {{ form.digest_prurito_cutaneo }}
+                    <label for="{{ form.digest_prurito_cutaneo.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Hemorragias</label>
+                <div class="form-switch">
+                    {{ form.digest_hemorragias }}
+                    <label for="{{ form.digest_hemorragias.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Prurito anal</label>
+                <div class="form-switch">
+                    {{ form.digest_prurito_anal }}
+                    <label for="{{ form.digest_prurito_anal.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Hemorroides</label>
+                <div class="form-switch">
+                    {{ form.digest_hemorroides }}
+                    <label for="{{ form.digest_hemorroides.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id = 'campo'>Comentarios&nbsp;</label> 
+                {{ form.Comentarios_digestivo }}
+            </div>
+        </div>
+        
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{# CentroIntegralTerapeutico/Pacientes/templates/Agenda/agenda.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Agenda Mensual{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/agenda.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">Agenda Mensual</h1>
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="calendar-header">
+        <a href="{% url 'agenda' %}?year={{ prev_month_year }}&month={{ prev_month_month }}" class="btn btn-outline-secondary">
+            <i class="bi bi-chevron-left"></i> Mes Anterior
+        </a>
+        <h2>{{ month_name|capfirst }} {{ selected_year }}</h2>
+        <a href="{% url 'agenda' %}?year={{ next_month_year }}&month={{ next_month_month }}" class="btn btn-outline-secondary">
+            Mes Siguiente <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'crear_cita' %}" class="btn btn-primary new-cita-btn">
+            <i class="bi bi-calendar-plus-fill me-2"></i> Crear Nueva Cita
+        </a>
+    </div>
+
+    <div class="week-header">
+        <div class="day-name">Lunes</div>
+        <div class="day-name">Martes</div>
+        <div class="day-name">Miércoles</div>
+        <div class="day-name">Jueves</div>
+        <div class="day-name">Viernes</div>
+        <div class="day-name">Sábado</div>
+        <div class="day-name">Domingo</div>
+    </div>
+
+    <div class="calendar-grid">
+        {% for week in calendar_days_with_citas %}
+            {% for day_data in week %}
+                <div class="day-cell 
+                    {% if day_data.is_today %}today{% endif %}
+                    {% if not day_data.is_current_month %}not-current-month{% endif %}">
+                    <div class="day-number">{{ day_data.date.day }}</div>
+                    
+                    {# --- ASEGURATE DE QUE ESTO ESTÉ ASÍ --- #}
+                    {% if day_data.citas %} 
+                        {% for cita in day_data.citas|slice:":3" %} 
+                            <a href="{% url 'editar_cita' cita.pk %}" class="cita-mini-item">
+                                <span class="time">{{ cita.hora_inicio|time:"H:i" }}</span>
+                                <span class="patient-name">{{ cita.paciente.nombre }}</span>
+                            </a>
+                            {# --- AQUI DENTRO DEL BUCLE DE CITA --- #}
+                            <form action="{% url 'eliminar_cita' cita.pk %}" method="post" class="d-inline ms-1">
+                                {% csrf_token %} 
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar Cita" 
+                                        onclick="return confirm('¿Estás seguro de que quieres eliminar esta cita de {{ cita.paciente.nombre }} el {{ cita.fecha|date:"d M Y" }} a las {{ cita.hora_inicio|time:"H:i" }}? Esta acción es irreversible.');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        {% endfor %}
+                        {% if day_data.citas|length > 3 %}
+                            <p class="more-citas-text">+{{ day_data.citas|length|add:"-3" }} más</p>
+                        {% endif %}
+                    {% endif %}
+                    {# --- FIN DEL BLOQUE day_data.citas --- #}
+
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

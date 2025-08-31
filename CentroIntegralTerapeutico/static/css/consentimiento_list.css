@@ -1,0 +1,15 @@
+/* Pacientes/static/css/consentimiento_list.css */
+
+.list-group-item a {
+    text-decoration: none; /* Elimina el subrayado de los enlaces */
+    color: #333; /* Color del texto del enlace */
+    display: block; /* Hace que el enlace ocupe todo el ancho del list-item para que sea más fácil hacer clic */
+}
+
+.list-group-item a:hover {
+    color: #007bff; /* Cambia el color al pasar el mouse */
+}
+
+.badge {
+    font-size: 0.8rem; /* Reduce el tamaño de la fuente de la etiqueta de fecha */
+}

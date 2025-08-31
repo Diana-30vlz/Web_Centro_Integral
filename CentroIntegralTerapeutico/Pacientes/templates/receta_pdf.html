@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receta Médica - {{ receta.paciente.nombre }}</title>
+    
+    <style>
+        /* Define la configuración de la página para la impresión en PDF (A4 en formato horizontal) */
+        @page {
+            size: A4 landscape;
+            margin: 1.5cm; /* Margen de 1.5cm en todos los lados para dar más espacio */
+            
+            /* Define el marco para el encabezado de la página */
+            @frame header {
+                -pdf-frame-content: header-content; /* Asocia el marco al div con id "header-content" */
+                top: 1cm; /* Posición del encabezado desde la parte superior */
+                left: 1.5cm; /* Posición desde la izquierda */
+                right: 1.5cm; /* Posición desde la derecha */
+                height: 2.5cm; /* Altura del marco del encabezado */
+            }
+            
+            /* Define el marco para el contenido principal de la página */
+            @frame content {
+                -pdf-frame-content: page-content; /* Asocia el marco al div con id "page-content" */
+                top: 3.5cm; /* Posición del contenido debajo del encabezado */
+                left: 1.5cm;
+                right: 1.5cm;
+                bottom: 2.5cm; /* Aumenta el espacio desde abajo para el pie de página */
+            }
+            
+            /* Nuevo marco para el pie de página */
+            @frame footer {
+                -pdf-frame-content: footer-content;
+                bottom: 1.5cm; /* Posiciona el pie de página en la parte inferior */
+                left: 1.5cm;
+                right: 1.5cm;
+                height: 2cm; /* Altura del marco del pie de página aumentada a 2cm */
+            }
+        }
+        
+        /* Estilos para el cuerpo del documento */
+        body {
+            font-family: sans-serif; /* Fuente del texto */
+            font-size: 10pt; /* Tamaño de la fuente */
+            color: #333; /* Color del texto */
+        }
+        
+        /* Estilos para el contenedor de la marca de agua con el icono de medicina */
+        .watermark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1; /* Ajusta la opacidad para que no opaque el texto */
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkiIGVpd2JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNOS43OTggOS40NzhhLjYuNiAwIDAgMCAuNzAxLS4wNTIgMS42IDEuNiAwIDEgMSAtMi41NS0xLjI3Ny42LjYgMCAwIDAgLjA1Mi0uNzAxLjguOCAwIDAgMSAxLjI3NyAyLjU1ek04IDcuOWExLjUgMS41IDAgMSAwIDAtMyAxLjUgMS41IDAgMCAwIDAgM3oiLz4KPC9zdmc+");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 30%; /* Ajusta el tamaño del icono de fondo */
+            z-index: -1; /* Mueve el div detrás del contenido */
+        }
+        
+        /* Contenedor del encabezado */
+        #header-content {
+            text-align: center; /* Centra todo el contenido dentro del encabezado */
+        }
+
+        /* Estilos para el contenedor de la imagen */
+        .header {
+            width: 100%; /* Aseguramos que el contenedor ocupe el ancho completo para centrar */
+        }
+        
+        /* Estilos para el título principal del encabezado */
+        .header h1 {
+            font-size: 1.5rem; /* Tamaño de la fuente del título */
+            color: #021b6dff; /* Color del texto (azul oscuro) */
+            text-shadow:
+                -1px -1px 0 #000, /* Sombra para el texto para darle un efecto de borde */
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+            margin: 0; /* Sin margen */
+        }
+
+        /* Estilos para los subtítulos */
+        .header h2 {
+            margin: 0; /* Sin margen para reducir el espacio entre líneas */
+            color: #021b6dff;
+        }
+        
+        /* Contenedor para el logo */
+        .logo-container {
+            width: auto;
+            text-align: center; /* Centra el logo */
+        }
+        
+        /* Estilos para la imagen del logo dentro del contenedor */
+        .logo-container img {
+            max-height: 20px; /* Limita la altura de la imagen */
+            max-width: 20px; /* Limita el ancho de la imagen */
+        }
+        
+        /* Estilos para la tabla principal que contiene las 3 columnas */
+        .patient-table {
+            width: 100%; /* La tabla ocupa todo el ancho */
+            border-collapse: collapse; /* Elimina el espacio entre los bordes de las celdas */
+            border: none; /* Quitamos el borde principal */
+        }
+        
+        /* Estilos para las celdas principales de la tabla */
+        .patient-table td {
+            vertical-align: top;
+            padding: 0; /* Quitamos el padding para que la tabla anidada lo maneje */
+            border: none; /* Quitamos los bordes de las celdas principales */
+        }
+        
+        /* Estilos para la tabla anidada que crea las celdas individuales */
+        .nested-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .nested-table td {
+            padding: 5px;
+            vertical-align: top;
+            line-height: 1.4;
+            border-bottom: 1px solid black; /* Borde de división para cada fila */
+        }
+        
+        /* Estilos para las secciones principales (Diagnóstico y Prescripción) */
+        .section {
+            border: 1px solid #eee; /* Borde de la sección */
+            padding: 10px; /* Relleno interno */
+            border-radius: 5px; /* Bordes redondeados */
+        }
+        
+        /* Estilos para los títulos de las secciones */
+        .section h3 {
+            margin-top: 0;
+            font-size: 11pt;
+            color: #021b6dff;
+            border-bottom: 1px solid #eee; /* Línea divisoria en la parte inferior */
+            padding-bottom: 2px;
+            margin-bottom: 5px;
+        }
+
+        /* Estilos para la tabla dentro del pie de página */
+        #footer-content table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .footer-left {
+            text-align: left;
+            font-size: 9px;
+            padding-top: 5px;
+            vertical-align: bottom;
+        }
+
+        .footer-right {
+            text-align: right;
+            padding-top: 5px;
+            vertical-align: bottom;
+        }
+        
+        .footer-right p {
+            font-size: 11px; /* Aumenta el tamaño de la fuente para el texto de la firma */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark"></div>
+    <div id="header-content">
+        <div class="header">
+            <h1>Dra. Jaqueline Vásquez Gómez</h1>
+            <h2>Universidad Evangélica Nicaragüense</h2>
+            <h2>Ced. Profesional: 11708282</h2>
+            <div class="logo-container">
+                <img src="{% static 'img/logo.png' %}" alt="Logo del Centro">
+            </div>
+        </div>
+    </div>
+    
+    <div id="page-content">
+        <table class="patient-table">
+            <tr>
+                <td>
+                    <table class="nested-table">
+                        <tr>
+                            <td><strong>NOMBRE COMPLETO:</strong></td>
+                            <td>{{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FECHA DE NACIMIENTO:</strong></td>
+                            <td>{{ paciente.fecha_nacimiento|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DOMICILIO:</strong></td>
+                            <td>{{ paciente.direccion|default:"N/A" }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="nested-table">
+                        <tr>
+                            <td><strong>EDAD:</strong></td>
+                            <td>{{ receta.edad|default:"N/A" }} años</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ESTATURA:</strong></td>
+                            <td>{{ receta.talla|default:"N/A" }} cm</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PESO:</strong></td>
+                            <td>{{ receta.peso|default:"N/A" }} kg</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table class="nested-table">
+                        <tr>
+                            <td><strong>SIGNOS VITALES:</strong></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><strong>T/A:</strong></td>
+                            <td>{{ receta.ta|default:"N/A" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>F.C.:</strong></td>
+                            <td>{{ receta.fc|default:"N/A" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SAT. O2:</strong></td>
+                            <td>{{ receta.sat_o2|default:"N/A" }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="section">
+            <h3>Diagnóstico</h3>
+            <p>{{ receta.diagnostico }}</p>
+        </div>
+        
+        <div class="section">
+            <h3>Prescripción</h3>
+            <p><strong>Medicamento:</strong> {{ receta.medicamento|linebreaksbr }}</p>
+            <p><strong>Indicaciones extras:</strong> {{ receta.indicaciones|linebreaksbr }}</p>
+        </div>
+    </div>
+    
+    <div id="footer-content">
+        <table>
+            <tr>
+                <td class="footer-left">
+                    <p>número: </p>
+                    <p><strong>dirección consultorio:</strong></p>
+                </td>
+                <td class="footer-right">
+                    <p>__________________________</p>
+                    <p><strong>Firma de la Doctora</strong></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

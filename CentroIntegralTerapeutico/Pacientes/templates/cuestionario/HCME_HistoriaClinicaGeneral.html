@@ -1,0 +1,214 @@
+{# Pacientes/templates/cuestionario/historia_clinica_parte2.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Parte 2{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Información General y Hábitos</h3>
+            <p>
+                <label id ='campo' for="{{ form.GradoInstruccion.id_for_label }}">Grado de Instrucción:</label>
+                {{ form.GradoInstruccion }}
+            </p>
+            <p>
+                <label id ='campo' for="{{ form.inmunizaciones_o_vacunas.id_for_label }}">Inmunizaciones o Vacunas:</label>
+                {{ form.inmunizaciones_o_vacunas }}
+            </p>
+            
+            <h3>Hábitos de Higiene</h3>
+            <div class="form-body-habitos">
+                <div class="form-group-horizontal">
+                    <label id = 'campo'>Baño diario:</label>
+                    <div class="radio-button-group">
+                        {% for choice in form.baño_diario %}
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id = 'campo'>Aseo dental:</label>
+                    <div class="radio-button-group">
+                        {% for choice in form.aseo_dental %}
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id = 'campo'>Lavado de manos antes de comer:</label>
+                    <div class="radio-button-group">
+                        {% for choice in form.lavado_manos_antes_comer %}
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group-horizontal">
+                    <label id = 'campo'>Lavado de manos después de ir al baño:</label>
+                    <div class="radio-button-group">
+                        {% for choice in form.lavado_manos_despues %}
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <h3>Vivienda y Servicios</h3>
+            <div class="form-group">
+                <label id = 'campo'>Tamaño de la Vivienda:</label>
+                <div class="radio-card-group">
+                    {% for choice in form.tamanio_vivienda %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label id = 'campo'>Tipo de Vivienda:</label>
+                <div class="radio-card-group">
+                    {% for choice in form.tipo_vivienda %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id = 'campo' >Servicios con los que cuenta la vivienda:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.servicio_vivienda %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id = 'campo'>Antecedentes Familiares:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Antecedentes_familiares %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <h3>Antecedentes y Patologías</h3>
+            <p>
+                <label  id = 'campo' for="{{ form.enfermedad_actual.id_for_label }}">Enfermedad Actual:</label>
+                {{ form.enfermedad_actual }}
+            </p>
+            <div class="form-group">
+                <label>Hábitos Tóxicos:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.habitos_toxicos %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <h3>Antecedentes Fisiológicos</h3>
+
+            <div class="form-group">
+                <label id ='campo'>Alimentación:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Allimentación %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <h3>Antecedentes Patológicos</h3>
+            <p>
+                <label for="{{ form.Infancia.id_for_label }}">Infancia:</label>
+                {{ form.Infancia }}
+            </p>
+            <p>
+                <label for="{{ form.Adulto.id_for_label }}">Adulto:</label>
+                {{ form.Adulto }}
+            </p>
+        </div>
+            <div class="form-group">
+                <label>Patologías:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Patologias %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id = 'campo'>¿Ha sido operado?</label>
+                <div class="form-switch">
+                    {{ form.ha_sido_operado }}
+                    <label for="{{ form.ha_sido_operado.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <p>
+                <label id = 'campo' for="{{ form.fecha_operacion.id_for_label }}">Fecha de Operación:</label>
+                {{ form.fecha_operacion }}
+            </p>
+            <p>
+                <label id = 'campo' for="{{ form.traumatismo_o_fractura.id_for_label }}">Traumatismo o Fractura:</label>
+                {{ form.traumatismo_o_fractura }}
+            </p>
+            <p>
+                <label for="{{ form.Otro.id_for_label }}">Otro:</label>
+                {{ form.Otro }}
+            </p>
+
+            <h3>Otros Datos</h3>
+            <p>
+                <label for="{{ form.Ingesta_Agua.id_for_label }}">Ingesta de Agua (litros):</label>
+                {{ form.Ingesta_Agua }}
+            </p>
+            <p>
+                <label for="{{ form.Cantidad_veces_Orina.id_for_label }}">Cantidad de veces que Orina:</label>
+                {{ form.Cantidad_veces_Orina }}
+            </p>
+            <p>
+                <label for="{{ form.Catarsis.id_for_label }}">Catarsis:</label>
+                {{ form.Catarsis }}
+            </p>
+            <p>
+                <label for="{{ form.Somnia.id_for_label }}">Somnia:</label>
+                {{ form.Somnia }}
+            </p>
+
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

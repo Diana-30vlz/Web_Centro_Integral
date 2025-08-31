@@ -1,0 +1,100 @@
+{# Inventario/templates/inventario/lista_medicamentos.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+
+{% block title %}Inventario de Medicamentos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Inventario de Medicamentos</h2>
+
+
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+
+
+
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="d-flex justify-content-end mb-3">
+        {# Botón para Añadir Nuevo Medicamento (ya lo tenías) #}
+        <a href="{% url 'crear_medicamento' %}" class="btn btn-primary me-2"> {# Añadido me-2 para un pequeño margen a la derecha #}
+            <i class="bi bi-plus-circle me-2"></i> Añadir Nuevo Medicamento
+        </a>
+
+        {# NUEVO BOTÓN PARA IMPRIMIR VARIAS ETIQUETAS #}
+        <a href="{% url 'seleccionar_medicamentos_para_imprimir' %}" class="btn btn-info"> {# Usa btn-info o el color que prefieras #}
+            <i class="bi bi-printer me-2"></i> Imprimir Varias Etiquetas
+        </a>
+    </div>
+
+    {% if medicamentos %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fabricante</th>
+                    <th>Cantidad Disponible</th>
+                    <th>Unidad</th>
+                    <th>Fecha Caducidad</th>
+                    <th>Etiquetas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in medicamentos %}
+                <tr>
+                    <td>{{ med.nombre }}</td>
+                    <td>{{ med.fabricante|default:"N/A" }}</td>
+                    <td>{{ med.cantidad_disponible }}</td>
+                    <td>{{ med.unidad_medida }}</td>
+                    <td>
+                        {% if med.fecha_caducidad %}
+                            {{ med.fecha_caducidad|date:"d M Y" }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for tag in med.tags.all %}
+                            <span class="badge bg-secondary me-1">{{ tag.nombre }}</span>
+                        {% empty %}
+                            <small class="text-muted">Ninguna</small>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{% url 'editar_medicamento' med.pk %}" class="btn btn-sm btn-outline-info me-1" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="{% url 'eliminar_medicamento' med.pk %}" class="btn btn-sm btn-outline-danger me-1" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {# --- BOTÓN PARA IMPRIMIR UNA ETIQUETA (ya lo tenías) --- #}
+                        <a href="{% url 'imprimir_etiqueta_medicamento' med.pk %}" class="btn btn-sm btn-outline-secondary" title="Imprimir Etiqueta" target="_blank">
+                            <i class="bi bi-printer"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No hay medicamentos registrados en el inventario. <a href="{% url 'crear_medicamento' %}" class="alert-link">Añade uno ahora.</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

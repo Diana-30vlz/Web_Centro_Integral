@@ -1,0 +1,64 @@
+{# Pacientes/templates/consentimientos/consentimiento_list.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+{% block title %}Lista de Consentimientos{% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/historia_clinica.css' %}">
+{% endblock %}
+{% block content %}
+<div class="pagina-container">
+    <h1 class="pagina-titulo text-center">Lista de Consentimientos Informados</h1>
+
+    <div class="historia-clinica-container">
+        <div class="acciones-container">
+            <a href="{% url 'consentimiento_create' paciente.pk %}" class="btn btn-principal btn-grande">
+                Crear Nuevo Consentimiento
+            </a>
+            <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+                Regresar a la página anterior
+            </a>
+        </div>
+    
+        <table class="tabla-registros">
+            <thead>
+                <tr>
+                    <th>Nombre Paciente</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consentimiento in consentimientos %}
+                <tr>
+                    <td>{{ consentimiento.nombre }}</td>
+                    <td>{{ consentimiento.fecha }}</td>
+                    <td>
+                        <div class="acciones-tabla">
+                            <a href="{% url 'consentimiento_detail' pk=consentimiento.pk %}" class="btn btn-ver" title="Ver Detalles">
+                                <i class="bi bi-journal-text"></i>
+                            </a>
+                            <form action="{% url 'eliminar_consentimiento' pk=consentimiento.pk %}" method="post" class="formulario-eliminar">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-eliminar" title="Eliminar Consentimiento" onclick="return confirm('¿Estás seguro de que quieres eliminar este consentimiento? Esta acción es irreversible.');">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="mensaje-sin-registros">No hay consentimientos informados registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pie-pagina-acciones">
+             <a href="{% if request.user.user_type == 'doctor' %}{% url 'doctor_home' %}{% else %}{% url 'dashboard_farmacia' %}{% endif %}" class="btn btn-volver">
+                Regresar al Inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

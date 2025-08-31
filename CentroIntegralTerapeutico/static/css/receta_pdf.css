@@ -1,0 +1,76 @@
+body {
+    font-family: sans-serif;
+    font-size: 10pt; /* Tamaño de fuente reducido */
+    color: #333;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2px; /* Reducción del espaciado */
+}
+
+.header h1 {
+    font-size: 3 rem; /* Tamaño de fuente reducido */
+    color: rgb(84, 124, 255);
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.logo-container {
+    text-align: right;
+    width: 150px;
+}
+
+.logo-container img {
+    max-height: 20px;
+    max-width: 20px;
+}
+
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px; /* Reducción del margen inferior */
+}
+
+.patient-table td {
+    vertical-align: top;
+    padding: 0;
+    line-height: 1.4; /* Reducción del espacio entre líneas */
+}
+
+.section {
+    border: 1px solid #ffffffff;
+    padding: 10px; /* Reducción del padding */
+    border-radius: 5px;
+    margin-bottom: 10px; /* Reducción del margen inferior */
+}
+
+.section h3 {
+    margin-top: 0;
+    font-size: 11pt;
+    color: #021b6dff;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px; /* Reducción del margen superior */
+    font-size: 9px;
+    border-top: 1px solid #ffffffff;
+    padding-top: 5px;
+}
+
+.cut-line {
+    border-top: 1px dashed black;
+    margin-top: 15px; /* Reducción de los márgenes */
+    margin-bottom: 15px;
+}

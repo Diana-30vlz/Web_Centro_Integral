@@ -1,0 +1,159 @@
+/* Estilos generales de la página */
+body {
+    background-color: #b2d9c4;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #333;
+    line-height: 1.5;
+}
+
+.pagina-container {
+    width: 100%;
+    max-width: 960px;
+    padding: 3rem 1rem;
+    margin: 50px auto;
+    background-color: #80b9c8;
+}
+.historia-clinica-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    margin: 20px auto;
+    max-width: 1000px; /* Limita el ancho para mejor lectura */
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+}
+.pagina-titulo {
+    font-size: 2.2rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+.pagina-titulo_sub {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.acciones-container {
+    margin-bottom: 1.5rem;
+}
+
+.pie-pagina-acciones {
+    margin-top: 1.5rem;
+}
+
+/* Estilos de botones */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-principal {
+    color: #fff;
+    background-color: #224b87;
+    border-color: #224b87;
+    display: block; /* Para que el botón ocupe todo el ancho como btn-block */
+    width: 400px; /* Ancho fijo para el botón */
+
+}
+
+.btn-principal:hover {
+    background-color: #3965a6;
+    border-color: #3965a6;
+}
+
+.btn-principal.btn-grande {
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-ver {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-ver:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-eliminar {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-eliminar:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-volver {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-volver:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Estilos de la tabla */
+.tabla-registros {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse; /* Para que las celdas se vean mejor */
+}
+
+.tabla-registros th, .tabla-registros td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.tabla-registros thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    text-align: left;
+}
+
+.tabla-registros tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.acciones-tabla {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.formulario-eliminar {
+    display: inline;
+}
+
+.mensaje-sin-registros {
+    text-align: center;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.numero-registro {
+    font-weight: bold;
+    }
+

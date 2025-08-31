@@ -1,0 +1,154 @@
+
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Glasgow y Exploración Visual{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+        <h3>Escala de Glasgow</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Prueba</th>
+                        <th>Respuesta</th>
+                        <th>Puntuación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apertura de Ojos</td>
+                        <td>{{ form.glasgow_apertura_ojos_respuesta }}</td>
+                        <td>{{ form.glasgow_apertura_ojos_puntuacion }}</td>
+                    </tr>
+                    <tr>
+                        <td>Respuesta Verbal</td>
+                        <td>{{ form.glasgow_respuesta_verbal_respuesta }}</td>
+                        <td>{{ form.glasgow_respuesta_verbal_puntuacion }}</td>
+                    </tr>
+                    <tr>
+                        <td>Respuesta Motora</td>
+                        <td>{{ form.glasgow_respuesta_motora_respuesta }}</td>
+                        <td>{{ form.glasgow_respuesta_motora_puntuacion }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+            <h3>Reflejo Fotomotor: (Reactividad Pupilar)</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Según el tamaño</td>
+                            <td>{{ form.reflejo_fotomotor_tamano }}</td>
+                        </tr>
+                        <tr>
+                            <td>Según relación entre ellas</td>
+                            <td>{{ form.reflejo_fotomotor_relaciones }}</td>
+                        </tr>
+                        <tr>
+                            <td>Según respuesta a la luz</td>
+                            <td>{{ form.reflejo_fotomotor_respuestas_luz }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Exploración de Partes Craneales</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Par craneal III Oculomotor</td>
+                            <td>{{ form.par_craneal_iii_oculomotor }}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal IV Patético o Troclear</td>
+                            <td>{{ form.par_craneal_iv_patetico }}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal VI Motor Ocular Externo</td>
+                            <td>{{ form.par_craneal_vi_motor_ocular_externo }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Campos Visuales</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Par craneal III Oculomotor</td>
+                            <td>{{ form.par_craneal_iii_oculomotor_cv }}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal IV Patético o Troclear</td>
+                            <td>{{ form.par_craneal_iv_patetico_cv }}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal VI Motor Ocular Externo</td>
+                            <td>{{ form.par_craneal_vi_motor_ocular_externo_cv }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Campos Visuales</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Retina (Relación Arterio-Venosa)</td>
+                            <td>{{ form.retina_relacion_arterio_venosa }}</td>
+                        </tr>
+                        <tr>
+                            <td>Retina (Mácula)</td>
+                            <td>{{ form.retina_macula }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+                <div class="form-group">
+                    <label id='campo'>Campos Visuales:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.campos_visuales_opciones %}
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+        </div>
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

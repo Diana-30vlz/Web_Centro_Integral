@@ -1,0 +1,406 @@
+/* Estilo del contenedor principal del formulario */
+body {
+    background-color: #828385; /* Color de fondo claro */
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;;
+    margin: 0;
+    padding: 0;
+    
+
+}
+.formulario-wizard {
+    max-width: 800px;
+    margin: 25px auto;
+    color: #333;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Estilo del encabezado del paso, similar a #presentation */
+.header-presentacion {
+    font-size: 26px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #44916f; /* Color verde de tu paleta */
+    text-align: center;
+    padding: 15px;
+    margin: -25px auto;
+    border-bottom: 2px solid #25443f;
+}
+
+/* Estilo del título del paso */
+.titulo-paso {
+    font-size: 35px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    
+}
+
+/* Estilo del subtítulo del paso */
+.formulario-wizard h3 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #275d45;
+    margin: 10px 0 10px;
+    text-align: center;
+    margin-top: 10px;
+}
+/* Estilo del subtítulo del paso */
+#sub {
+    font-size: 20px;
+    font-weight: 600;
+    color: #275d45;
+   
+    text-align: center;
+    margin-top: 50px;
+}
+
+
+/* Estilos para los campos del formulario, que se renderizan dentro de <p> */
+.formulario-wizard p {
+    font-size: 19px;
+    line-height: 1.6;
+    margin: -10px 0;
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column; /* Para que la etiqueta y el input se apilen */
+    text-indent: 20px;
+}
+
+
+/*____________________________________-PRUEBA________________________________________---*/
+
+/* Estilo para el contenedor de cada switch */
+/* Contenedor de los grupos de botones */
+.form-group-horizontal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    justify-content: space-between;
+    margin-right: 20px; /* Añade espacio entre la etiqueta y el grupo de botones */
+
+}
+
+.radio-button-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Oculta los radios originales */
+.radio-button-group input[type="radio"] {
+    display: none;
+}
+
+/* Estilo para los "botones" que son las etiquetas */
+.radio-button-group label {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    font-weight: 500;
+}
+
+/* Estilo cuando el radio está seleccionado */
+.radio-button-group input[type="radio"]:checked + label {
+    background-color: #44916f;
+    color: #ffffff;
+    border-color: #44916f;
+}
+
+
+
+
+
+
+
+
+
+/*__________________________________________________________________________________________-*/
+
+
+/*ESTILOS PARA LOS DESPLEGABLES*/
+
+/* Contenedor del grupo de botones */
+.radio-card-group {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben */
+    gap: 10px;
+    margin: 10px 50px;
+}
+
+/* Oculta los radios originales */
+.radio-card-group input[type="radio"] {
+    display: none;
+}
+
+/* Estilo para las "tarjetas" que son las etiquetas */
+.radio-card-group label {
+    display: block;
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    font-weight: 500;
+}
+
+/* Estilo cuando el radio está seleccionado */
+.radio-card-group input[type="radio"]:checked + label {
+    background-color: #44916f; /* El color verde de tu paleta */
+    color: #ffffff;
+    border-color: #44916f;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+/* ___________________________________________________________________________-*/
+
+/* Estilo para el contenedor de las tarjetas de checkbox */
+.checkbox-card-group {
+    display: flex;
+    flex-direction: row; /* Esto hace que los elementos se coloquen en una fila */
+    flex-wrap: wrap; /* Esto permite que los elementos se envuelvan a la siguiente línea si no caben */
+    gap: 10px;
+    margin: 10px 0;
+    margin-left: 50px;
+    margin-right: 20px
+}
+
+/* Oculta los checkboxes originales */
+.checkbox-card-group input[type="checkbox"] {
+    display: none;
+}
+
+/* Estilo para las tarjetas (las etiquetas de cada checkbox) */
+.checkbox-card-group label {
+    display: inline-block;
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    font-weight: 500;
+}
+
+
+/* Estilo cuando la tarjeta está seleccionada (el checkbox está marcado) */
+.checkbox-card-group input[type="checkbox"]:checked + label {
+    background-color: #44916f;
+    color: #ffffff;
+    border-color: #44916f;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/*_____________________________________________________________________________________*/
+
+/*_____Para el check unico________________________________________________________________________________*/
+
+/* Estilo para el contenedor del switch */
+.form-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Oculta el checkbox original */
+.form-switch input[type="checkbox"] {
+    display: none;
+}
+
+/* Estilo para el "interruptor" (el thumb y el track) */
+.form-switch label {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.4s;
+}
+
+/* Crea el "thumb" del interruptor */
+.form-switch label .switch-toggle {
+    position: absolute;
+    content: '';
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.4s;
+}
+
+/* Estilo cuando el checkbox está 'checked' (activo) */
+.form-switch input[type="checkbox"]:checked + label {
+    background-color: #44916f; /* Color verde de tu paleta */
+}
+
+/* Mueve el "thumb" cuando el checkbox está activo */
+.form-switch input[type="checkbox"]:checked + label .switch-toggle {
+    transform: translateX(26px);
+}
+
+
+/*______________________________________________________________________________________*
+/*__________________________ESTILOS DE TABLAS________________________________________*/
+/* Estilo para el contenedor de la tabla */
+.table-container {
+    background-color: #fcfcfc;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Puedes añadir este estilo para centrar el título si lo deseas */
+.table-container h3 {
+    text-align: center;
+    color: #444;
+}
+
+
+
+
+
+.table td{
+    font-weight: bold;
+}
+
+
+
+/* Elimina el borde del último párrafo */
+.formulario-wizard p:last-of-type {
+    border-bottom: none;
+}
+
+/* Efecto al pasar el mouse por encima de los campos */
+.formulario-wizard p:hover {
+    background-color: #d2dfd5; /* Color claro de tu paleta */
+    transition: background-color 0.3s ease;
+}
+
+/* Efecto al pasar el mouse por encima de los campos */
+.formulario-wizard .form-group-horizontal:hover {
+    background-color: #d2dfd5; /* Color claro de tu paleta */
+    transition: background-color 0.3s ease;
+}
+.formulario-wizard .form-group:hover {
+    background-color: #d2dfd5; /* Color claro de tu paleta */
+    transition: background-color 0.3s ease;
+}
+.table-container:hover {
+    background-color: #d2dfd5; /* Color claro de tu paleta */
+    transition: background-color 0.3s ease;
+}
+
+/* Estilos para los labels y los inputs */
+.formulario-wizard label {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-indent: 50px;
+}
+#campo {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-indent: 70px;
+    color: #06312a;
+    font-weight: bold;
+}
+
+.formulario-wizard input,
+.formulario-wizard select,
+.formulario-wizard textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.formulario-wizard input:focus,
+.formulario-wizard select:focus,
+.formulario-wizard textarea:focus {
+    border-color: #44916f;
+    outline: none;
+    box-shadow: 0 0 5px rgba(68, 145, 111, 0.5);
+}
+
+/* Estilos para los botones de navegación */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.btn-wizard {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-anterior {
+    background-color: #80b9c8; /* Un color azul de tu paleta */
+}
+
+.btn-anterior:hover {
+    background-color: #6a9caf;
+}
+
+.btn-siguiente {
+    background-color: #44916f; /* Un color verde de tu paleta */
+}
+
+.btn-siguiente:hover {
+    background-color: #3e8163;
+}
+
+/* Estilo para el botón de "Volver" */
+.volver-container {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.btn-volver {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    background-color: #d2dfd5;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-volver:hover {
+    background-color: #c2d1c6;
+}

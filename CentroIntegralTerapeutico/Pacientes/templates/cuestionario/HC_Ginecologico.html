@@ -1,0 +1,112 @@
+{# Pacientes/templates/cuestionario/historia_clinica_ginecologico.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Datos Ginecológicos{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Datos Obstétricos y Menstruales</h3>
+            <p>
+                <label for="{{ form.fum.id_for_label }}">FUM:</label>
+                {{ form.fum }}
+            </p>
+            <p>
+                <label for="{{ form.fpp.id_for_label }}">FPP:</label>
+                {{ form.fpp }}
+            </p>
+            <p>
+                <label for="{{ form.edad_gestacional.id_for_label }}">Edad Gestacional:</label>
+                {{ form.edad_gestacional }}
+            </p>
+            <p>
+                <label for="{{ form.menarquia.id_for_label }}">Menarquia:</label>
+                {{ form.menarquia }}
+            </p>
+            <p>
+                <label for="{{ form.rm_rit_menstr.id_for_label }}">Ritmo Menstrual:</label>
+                {{ form.rm_rit_menstr }}
+            </p>
+            <p>
+                <label for="{{ form.irs.id_for_label }}">IRS:</label>
+                {{ form.irs }}
+            </p>
+            <p>
+                <label for="{{ form.no_de_parejas.id_for_label }}">Nº de Parejas:</label>
+                {{ form.no_de_parejas }}
+            </p>
+            <p>
+                <label for="{{ form.flujo_genital.id_for_label }}">Flujo Genital:</label>
+                {{ form.flujo_genital }}
+            </p>
+            <h3>Historial Ginecológico</h3>
+            <p>
+                <label for="{{ form.gestas.id_for_label }}">Gestas:</label>
+                {{ form.gestas }}
+            </p>
+            <p>
+                <label for="{{ form.partos.id_for_label }}">Partos:</label>
+                {{ form.partos }}
+            </p>
+            <p>
+                <label for="{{ form.cesareas.id_for_label }}">Cesáreas:</label>
+                {{ form.cesareas }}
+            </p>
+            <p>
+                <label for="{{ form.abortos.id_for_label }}">Abortos:</label>
+                {{ form.abortos }}
+            </p>
+            <p>
+                <label for="{{ form.anticonceptivos.id_for_label }}">Anticonceptivos:</label>
+                {{ form.anticonceptivos }}
+            </p>
+            <p>
+                <label for="{{ form.anticonceptivos_tipo.id_for_label }}">Tipo de Anticonceptivos:</label>
+                {{ form.anticonceptivos_tipo }}
+            </p>
+            <p>
+                <label for="{{ form.anticonceptivos_tiempo.id_for_label }}">Tiempo de Uso:</label>
+                {{ form.anticonceptivos_tiempo }}
+            </p>
+            <p>
+                <label for="{{ form.anticonceptivos_ultima_toma.id_for_label }}">Última Toma:</label>
+                {{ form.anticonceptivos_ultima_toma }}
+            </p>
+            <p>
+                <label for="{{ form.cirugia_ginecologica.id_for_label }}">Cirugía Ginecológica:</label>
+                {{ form.cirugia_ginecologica }}
+            </p>
+            <p>
+                <label for="{{ form.otros_ginecologicos.id_for_label }}">Otros (Ginecológicos):</label>
+                {{ form.otros_ginecologicos }}
+            </p>
+        </div>
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

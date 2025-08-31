@@ -1,0 +1,968 @@
+{% extends "BaseSinInicio.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resultados Historial Clínico</title>
+    {% load static %} 
+    <link rel="stylesheet" href="{% static 'css/Resultado_Historial_Clinico.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+</head>
+<body>
+
+    <header class="header">
+        <h1>Resumen del historial Clinico <h1 class="patient-name"></h1> 
+    </header> 
+    <main>
+        <section class="patient-info">
+            <h2 id = "patient-presentation">Información del Paciente</h2>
+            <p><strong>Nombre: </strong>&nbsp;{{  paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</p>
+            <p><strong>Fecha de nacimiento:</strong>&nbsp;{{ paciente.fecha_nacimiento }}</p>
+            <p><strong>Género:</strong>&nbsp;{{ paciente.genero }}</p>
+            <p><strong>Motivo de consulta:</strong>&nbsp;{{ historia_clinica.motivo_consulta }}</p>
+            <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.comentarios }}</p>
+            <p><strong>Fecha de registro:</strong>&nbsp;{{ historia_clinica.fecha_registro }}</p>
+        </section>
+
+        <section class="contenedor Datos_generales_vivienda">
+            <h2 id='presentation'>Datos Generales y Vivienda</h2>
+            
+            <p><strong>Grado de instrucción:</strong>&nbsp;{{ historia_clinica.GradoInstruccion }}</p>
+            <p><strong>Inmunizaciones o vacunas:</strong>&nbsp;{{ historia_clinica.inmunizaciones_o_vacunas }}</p>
+            <p><strong>Baño diario:</strong>&nbsp;{{ historia_clinica.baño_diario }}</p>
+            <p><strong>Aseo dental:</strong>&nbsp;{{ historia_clinica.aseo_dental }}</p>
+            <p><strong>Lavado de manos antes de comer:</strong>&nbsp;{{ historia_clinica.lavado_manos_antes_comer }}</p>
+            <p><strong>Lavado de manos después:</strong>&nbsp;{{ historia_clinica.lavado_manos_despues }}</p>
+            <p><strong>Tamaño de vivienda:</strong>&nbsp;{{ historia_clinica.tamanio_vivienda }}</p>
+            <p><strong>Tipo de vivienda:</strong>&nbsp;{{ historia_clinica.tipo_vivienda }}</p>
+
+            <p class="list-header"><strong>Servicios con los que cuenta la vivienda:</strong>&nbsp;</p>
+            <ul>
+                {% for servicio in historia_clinica.servicio_vivienda %}
+                    <li>{{ servicio }}</li>
+                {% endfor %}
+            </ul>
+
+            <p><strong>Enfermedad actual:</strong>&nbsp;{{ historia_clinica.enfermedad_actual }}</p>
+            <p class="list-header"><strong>Antecedentes familiares:</strong>&nbsp;</p>
+            <ul>
+                {% for antecedente in historia_clinica.Antecedentes_familiares %}
+                    <li>{{ antecedente }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Hábitos tóxicos</h3>
+            <p class="list-header"><strong>Hábitos tóxicos:</strong>&nbsp;</p>
+            <ul>
+                {% for habito in historia_clinica.habitos_toxicos %}
+                    <li>{{ habito }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Fisiológicos: </h3>
+            <p><strong>Alimentación:</strong>&nbsp;{{ historia_clinica.Allimentación }} litros</p>
+            <p><strong>Ingesta de agua:</strong>&nbsp;{{ historia_clinica.Ingesta_Agua }} litros</p>
+            <p><strong>Cantidad de veces que orina:</strong>&nbsp;{{ historia_clinica.Cantidad_veces_Orina }} veces</p>
+            <p><strong>Catarsis:</strong>&nbsp;{{ historia_clinica.Catarsis }}</p>
+            <p><strong>Somnia:</strong>&nbsp;{{ historia_clinica.Somnia }}</p>
+            
+            <h3>Patológicos</h3>
+            <p><strong>Infancia:</strong>&nbsp;{{ historia_clinica.Infancia }}</p>
+            <p><strong>Adulto:</strong>&nbsp;{{ historia_clinica.Adulto }}</p>
+            <p class="list-header"><strong>Patologías:</strong>&nbsp;</p>
+            <ul>
+                {% for patologia in historia_clinica.Patologias %}
+                    <li>{{ patologia }}</li>
+                {% endfor %}
+            </ul>
+
+            <p><strong>Ha sido operado:</strong>&nbsp;{{ historia_clinica.ha_sido_operado }}</p>
+            <p><strong>Fecha de operación:</strong>&nbsp;{{ historia_clinica.fecha_operacion }}</p>
+            <p><strong>Traumatismo o fractura:</strong>&nbsp;{{ historia_clinica.traumatismo_o_fractura }}</p>
+            <p><strong>Otros antecedentes:</strong>&nbsp;{{ historia_clinica.Otro }}</p>
+        </section>
+            <section class="contenedor CuestionarioGinecologico">
+                <h2 id="presentation">Cuestionario Gineco-Obstetricos</h2>
+                <p><strong>FUM (Fecha de última menstruación):</strong>&nbsp;{{ historia_clinica.fum }}</p>
+                <p><strong>FPP (Fecha probable de parto):</strong>&nbsp;{{ historia_clinica.fpp }}</p>
+                <p><strong>Edad gestacional:</strong>&nbsp;{{ historia_clinica.edad_gestacional }} semanas</p>
+                <p><strong>Menarquia:</strong>&nbsp;{{ historia_clinica.menarquia }} años</p>
+                <p><strong>Ritmo menstrual:</strong>&nbsp;{{ historia_clinica.rm_rit_menstr }}</p>
+                <p><strong>IRS (Inicio de relaciones sexuales):</strong>&nbsp;{{ historia_clinica.irs }}</p>
+                <p><strong>Número de parejas:</strong>&nbsp;{{ historia_clinica.no_de_parejas }}</p>
+                <p><strong>Flujo genital:</strong>&nbsp;{{ historia_clinica.flujo_genital }}</p>
+                <p><strong>Gestas:</strong>&nbsp;{{ historia_clinica.gestas }}</p>
+                <p><strong>Partos:</strong>&nbsp;{{ historia_clinica.partos }}</p>
+                <p><strong>Cesáreas:</strong>&nbsp;{{ historia_clinica.cesareas }}</p>
+                <p><strong>Abortos:</strong>&nbsp;{{ historia_clinica.abortos }}</p>
+                <p><strong>Anticonceptivos:</strong>&nbsp;{{ historia_clinica.anticonceptivos }}</p>
+                <p><strong>Tipo de anticonceptivos:</strong>&nbsp;{{ historia_clinica.anticonceptivos_tipo }}</p>
+                <p><strong>Tiempo de uso:</strong>&nbsp;{{ historia_clinica.anticonceptivos_tiempo }}</p>
+                <p><strong>Última toma de anticonceptivos:</strong>&nbsp;{{ historia_clinica.anticonceptivos_ultima_toma }}</p>
+                <p><strong>Cirugía ginecológica:</strong>&nbsp;{{ historia_clinica.cirugia_ginecologica }}</p>
+                <p><strong>Otros ginecológicos:</strong>&nbsp;{{ historia_clinica.otros_ginecologicos }}</p>
+            </section>
+            <section class="contenedor CuestionarioDigestivo">
+                <h2 id="presentation">Cuestionario del Sistema Digestivo</h2>
+                <p><strong>Halitosis:</strong>&nbsp;{{ historia_clinica.digest_halitosis }}</p>
+                <p><strong>Boca seca:</strong>&nbsp;{{ historia_clinica.digest_boca_seca }}</p>
+                <p><strong>Dificultad para masticar:</strong>&nbsp;{{ historia_clinica.digest_masticacion }}</p>
+                <p><strong>Disfagia (dificultad para tragar):</strong>&nbsp;{{ historia_clinica.digest_disfagia }}</p>
+                <p><strong>Pirosis (acidez estomacal):</strong>&nbsp;{{ historia_clinica.digest_pirosis }}</p>
+                <p><strong>Náuseas:</strong>&nbsp;{{ historia_clinica.digest_nausea }}</p>
+                <p><strong>Vómito o hematemesis (vómito con sangre):</strong>&nbsp;{{ historia_clinica.digest_vomito_hematemesis }}</p>
+                <p><strong>Cólicos:</strong>&nbsp;{{ historia_clinica.digest_colicos }}</p>
+                <p><strong>Dolor abdominal:</strong>&nbsp;{{ historia_clinica.digest_dolor_abdominal }}</p>
+                <p><strong>Meteorismo (gases):</strong>&nbsp;{{ historia_clinica.digest_meteorismo }}</p>
+                <p><strong>Flatulencias:</strong>&nbsp;{{ historia_clinica.digest_flatulencias }}</p>
+                <p><strong>Constipación (estreñimiento):</strong>&nbsp;{{ historia_clinica.digest_constipacion }}</p>
+                <p><strong>Diarrea:</strong>&nbsp;{{ historia_clinica.digest_diarrea }}</p>
+                <p><strong>Rectorragias (sangrado rectal):</strong>&nbsp;{{ historia_clinica.digest_rectorragias }}</p>
+                <p><strong>Melenas (heces negras):</strong>&nbsp;{{ historia_clinica.digest_melenas }}</p>
+                <p><strong>Pujo:</strong>&nbsp;{{ historia_clinica.digest_pujo }}</p>
+                <p><strong>Tenesmo:</strong>&nbsp;{{ historia_clinica.digest_tenesmo }}</p>
+                <p><strong>Ictericia (piel amarillenta):</strong>&nbsp;{{ historia_clinica.digest_ictericia }}</p>
+                <p><strong>Coluria (orina oscura):</strong>&nbsp;{{ historia_clinica.digest_coluria }}</p>
+                <p><strong>Acolia (heces pálidas):</strong>&nbsp;{{ historia_clinica.digest_acolia }}</p>
+                <p><strong>Prurito cutáneo (picazón en la piel):</strong>&nbsp;{{ historia_clinica.digest_prurito_cutaneo }}</p>
+                <p><strong>Hemorragias:</strong>&nbsp;{{ historia_clinica.digest_hemorragias }}</p>
+                <p><strong>Prurito anal (picazón anal):</strong>&nbsp;{{ historia_clinica.digest_prurito_anal }}</p>
+                <p><strong>Hemorroides:</strong>&nbsp; {{ historia_clinica.digest_hemorroides }}</p>
+                <p><strong>Comentarios:</strong>&nbsp; {{ historia_clinica.Comentarios_digestivo }}</p>
+
+            </section>
+            <section class="contenedor CuestionarioCardioRespiratorio">
+                <h2 id="presentation">Cuestionario Cardiovascular y Respiratorio</h2>
+                <h3><strong>Sistema Cardiovascular</strong>&nbsp;</h3>
+                <p><strong>Tos seca:</strong>&nbsp;{{ historia_clinica.cardio_tos_seca }}</p>
+                <p><strong>Tos espasmódica:</strong>&nbsp;{{ historia_clinica.cardio_tos_espasmodica }}</p>
+                <p><strong>Hemoptisis (sangre al toser):</strong>&nbsp;{{ historia_clinica.cardio_hemoptisis }}</p>
+                <p><strong>Dolor precordial (dolor en el pecho):</strong>&nbsp;{{ historia_clinica.cardio_dolor_precordial }}</p>
+                <p><strong>Palpitaciones:</strong>&nbsp;{{ historia_clinica.cardio_palpitaciones }}</p>
+                <p><strong>Cianosis (coloración azulada de la piel):</strong>&nbsp;{{ historia_clinica.cardio_cianosis }}</p>
+                <p><strong>Edema (hinchazón):</strong>&nbsp;{{ historia_clinica.cardio_edema }}</p>
+                <h3><strong>Manifestaciones Neurológicas</strong>&nbsp;</h3>
+                <p><strong>Acúfenos (zumbidos en los oídos):</strong>&nbsp;{{ historia_clinica.cardio_acufenos }}</p>
+                <p><strong>Fosfenos (destellos de luz):</strong>&nbsp;{{ historia_clinica.cardio_fosfenos }}</p>
+                <p><strong>Síncope (desmayo):</strong>&nbsp;{{ historia_clinica.cardio_sincope }}</p>
+                <p><strong>Lipotimia (sensación de desmayo):</strong>&nbsp;{{ historia_clinica.cardio_lipotimia }}</p>
+                <p><strong>Cefaleas (dolor de cabeza):</strong>&nbsp;{{ historia_clinica.cardio_cefaleas }}</p>
+                <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.Comentarios_cardio }}</p>
+
+                <h3><strong>Pulsos</strong>&nbsp;</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Derecho</th>
+                    <th>Izquierdo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pulso Carotídeo</td>
+                    <td>{{ historia_clinica.me_pulso_carotideo_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_carotideo_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Humeral</td>
+                    <td>{{ historia_clinica.me_pulso_humeral_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_humeral_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Radial</td>
+                    <td>{{ historia_clinica.me_pulso_radial_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_radial_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Femoral</td>
+                    <td>{{ historia_clinica.me_pulso_femoral_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_femoral_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Poplíteo</td>
+                    <td>{{ historia_clinica.me_pulso_popliteo_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_popliteo_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Tibial Posterior</td>
+                    <td>{{ historia_clinica.me_pulso_tibial_posterior_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_tibial_posterior_izquierdo }}</td>
+                </tr>
+                <tr>
+                    <td>Pulso Pedio</td>
+                    <td>{{ historia_clinica.me_pulso_pedio_derecho }}</td>
+                    <td>{{ historia_clinica.me_pulso_pedio_izquierdo }}</td>
+                </tr>
+            </tbody>
+        </table>
+                <h3>Sistema Respiratorio</h3>
+                <p><strong>Tos:</strong>&nbsp;{{ historia_clinica.resp_tos }}</p>
+                <p><strong>Disnea (dificultad para respirar):</strong>&nbsp;{{ historia_clinica.resp_disnea }}</p>
+                <p><strong>Dolor torácico:</strong>&nbsp;{{ historia_clinica.resp_dolor_toracico }}</p>
+                <p><strong>Hemoptisis (sangre al toser):</strong>&nbsp;{{ historia_clinica.resp_hemoptisis }}</p>
+                <p><strong>Cianosis:</strong>&nbsp;{{ historia_clinica.resp_cianosis }}</p>
+                <p><strong>Vómica (expulsión de pus al toser):</strong>&nbsp;{{ historia_clinica.resp_vomica }}</p>
+                <p><strong>Alteraciones de la voz:</strong>&nbsp;{{ historia_clinica.resp_alteraciones_voz }}</p>
+                <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.Comentarios_respiratorio }}</p>
+            </section>
+            <section class="contenedor CuestionarioGenitalUrinario">
+                <h2 id="presentation">Cuestionario Genital y Urinario</h2>
+                <h3>Genital</h3>
+                <p><strong>Criptorquidea:</strong>&nbsp; {{ historia_clinica.genital_criptorquidea }}</p>
+                <p><strong>Fimosis:</strong>&nbsp; {{ historia_clinica.genital_fimosis }}</p>
+                <p><strong>Función sexual:</strong>&nbsp; {{ historia_clinica.genital_funcion_sexual }}</p>
+                <p><strong>Sangrado genital:</strong>&nbsp; {{ historia_clinica.genital_sangrado_genital }}</p>
+                <p><strong>Flujo o leucorrea:</strong>&nbsp; {{ historia_clinica.genital_flujo_leucorrea }}</p>
+                <p><strong>Dolor ginecológico:</strong>&nbsp; {{ historia_clinica.genital_dolor_ginecologico }}</p>
+                <p><strong>Prurito vulvar:</strong>&nbsp; {{ historia_clinica.genital_prurito_vulvar }}</p>
+
+                <h3>Urinario</h3>
+                <h3>Alteraciones de la Micción:</h3>
+                <p><strong>Poliuria:</strong>&nbsp;{{ historia_clinica.Poliuria }}</p>
+                <p><strong>Anuria:</strong>&nbsp;{{ historia_clinica.Anuria }}</p>
+                <p><strong>Oliguria:</strong>&nbsp;{{ historia_clinica.Oliguria }}</p>
+                <p><strong>Nicturia:</strong>&nbsp;{{ historia_clinica.Nicturia }}</p>
+                <p><strong>Opsuria:</strong>&nbsp;{{ historia_clinica.Opsuria }}</p>
+                <p><strong>Disuria:</strong>&nbsp;{{ historia_clinica.Disuria }}</p>
+                <p><strong>Tenesmo vesical:</strong>&nbsp;{{ historia_clinica.Tenesmo_vesical }}</p>
+                <p><strong>Urgencia:</strong>&nbsp;{{ historia_clinica.Urgencia }}</p>
+                <p><strong>Chorro:</strong>&nbsp;{{ historia_clinica.Chorro }}</p>
+                <p><strong>Enuresis:</strong>&nbsp;{{ historia_clinica.Enuresis }}</p>
+                <p><strong>Incontinencia:</strong>&nbsp;{{ historia_clinica.Incontinencia }}</p>
+                <p><strong>Ninguna:</strong>&nbsp;{{ historia_clinica.Ninguna }}</p>
+
+                <h3>Características de la Orina:</h3>
+                <p><strong>Volumen de la orina:</strong>&nbsp;{{ historia_clinica.urin_volumen_orina }}</p>
+                <p><strong>Color de la orina:</strong>&nbsp;{{ historia_clinica.urin_color_orina }}</p>
+                <p><strong>Olor de la orina:</strong>&nbsp;{{ historia_clinica.urin_olor_orina }}</p>
+                <p><strong>Aspecto de la orina:</strong>&nbsp;{{ historia_clinica.urin_aspecto_orina }}</p>
+                <p><strong>Dolor lumbar:</strong>&nbsp;{{ historia_clinica.urin_dolor_lumbar }}</p>
+                <p><strong>Edema palpebral superior:</strong>&nbsp;{{ historia_clinica.urin_edema_palpebral_sup }}</p>
+                <p><strong>Edema palpebral inferior:</strong>&nbsp;{{ historia_clinica.urin_edema_palpebral_inf }}</p>
+                <p><strong>Edema renal:</strong>&nbsp;{{ historia_clinica.urin_edema_renal }}</p>
+                <p><strong>Hipertensión arterial:</strong>&nbsp;{{ historia_clinica.urin_hipertension_arterial }}</p>
+                <p><strong>Datos clínicos de anemia:</strong>&nbsp;{{ historia_clinica.urin_datos_clinicos_anemia }}</p>
+                <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.Comentarios_urinario }}</p>
+            </section>
+            <section class="contenedor CuestionarioEndocrinoCuello">
+                <h2 id="presentation">Cuestionario Endocornio y de Cuello</h2>
+                <h3> Aparato Hematológico</h3>
+                <p><strong>Palidez:</strong>&nbsp;{{ historia_clinica.Palidez }}</p>
+                <p><strong>Astenia:</strong>&nbsp;{{ historia_clinica.Astenia }}</p>
+                <p><strong>Adinamia:</strong>&nbsp;{{ historia_clinica.Adinamia }}</p>
+                <p><strong>Otros:</strong>&nbsp;{{ historia_clinica.Otros }}</p>
+                <p><strong>Hemorragias:</strong>&nbsp;{{ historia_clinica.hemato_hemorragias }}</p>
+                <p><strong>Adenopatías:</strong>&nbsp;{{ historia_clinica.hemato_adenopatias }}</p>
+                <p><strong>Esplenomegalia:</strong>&nbsp;{{ historia_clinica.hemato_esplenomegalia }}</p>
+                <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.Comentarios_anemia }}</p>
+
+                <h3> Aparato Endocornio</h3>
+                <p><strong>Bocio:</strong>&nbsp;{{ historia_clinica.endocr_bocio }}</p>
+                <p><strong>Letargia:</strong>&nbsp;{{ historia_clinica.endocr_letargia }}</p>
+                <p><strong>Bradipsiquia (lentitud de ideas):</strong>&nbsp;{{ historia_clinica.endocr_bradipsiquia_idia }}</p>
+                <p><strong>Intolerancia al calor o frío:</strong>&nbsp;{{ historia_clinica.endocr_intolerancia_calor_frio }}</p>
+                <p><strong>Nerviosismo:</strong>&nbsp;{{ historia_clinica.endocr_nerviosismo }}</p>
+                <p><strong>Hiperquinesis (movimiento excesivo):</strong>&nbsp;{{ historia_clinica.endocr_hiperquinesis }}</p>
+                <p><strong>Caracteres sexuales:</strong>&nbsp;{{ historia_clinica.endocr_caracteres_sexuales }}</p>
+                <p><strong>Galactorrea:</strong>&nbsp;{{ historia_clinica.endocr_galactorrea }}</p>
+                <p><strong>Amenorrea:</strong>&nbsp;{{ historia_clinica.endocr_amenorrea }}</p>
+                <p><strong>Ginecomastia:</strong>&nbsp;{{ historia_clinica.endocr_ginecomastia }}</p>
+                <p><strong>Obesidad:</strong>&nbsp;{{ historia_clinica.endocr_obesidad }}</p>
+                <p><strong>Ruborización:</strong>&nbsp;{{ historia_clinica.endocr_ruborizacion }}</p>
+                <p><strong>Comentarios:</strong>&nbsp;{{ historia_clinica.Comentarios_endocrino }}</p>
+
+                <h3>Cuello</h3>
+                <p><strong>Tiroides:</strong>&nbsp;{{ historia_clinica.cuello_tiroides }}</p>
+                <p><strong>Músculos:</strong>&nbsp;{{ historia_clinica.cuello_musculos }}</p>
+                <p><strong>Ganglios linfáticos:</strong>&nbsp;{{ historia_clinica.cuello_ganglios_linfaticos }}</p>
+            </section>
+            <section class="contenedor CuestionarioExploracion1">
+                <h2 id="presentation">Exploración Física: Columna y Miembros Superiores</h2>
+                <h3>Exploración de Columna Vertebral</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Región</th>
+                                <th>Ascendente:</th>
+                                <th>Descendente:</th>
+                                <th>Observaciones:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cervical</td>
+                                <td>{{ historia_clinica.ecv_cervical_asc }}</td>
+                                <td>{{ historia_clinica.ecv_cervical_desc }}</td>
+                                <td>{{ historia_clinica.ecv_cervical_obs }}</td>
+                            </tr>
+                            <tr>
+                                <td>Dorsal</td>
+                                <td>{{ historia_clinica.ecv_dorsal_asc }}</td>
+                                <td>{{ historia_clinica.ecv_dorsal_desc }}</td>
+                                <td>{{ historia_clinica.ecv_dorsal_obs }}</td>
+                            </tr>
+                            <tr>
+                                <td>Lumbo Sacra</td>
+                                <td>{{ historia_clinica.ecv_lumbosacra_asc }}</td>
+                                <td>{{ historia_clinica.ecv_lumbosacra_desc }}</td>
+                                <td>{{ historia_clinica.ecv_lumbosacra_obs }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <h3>Evaluación MMSS</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Aducción (AD)</th>
+                                <th>Abducción (AB)</th>
+                                <th>Flexión (F)</th>
+                                <th>Extensión (E)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hombros CS</td>
+                                <td>{{ historia_clinica.mmss_hombros_cs_ad }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cs_ab }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cs_f }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cs_e }}</td>
+                            </tr>
+                            <tr>
+                                <td>Hombros CV</td>
+                                <td>{{ historia_clinica.mmss_hombros_cv_ad }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cv_ab }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cv_f }}</td>
+                                <td>{{ historia_clinica.mmss_hombros_cv_e }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Evaluación articular de MMSS Codo y Muñeca</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Extensión (E)</th>
+                                <th>Flexión (F)</th>
+                                <th>Pronación (P)</th>
+                                <th>Supinación (S)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Codo</td>
+                                <td>{{ historia_clinica.art_codo_e }}</td>
+                                <td>{{ historia_clinica.art_codo_f }}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Muñeca</td>
+                                <td>{{ historia_clinica.art_muneca_e }}</td>
+                                <td>{{ historia_clinica.art_muneca_f }}</td>
+                                <td>{{ historia_clinica.art_muneca_p }}</td>
+                                <td>{{ historia_clinica.art_muneca_s }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <h3>Evaluación articular de MMSS del pulgar</h3>
+                <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Abducción (AB)</th>
+                            <th>Aducción (AD)</th>
+                            <th>Extensión (E)</th>
+                            <th>Flexión (F)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pulgar</td>
+                            <td>{{ historia_clinica.art_pulgar_ab }}</td>
+                            <td>{{ historia_clinica.art_pulgar_ad }}</td>
+                            <td>{{ historia_clinica.art_pulgar_e }}</td>
+                            <td>{{ historia_clinica.art_pulgar_f }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>Evaluación articular de MMSS Dedos:</h3>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Flexión (F)</th>
+                            <th>Extensión (E)</th>
+                            <th>IFP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dedos</td>
+                            <td>{{ historia_clinica.art_dedos_f }}</td>
+                            <td>{{ historia_clinica.art_dedos_e }}</td>
+                            <td>{{ historia_clinica.art_dedos_ifp }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </section>
+            <section class="contenedor CuestionarioExploracion2">
+                <h2 id="presentation">Exploración Física: Miembros Inferiores y Nariz</h2>
+                <h3>Articulaciones de Miembros Inferiores</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Abducción (AB)</th>
+                                <th>Aducción (AD)</th>
+                                <th>Flexión (F)</th>
+                                <th>Extensión (E)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cadera</td>
+                                <td>{{ historia_clinica.art_cadera_ab }}</td>
+                                <td>{{ historia_clinica.art_cadera_ad }}</td>
+                                <td>{{ historia_clinica.art_cadera_f }}</td>
+                                <td>{{ historia_clinica.art_cadera_e }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Evaluación articular del Tobillo</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Flexión (F)</th>
+                                <th>Extensión (E)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tobillo</td>
+                                <td>{{ historia_clinica.art_tobillo_f }}</td>
+                                <td>{{ historia_clinica.art_tobillo_e }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Evaluación articular MMII Subastragalina</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Inversión (I)</th>
+                                <th>Eversión (EV)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Subastragalina</td>
+                                <td>{{ historia_clinica.art_subastragalina_f }}</td>
+                                <td>{{ historia_clinica.art_subastragalina_ev }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Exploración de la cavidad nasal</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Aspecto</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mucosa</td>
+                                <td>{{ historia_clinica.nasal_mucosa }}</td>
+                            </tr>
+                            <tr>
+                                <td>Cornetes</td>
+                                <td>{{ historia_clinica.nasal_cochas }}</td>
+                            </tr>
+                            <tr>
+                                <td>Vascularización</td>
+                                <td>{{ historia_clinica.nasal_vascularizacion }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="contenedor CuestionarioPulsosConciencia">
+                <h2 id="presentation">Exploración Física: Pulsos y Conciencia</h2>
+
+                <h3>Pulsos</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th><strong>Tipo de pulso</strong>&nbsp;</th>
+                            <th><strong>Derecho</strong>&nbsp;</th>
+                            <th><strong>Izquierdo</strong>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Carotídeo</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_carotideo_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_carotideo_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Humeral</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_humeral_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_humeral_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Radial</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_radial_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_radial_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Femoral</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_femoral_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_femoral_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Poplíteo</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_popliteo_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_popliteo_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tibial Posterior</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_tibial_posterior_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_tibial_posterior_izquierdo }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pedio</strong>&nbsp;</td>
+                            <td>{{ historia_clinica.me_pulso_pedio_derecho }}</td>
+                            <td>{{ historia_clinica.me_pulso_pedio_izquierdo }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Otros</h3>
+                <p><strong>Ascitis:</strong>&nbsp; {{ historia_clinica.ascitis }}</p>
+                <p><strong>Estado de Conciencia:</strong>&nbsp; {{ historia_clinica.Estado_Conciencia }}</p>
+            </section>
+            <section class="contenedor CuestionarioGlasgowVisual">
+                <h2 id="presentation">Cuestionario Glasgow y Visual</h2>
+                <h3>Escala de Glasgow</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Prueba</th>
+                                <th>Respuesta</th>
+                                <th>Puntuación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Apertura de Ojos</td>
+                                <td>{{ historia_clinica.glasgow_apertura_ojos_respuesta }}</td>
+                                <td>{{ historia_clinica.glasgow_apertura_ojos_puntuacion }}</td>
+                            </tr>
+                            <tr>
+                                <td>Respuesta Verbal</td>
+                                <td>{{ historia_clinica.glasgow_respuesta_verbal_respuesta }}</td>
+                                <td>{{ historia_clinica.glasgow_respuesta_verbal_puntuacion }}</td>
+                            </tr>
+                            <tr>
+                                <td>Respuesta Motora</td>
+                                <td>{{ historia_clinica.glasgow_respuesta_motora_respuesta }}</td>
+                                <td>{{ historia_clinica.glasgow_respuesta_motora_puntuacion }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Reflejo Fotomotor: (Reactividad Pupilar)</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Aspecto</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Según el tamaño</td>
+                                <td>{{ historia_clinica.reflejo_fotomotor_tamano }}</td>
+                            </tr>
+                            <tr>
+                                <td>Según relación entre ellas</td>
+                                <td>{{ historia_clinica.reflejo_fotomotor_relaciones }}</td>
+                            </tr>
+                            <tr>
+                                <td>Según respuesta a la luz</td>
+                                <td>{{ historia_clinica.reflejo_fotomotor_respuestas_luz }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Exploración de Pares Craneales</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Par Craneal</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>III (Oculomotor)</td>
+                                <td>{{ historia_clinica.par_craneal_iii_oculomotor }}</td>
+                            </tr>
+                            <tr>
+                                <td>IV (Patético)</td>
+                                <td>{{ historia_clinica.par_craneal_iv_patetico }}</td>
+                            </tr>
+                            <tr>
+                                <td>VI (Motor Ocular Externo)</td>
+                                <td>{{ historia_clinica.par_craneal_vi_motor_ocular_externo }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3>Campos Visuales</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Par Craneal</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>III Oculomotor</td>
+                                <td>{{ historia_clinica.par_craneal_iii_oculomotor_cv }}</td>
+                            </tr>
+                            <tr>
+                                <td>IV Patético</td>
+                                <td>{{ historia_clinica.par_craneal_iv_patetico_cv }}</td>
+                            </tr>
+                            <tr>
+                                <td>VI Motor Ocular Externo</td>
+                                <td>{{ historia_clinica.par_craneal_vi_motor_ocular_externo_cv }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Evaluación de la Retina</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Aspecto de la Retina</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Relación Arterio-Venosa</td>
+                                <td>{{ historia_clinica.retina_relacion_arterio_venosa }}</td>
+                            </tr>
+                            <tr>
+                                <td>Mácula</td>
+                                <td>{{ historia_clinica.retina_macula }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Hallazgos en la Exploración Visual</h3>
+                <ul>
+                    {% for opcion in historia_clinica.campos_visuales_opciones %}
+                        <li>{{ opcion }}</li>
+                    {% endfor %}
+                </ul>
+
+            </section>
+            <section class="contenedor CuestionarioExploracionFinal">
+                <h2 id="presentation">Exploración Física: Últimos campos</h2>
+                <h3>Exploración de oído</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>Conducto Auditivo</td>
+                                <td>{{ historia_clinica.Conducta_auditiva }}</td>
+                            </tr>
+                            <tr>
+                                <td>Membrana Timpánica</td>
+                                <td>{{ historia_clinica.Membrana_timpatica }}</td>
+                            </tr>
+                            <tr>
+                                <td>Conducción Ósea</td>
+                                <td>{{ historia_clinica.conduccion_osea }}</td>
+                            </tr>
+                            <tr>
+                                <td>Conducción Aérea</td>
+                                <td>{{ historia_clinica.conduccion_area }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <h3>Reflejos Osteo Tendinosos Profundos</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Reflejo</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Naso palpebral</td>
+                                <td>{% if '1' in historia_clinica.Naso_palpebral %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Naso_palpebral %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Naso_palpebral %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Naso_palpebral %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Superciliar</td>
+                                <td>{% if '1' in historia_clinica.Superciliar %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Superciliar %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Superciliar %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Superciliar %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Maseterino</td>
+                                <td>{% if '1' in historia_clinica.Maseterino %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Maseterino %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Maseterino %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Maseterino %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Bicipital</td>
+                                <td>{% if '1' in historia_clinica.Bicipital %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Bicipital %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Bicipital %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Bicipital %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Estilo Radial</td>
+                                <td>{% if '1' in historia_clinica.Estilo_Radial %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Estilo_Radial %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Estilo_Radial %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Estilo_Radial %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Tricipital</td>
+                                <td>{% if '1' in historia_clinica.Tricipital %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Tricipital %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Tricipital %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Tricipital %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Cúbito Pronador</td>
+                                <td>{% if '1' in historia_clinica.Cubito_Pronador %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Cubito_Pronador %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Cubito_Pronador %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Cubito_Pronador %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Medio Pubiano</td>
+                                <td>{% if '1' in historia_clinica.Medio_Pubiano %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Medio_Pubiano %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Medio_Pubiano %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Medio_Pubiano %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Rotuliano</td>
+                                <td>{% if '1' in historia_clinica.Rotuliano %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Rotuliano %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Rotuliano %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Rotuliano %}X{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Reflejos Superficiales o Mucocutenéos</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Reflejo</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Córneo Palpebral</td>
+                                <td>{% if '1' in historia_clinica.Corneo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Corneo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Corneo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Corneo_Palpebral %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Conjuntivo Palpebral</td>
+                                <td>{% if '1' in historia_clinica.Conjuntivo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Conjuntivo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Conjuntivo_Palpebral %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Conjuntivo_Palpebral %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Palatino o Velo Palatino</td>
+                                <td>{% if '1' in historia_clinica.Palatino_o_Velo_Palatino %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Palatino_o_Velo_Palatino %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Palatino_o_Velo_Palatino %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Palatino_o_Velo_Palatino %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Faríngeo</td>
+                                <td>{% if '1' in historia_clinica.Faringeo %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Faringeo %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Faringeo %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Faringeo %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Tusígeno</td>
+                                <td>{% if '1' in historia_clinica.Tusigeno %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Tusigeno %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Tusigeno %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Tusigeno %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Vómito</td>
+                                <td>{% if '1' in historia_clinica.Vomito %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Vomito %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Vomito %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Vomito %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Respiratorio</td>
+                                <td>{% if '1' in historia_clinica.Respiratorio %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Respiratorio %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Respiratorio %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Respiratorio %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Miccional</td>
+                                <td>{% if '1' in historia_clinica.Miccional %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Miccional %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Miccional %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Miccional %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Defecatorio</td>
+                                <td>{% if '1' in historia_clinica.Defecatorio %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Defecatorio %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Defecatorio %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Defecatorio %}X{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Reflejos</h3>
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Reflejo</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Babinski</td>
+                                <td>{% if '1' in historia_clinica.Babinski %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Babinski %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Babinski %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Babinski %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Chaddock</td>
+                                <td>{% if '1' in historia_clinica.Chaddock %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Chaddock %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Chaddock %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Chaddock %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Oppenheim</td>
+                                <td>{% if '1' in historia_clinica.Oppenheim %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Oppenheim %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Oppenheim %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Oppenheim %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Gordon</td>
+                                <td>{% if '1' in historia_clinica.Gordon %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Gordon %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Gordon %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Gordon %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Kerning</td>
+                                <td>{% if '1' in historia_clinica.Kerning %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Kerning %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Kerning %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Kerning %}X{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Brudzinski</td>
+                                <td>{% if '1' in historia_clinica.Brudzinski %}X{% endif %}</td>
+                                <td>{% if '2' in historia_clinica.Brudzinski %}X{% endif %}</td>
+                                <td>{% if '3' in historia_clinica.Brudzinski %}X{% endif %}</td>
+                                <td>{% if '4' in historia_clinica.Brudzinski %}X{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+            </section>
+        <a href="{% url 'historia_clinica_paciente' pk=paciente.pk %}" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </main>
+    <footer>
+        
+    </footer>
+</body>
+</html>
+{% endblock %}

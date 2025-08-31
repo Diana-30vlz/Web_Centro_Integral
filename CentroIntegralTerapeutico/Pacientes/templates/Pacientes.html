@@ -1,0 +1,99 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Lista de Pacientes{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/ListaPaciente.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Listado de Pacientes</h1>
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="d-flex justify-content-end mb-3">
+        {# Asegúrate de que este nombre de URL coincida con tu urls.py, usaremos 'crear_paciente' como discutimos #}
+        <a href="{% url 'CrearPaciente' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill me-2"></i> Crear Nuevo Paciente
+        </a>
+    </div>
+
+    {% if pacientes %} {# <-- ¡CORREGIDO: 'pacientes' en minúscula! #}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido Paterno</th>
+                    <th scope="col">Apellido Materno</th>
+                    <th scope="col">Fecha Nac.</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paciente in pacientes %} {# <-- ¡CORREGIDO: 'pacientes' en minúscula! #}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ paciente.nombre }}</td>
+                    <td>{{ paciente.apellido_paterno }}</td>
+                    <td>{{ paciente.apellido_materno|default:"N/A" }}</td>
+                    <td>{{ paciente.fecha_nacimiento|date:"d M Y" }}</td>
+                    <td>{{ paciente.telefono|default:"N/A" }}</td>
+                   <td>
+    {# Descomentar y asegurar que las URLs 'editar_paciente', 'registros_paciente', 'eliminar_paciente' estén activas en urls.py #}
+    <div class="d-flex justify-content-end gap-2">
+        {# Botón EDITAR #}
+        <a href="{% url 'editar_paciente' paciente.pk %}" class="btn btn-sm btn-info text-white" title="Editar Paciente">
+            <i class="bi bi-pencil-fill"></i>
+        </a>
+        
+
+        {# Botón VER RECETAS (NUEVO) #}
+<a href="{% url 'lista_recetas' paciente.pk %}" class="btn btn-sm btn-success" 
+   style="padding: 0.1rem 0.3rem; font-size: 0.90rem;" 
+   title="Ver Recetas">
+    <i class="bi bi-file-earmark-medical-fill"></i>
+</a>
+
+
+        {# Botón VER REGISTROS #}
+        <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-sm btn-secondary" title="Ver Registros">
+            <i class="bi bi-journal-text"></i>
+        </a>
+        
+        {# Botón ELIMINAR con formulario POST para seguridad #}
+        <form action="{% url 'eliminar_paciente' paciente.pk %}" method="post" class="d-inline">
+            {% csrf_token %} {# ¡Siempre necesario para formularios POST en Django! #}
+            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Paciente" onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ paciente.nombre }} {{ paciente.apellido_paterno }}? Esta acción es irreversible.');">
+                <i class="bi bi-trash-fill"></i>
+            </button>
+        </form>
+    </div>
+</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            No hay pacientes registrados aún. ¡Comienza creando uno!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

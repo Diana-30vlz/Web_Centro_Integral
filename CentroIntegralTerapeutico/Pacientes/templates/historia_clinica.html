@@ -1,0 +1,76 @@
+{# Pacientes/templates/historia_clinica.html #}
+{% extends "BaseSinInicio.html" %}
+{% block title %}Historia Clínica de {{ paciente.nombre }}{% endblock %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/historia_clinica.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/historia_clinica.css' %}">
+{% endblock %}
+{% block content %}
+<div class="pagina-container">
+    <h1 class="pagina-titulo">Historia Clínica</h1>
+    <h1 class="pagina-titulo_sub">{{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</h1>
+    <div class="historia-clinica-container">
+        <div class="acciones-container">
+
+
+            <a href="{% url 'crear_historia_clinica_wizard' paciente_id=paciente.pk %}" class="btn btn-principal btn-grande">
+                Agregar Nueva Historia Clínica
+            </a>
+        </div>
+        <table class="tabla-registros">
+            <thead>
+                <tr>
+                    <th>Numero de registro</th>
+                    <th>Fecha</th>
+                    <th>Motivo de consulta</th>
+                    <th>Comentarios</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for historia in historia_clinica %}
+                <tr>
+                    <td class="numero-registro">{{ historia.id }}</td>
+                    <td>{{ historia.fecha_registro }}</td>
+                    <td>{{ historia.motivo_consulta }}</td>
+                    <td>{{ historia.comentarios }}</td>
+                    <td>
+                        <div class="acciones-tabla">
+                            <a href="{% url 'Resultados_Historial_Clinico' pk=paciente.pk historia_pk=historia.pk %}" class="btn-accion btn-ver" title="Ver Historia Clínica Completa">
+                                <i class="bi bi-journal-text"></i>
+                            </a>
+                            
+                            <a href="{% url 'HistorialClinicoPDF' pk=historia.paciente.pk historia_pk=historia.pk %}" 
+                            class="btn-accion btn-imprimir" 
+                            title="Imprimir Historia Clínica"
+                            target="_blank">
+                                <i class="bi bi-printer"></i>
+                            </a>
+
+
+                            <form action="{% url 'eliminar_historial_clinico_view' historia_pk=historia.pk %}" method="post" class="formulario-eliminar">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-accion btn-eliminar" title="Eliminar Historia Clínica" onclick="return confirm('¿Estás seguro de que quieres eliminar la historia clínica?');">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="mensaje-sin-registros">No hay registros de historia clínica para este paciente.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <a href="{% url 'expediente_paciente' paciente.pk  %}" class="btn btn-secondary mt-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}

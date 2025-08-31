@@ -1,0 +1,68 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Iniciar Sesión Farmacia{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+        <style>
+        body {
+            min-height: calc(100vh - 56px); /* 56px es la altura estándar del navbar */
+            background: linear-gradient(to right, #b7dd79ff, #dda87dff);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card login-card">
+        <h2>Iniciar Sesión</h2>
+
+        {# Mensajes de error del formulario #}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# Mensajes de Django #}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Usuario</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+            </div>
+
+            <div class="text-end mb-3">
+                <a href="{% url 'recovery_request' %}" class="small">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-login">Ingresar</button>
+        </form>
+
+        <hr>
+        <div class="text-center mt-3">
+            <p>¿No tienes una cuenta de Farmacia? <a href="{% url 'registro_farmacia' %}">Regístrate aquí</a></p>
+            <p>¿No tienes una cuenta de Doctora? <a href="{% url 'signin' %}">Regístrate como Doctora</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

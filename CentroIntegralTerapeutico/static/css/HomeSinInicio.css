@@ -1,0 +1,79 @@
+/* HomeSinInicio.css */
+
+/* Estilos Generales del Body */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Estilos para los encabezados */
+body {
+    /* Mantén solo las propiedades que no interfieran con Bootstrap, o las que quieras sobrescribir intencionadamente */
+    font-family: Arial, sans-serif; /* Puedes cambiar la fuente si lo deseas */
+    line-height: 1.6;
+}
+
+
+/* Estilos para los encabezados */
+/* Mantén estos, ya que son específicos de tu contenido */
+h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50; /* Un azul oscuro para los títulos */
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 2.2em;
+    border-bottom: 2px solid #3498db; /* Una línea azul debajo del título principal */
+    padding-bottom: 10px;
+}
+
+/* Estilos para los párrafos */
+p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+/*
+   Estilos para el bloque de contenido principal (intro-section)
+   Esta clase la añadimos en el HomeSinInicio.html, así que es seguro estilizarla.
+*/
+.intro-section {
+    background-color: #ffffff;
+    padding: 30px; /* Padding interno del cuadro blanco */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Ancho máximo para el contenido */
+    margin: 30px auto; /* Centrar en la página y darle un margen superior/inferior */
+    text-align: center; /* Centrar el texto */
+    
+    /* Agrega un poco de padding de Bootstrap al main si quieres que el contenido no pegue a los bordes de la ventana */
+    /* Si tu main ya tiene padding o usa clases de container de Bootstrap, esto podría no ser necesario */
+    /* Puedes envolver el div.intro-section dentro de un <div class="container my-5"> en HomeSinInicio.html */
+}
+
+
+/* Estilos para enlaces */
+a {
+    font-size: 20px;
+    color: #3498db; /* Azul para enlaces */
+    text-decoration: none; /* Quitar subrayado por defecto */
+    margin: 20px;
+}
+
+a:hover {
+    text-decoration: underline; /* Subrayar al pasar el ratón */
+}
+
+/* Pequeños ajustes para el diseño responsive (básico) */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.8em;
+    }
+    p {
+        font-size: 1em;
+    }
+    .intro-section {
+        margin: 15px auto; /* Ajustar margen para móviles */
+        padding: 20px;
+    }
+}

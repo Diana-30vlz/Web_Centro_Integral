@@ -1,0 +1,56 @@
+{# Inventario/templates/inventario/medicamento_form.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %} {# 'titulo' se pasa desde la vista para ser dinámico #}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">{{ titulo }}</h2>
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+    {# Mensajes de Django #}
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# Tarjeta para contener el formulario #}
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <form method="post">
+            {% csrf_token %} {# ¡Siempre necesario para formularios POST en Django! #}
+            
+            {# Iterar sobre los campos del formulario #}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }} {# Esto renderizará el SelectMultiple para las etiquetas #}
+                    {% if field.help_text %}
+                        <div class="form-text text-muted">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {# Botones de acción #}
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Guardar Medicamento</button>
+                <a href="{% url 'lista_medicamentos' %}" class="btn btn-secondary btn-lg">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

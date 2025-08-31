@@ -1,0 +1,59 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Recetas Médicas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    {% if is_doctora %}
+        <h1 class="mb-4">Recetas de {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+        <a href="#" onclick="history.back()" class="btn btn-secondary mb-3">
+            Regresar a la página anterior
+        </a>
+        <a href="{% url 'crear_receta' paciente.pk %}" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle me-2"></i> Crear Nueva Receta
+        </a>
+
+        {% if recetas %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Diagnóstico</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receta in recetas %}
+                    <tr>
+                        <td>{{ receta.fecha|date:"d M Y" }}</td>
+                        <td>{{ receta.diagnostico }}</td>
+                        <td>
+                            <a href="{% url 'detalle_receta' receta.pk %}" class="btn btn-sm btn-primary">Ver Detalle</a>
+                            
+                            <form action="{% url 'eliminar_receta' pk=receta.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta receta?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">Este paciente no tiene recetas registradas.</div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            No tienes permitido el ingreso al área de Recetas.
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'dashboard_farmacia' %}" class="btn btn-primary">Volver al Inicio</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

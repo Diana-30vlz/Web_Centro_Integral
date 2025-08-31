@@ -1,0 +1,230 @@
+/* CentroIntegralTerapeutico/static/css/agenda.css */
+
+/* General Layout */
+body {
+    background-color: #fcedcd; /* Light background for the page */
+}
+
+.container {
+    max-width: 1200px; /* Max width for the content */
+}
+
+h1 {
+    color: #34495e; /* Darker title color */
+    font-weight: 1000;
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* For rounded corners on the header */
+}
+
+/* Calendar Header - Month Navigation */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: #a0c29f;
+    padding: 1.5rem 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #344d33;
+    font-weight: 800;
+}
+
+.calendar-header .btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+.calendar-header .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(2, 97, 14, 0.1);
+}
+
+/* New Appointment Button */
+.new-cita-btn {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+.new-cita-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+/* Weekday Headers */
+.week-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem; /* Space between columns */
+    margin-bottom: 0.5rem;
+}
+
+.day-name {
+    background-color: #218f00; /* Primary blue for headers */
+    color: white;
+    padding: 0.75rem 0;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 0.5rem; /* Slightly rounded corners */
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for days */
+    gap: 0.5rem; /* Space between day cells */
+}
+
+.day-cell {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    min-height: 140px; /* A bit more height for content */
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    position: relative; /* For position of day number */
+}
+
+.day-cell:hover:not(.not-current-month) {
+    border-color: #04811f;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.day-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #34495e;
+    text-align: right; /* Day number to the top right */
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #eee; /* Subtle separator */
+}
+
+/* Specific day states */
+.day-cell.today {
+    border-color: #048322; /* Green border for today */
+    background-color: #eaf7ed; /* Light green background */
+    box-shadow: 0 4px 12px rgba(40, 170, 70, 0.15);
+}
+.day-cell.today .day-number {
+    color: #28a745; /* Green day number */
+}
+
+.day-cell.not-current-month {
+    background-color: #f1f3f5; /* Lighter grey for days outside the month */
+    color: #99a2aa;
+    opacity: 0.7;
+    pointer-events: none; /* Make them unclickable if they don't have actions */
+}
+.day-cell.not-current-month .day-number {
+    color: #aeb9c4;
+}
+
+/* Cita Mini Item */
+.cita-mini-item {
+    background-color: #0caa41; /* Primary blue for cita items */
+    color: white;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block; /* To make it take full width */
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.2s ease;
+}
+
+.cita-mini-item:hover {
+    background-color: #119cec; /* Darker blue on hover */
+    text-decoration: none;
+}
+
+.cita-mini-item .time {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.cita-mini-item .patient-name {
+    font-weight: 400;
+}
+
+.more-citas-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .day-cell {
+        min-height: 100px;
+    }
+    .day-number {
+        font-size: 1.1rem;
+    }
+    .cita-mini-item {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+    .week-header .day-name {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+    .calendar-header h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .calendar-header .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    .new-cita-btn {
+        font-size: 1rem;
+        padding: 0.6rem 1.2rem;
+    }
+    .day-cell {
+        min-height: 80px; /* Even smaller for smaller screens */
+        padding: 0.5rem;
+    }
+    .day-number {
+        font-size: 1rem;
+    }
+    .cita-mini-item {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+    }
+}
