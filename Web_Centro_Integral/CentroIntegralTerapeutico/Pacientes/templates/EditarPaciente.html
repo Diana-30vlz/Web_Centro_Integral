@@ -1,0 +1,61 @@
+{# CentroIntegralTerapeutico/Pacientes/templates/Pacientes/editar_paciente.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Editar Paciente{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/CrearPaciente.css' %}"> {# Puedes reutilizar el CSS si es similar #}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Editar Paciente: {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+    Regresar a la página anterior
+</a>
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="card p-4 shadow-sm">
+        <h4 class="card-title text-center mb-4">Formulario de Edición</h4>
+        <form method="post">
+            {% csrf_token %}
+            {# Puedes renderizar el formulario completo con un solo {{ form.as_p }} o {{ form.as_table }} #}
+            {# O, si quieres más control y CSS de Bootstrap como en crear_paciente.html, copia el bloque de campos de allí #}
+            {# Por simplicidad, aquí pongo uno simple, pero puedes reemplazarlo con tus divs y labels individuales #}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-success w-100 mt-3">Guardar Cambios</button>
+            <a href="{% url 'lista_pacientes' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

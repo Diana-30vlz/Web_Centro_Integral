@@ -1,0 +1,8 @@
+{% for option in widget.optgroups %}
+    {% for widget in option.widgets %}
+        <label>
+            {{ widget.tag }}
+            {{ widget.data.label }}
+        </label>
+    {% endfor %}
+{% endfor %}

@@ -1,0 +1,321 @@
+
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Glasgow y Exploración Visual{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        
+        <div class="form-body">
+
+        <h3>Exploración de oído</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>Conducta Auditiva</td>
+                        <td>{{ form.Conducta_auditiva }}</td>
+                    </tr>
+                    <tr>
+                        <td>Membrana Timpánica</td>
+                        <td>{{ form.Membrana_timpatica }}</td>
+                    </tr>
+                    <tr>
+                        <td>Conducción Ósea</td>
+                        <td>{{ form.conduccion_osea }}</td>
+                    </tr>
+                    <tr>
+                        <td>Conducción Área</td>
+                        <td>{{ form.conduccion_area }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Reflejos osteo tendinosos profundos</h3>
+        <div class="form-group">
+            <label id='campo'>Naso palpebral:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Naso_palpebral %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Superciliar:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Superciliar %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Maseterino:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Maseterino %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Bicipital:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Bicipital %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Estilo Radial:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Estilo_Radial %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Tricipital:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Tricipital %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Cúbito Pronador:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Cubito_Pronador %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Medio Pubiano:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Medio_Pubiano %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Rotuliano:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Rotuliano %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <h3>Reflejos superficiales o mucocutáneos</h3>
+
+        <div class="form-group">
+            <label id='campo'>Córneo Palpebral:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Corneo_Palpebral %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Conjuntivo Palpebral:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Conjuntivo_Palpebral %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Palatino o Velo Palatino:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Palatino_o_Velo_Palatino %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Faríngeo:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Faringeo %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Tusígeno:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Tusigeno %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Vómito:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Vomito %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Respiratorio:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Respiratorio %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Miccional:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Miccional %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Defecatorio:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Defecatorio %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Aquíleo:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Aquileo %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <h3>Reflejos Patológicos</h3>
+
+        <div class="form-group">
+            <label id='campo'>Babinski:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Babinski %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Chaddock:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Chaddock %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Oppenheim:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Oppenheim %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Gordon:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Gordon %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Kerning:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Kerning %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id='campo'>Brudzinski:</label>
+            <div class="radio-card-group">
+                {% for choice in form.Brudzinski %}
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                {% endfor %}
+            </div>
+        </div>
+            
+
+        </div>
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

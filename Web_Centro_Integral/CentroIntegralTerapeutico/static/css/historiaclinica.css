@@ -1,0 +1,186 @@
+/* static/css/historia_clinica.css */
+
+/* Estilos generales para campos de formulario */
+.form-control, .form-select {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Estilo para justificar texto, útil para descripciones largas */
+.text-justified {
+    text-align: justify;
+}
+
+/* Estilos para etiquetas (labels) */
+.form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 600; /* Opcional: para que las etiquetas destaquen un poco más */
+}
+
+/* Estilos para errores de formulario */
+.alert.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    padding: 1rem 1rem;
+    margin-top: 0.5rem;
+    border-radius: 0.375rem;
+}
+
+/* Estilos para radio buttons y checkboxes */
+.form-check {
+    display: block;
+    min-height: 1.5rem;
+    padding-left: 1.5em;
+    margin-bottom: 0.125rem;
+}
+
+.form-check-input {
+    float: left;
+    margin-left: -1.5em;
+}
+
+.form-check-label {
+    margin-bottom: 0;
+}
+
+/* Margen inferior para secciones de formulario, para mejor espaciado */
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Estilos para los títulos dentro del formulario */
+h1.text-center {
+    color: #343a40; /* Color oscuro para el título principal */
+}
+
+h5.mt-4.mb-3 {
+    border-bottom: 1px solid #dee2e6; /* Línea separadora para subtítulos */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem !important;
+    color: #495057;
+}
+
+/* Estilo para el contenedor principal del formulario */
+.card.p-4.shadow-sm {
+    background-color: #ffffff;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+}
+
+/* Estilos para los botones */
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #5c636a;
+    border-color: #565e64;
+}
+
+/* Estilos generales para el contenedor de los botones */
+.acciones-tabla {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Base para todos los botones de acción */
+.btn-accion {
+    padding: 6px 10px;
+    border-radius: 50%;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 2px solid; /* Borde de 2px para darles un toque de diseño */
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Colores y estilos específicos para cada botón */
+.btn-ver {
+    background-color: #007bff; /* Azul */
+    border-color: #0056b3; /* Azul más oscuro para el borde */
+}
+
+.btn-imprimir {
+    background-color: #28a745; /* Verde */
+    border-color: #1e7e34; /* Verde más oscuro para el borde */
+}
+
+.btn-eliminar {
+    background-color: #dc3545; /* Rojo */
+    border-color: #c82333; /* Rojo más oscuro para el borde */
+}
+
+/* Efecto al pasar el mouse por encima de los botones */
+.btn-accion:hover {
+    filter: brightness(0.9);
+    transform: scale(1.1);
+}

@@ -1,0 +1,12 @@
+{# Pacientes/templates/historia_clinica.html #}
+{% extends "BaseSinInicio.html" %}
+{% block title %}Orden medica para{{ paciente.nombre }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Orden médica para {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+    <p>Aquí irá el contenido detallado de la historia clínica general para {{ paciente.nombre }}.</p>
+    
+    {# CAMBIO CLAVE AQUÍ: Usar 'expediente_paciente' #}
+    <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-secondary mt-3">Volver a Registros del Paciente</a>
+</div>
+{% endblock %}

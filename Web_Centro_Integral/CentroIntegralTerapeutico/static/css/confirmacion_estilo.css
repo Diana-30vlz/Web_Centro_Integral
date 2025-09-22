@@ -1,0 +1,73 @@
+body {
+    background-color: #e0f2f1; /* Un verde menta suave para un fondo fresco */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+}
+
+.confirmacion-container {
+    background-color: #ffffff;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-out;
+}
+
+.confirmacion-header {
+    margin-bottom: 20px;
+}
+
+.emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 10px;
+    animation: popIn 0.5s ease-out;
+}
+
+h1 {
+    color: #00796b; /* Un verde oscuro que combina con el fondo */
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.confirmacion-body {
+    margin-bottom: 30px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.confirmacion-body p {
+    margin: 5px 0;
+}
+
+.btn-confirmacion {
+    display: inline-block;
+    background-color: #4caf50; /* Un verde vibrante para el botón */
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-confirmacion:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}

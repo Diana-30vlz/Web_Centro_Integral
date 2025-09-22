@@ -1,0 +1,130 @@
+{# inventario/templates/inventario/seleccionar_medicamentos.html #}
+{% extends 'BaseSinInicio.html' %} {# Si usas una plantilla base #}
+{% load static %} {# Para cargar archivos estáticos si los necesitas #}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Seleccionar Medicamentos y Cantidad de Etiquetas</h2>
+    
+    <form id="printForm" method="post" action="{% url 'imprimir_varias_etiquetas_pdf' selected_ids_str='0' %}"> {# '0' es un placeholder, se reemplazará con JS #}
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <p>Marca los medicamentos y especifica cuántas etiquetas quieres imprimir para cada uno.</p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label" for="selectAll">Seleccionar Todos</label>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Seleccionar</th>
+                        <th>Nombre del Medicamento</th>
+                        <th>Cantidad de Etiquetas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {# CAMBIO CLAVE AQUÍ: Itera sobre form.medicamentos en lugar de form.medicamentos.queryset #}
+                    {% for checkbox in form.medicamentos %}
+                    <tr>
+                        <td>
+                            {# El objeto 'checkbox' ya contiene el input y la información #}
+                            {{ checkbox.tag }} {# Esto renderiza el <input type="checkbox"> #}
+                        </td>
+                        <td>
+                            {{ checkbox.choice_label }} {# Esto renderiza el nombre del medicamento #}
+                        </td>
+                        <td>
+                            {# Campo de cantidad, usando el ID del medicamento desde checkbox.data.value #}
+                            <input type="number" name="cantidad_{{ checkbox.data.value }}" id="cantidad_{{ checkbox.data.value }}" class="form-control form-control-sm cantidad-input" value="1" min="1" disabled>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3">Generar Etiquetas en PDF</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        // Seleccionamos los checkboxes reales que tienen el nombre del campo del formulario
+        const checkboxes = document.querySelectorAll('input[name="medicamentos"]'); // CAMBIO: selecciona por el 'name' del campo del formulario
+        const quantityInputs = document.querySelectorAll('.cantidad-input');
+        const printForm = document.getElementById('printForm');
+
+        // Función para habilitar/deshabilitar campo de cantidad
+        function toggleQuantityInput(checkbox, quantityInput) {
+            quantityInput.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+                quantityInput.value = 1; // Resetear la cantidad si se desmarca
+            }
+        }
+
+        // Mapear IDs de checkboxes a sus respectivos campos de cantidad
+        const quantityMap = {};
+        quantityInputs.forEach(input => {
+            const medId = input.id.replace('cantidad_', '');
+            quantityMap[medId] = input;
+        });
+
+        // Event listener para "Seleccionar Todos"
+        selectAllCheckbox.addEventListener('change', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+                const medId = checkbox.value; // Obtener el ID del medicamento del checkbox
+                if (quantityMap[medId]) {
+                    toggleQuantityInput(checkbox, quantityMap[medId]);
+                }
+            });
+        });
+
+        // Event listeners para checkboxes individuales
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const medId = this.value; // Obtener el ID del medicamento del checkbox
+                if (quantityMap[medId]) {
+                    toggleQuantityInput(this, quantityMap[medId]);
+                }
+                // Si se desmarca uno, desmarcar "Seleccionar Todos"
+                if (!this.checked) {
+                    selectAllCheckbox.checked = false;
+                }
+            });
+        });
+
+        // Interceptar el envío del formulario para construir la URL
+        printForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar el envío normal del formulario
+
+            let selectedData = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const medId = checkbox.value;
+                    const quantityInput = quantityMap[medId];
+                    const quantity = quantityInput ? quantityInput.value : 1; // Usar 1 si no se encuentra el campo (fallo de seguridad)
+                    selectedData.push(`${medId}:${quantity}`);
+                }
+            });
+
+            if (selectedData.length === 0) {
+                alert('Por favor, selecciona al menos un medicamento para imprimir.');
+                return;
+            }
+
+            // Construir la cadena para la URL
+            const selectedIdsStr = selectedData.join(',');
+            
+            // Actualizar la acción del formulario y enviarlo
+            printForm.action = "{% url 'imprimir_varias_etiquetas_pdf' selected_ids_str='PLACEHOLDER' %}".replace('PLACEHOLDER', selectedIdsStr);
+            printForm.submit();
+        });
+    });
+</script>
+{% endblock %}

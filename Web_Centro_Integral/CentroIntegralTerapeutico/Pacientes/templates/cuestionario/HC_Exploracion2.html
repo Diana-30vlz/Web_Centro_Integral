@@ -1,0 +1,130 @@
+
+
+
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Exploración de Columna Vertebral y MMSS{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+        <h3>Evaluación articular de cadera</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>AB</th>
+                        <th>AD</th>
+                        <th>F</th>
+                        <th>E</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cadera</td>
+                        <td>{{ form.art_cadera_ab }}</td>
+                        <td>{{ form.art_cadera_ad }}</td>
+                        <td>{{ form.art_cadera_f }}</td>
+                        <td>{{ form.art_cadera_e }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Evaluación articular del Tobillo</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>F</th>
+                        <th>E</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tobillo</td>
+                        <td>{{ form.art_tobillo_f }}</td>
+                        <td>{{ form.art_tobillo_e }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Evaluación articular MMII Subastragalina</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>I</th>
+                        <th>EV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Subastragalina</td>
+                        <td>{{ form.art_subastragalina_f }}</td>
+                        <td>{{ form.art_subastragalina_ev }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3>Exploración de la cavidad nasal</h3>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mucosa</td>
+                        <td>{{ form.nasal_mucosa }}</td>
+                    </tr>
+                    <tr>
+                        <td>Cochas</td>
+                        <td>{{ form.nasal_cochas }}</td>
+                    </tr>
+                    <tr>
+                        <td>Vascularización</td>
+                        <td>{{ form.nasal_vascularizacion }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

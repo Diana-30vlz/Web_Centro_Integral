@@ -1,0 +1,102 @@
+/* Inventario/static/css/doctor_home.css */
+
+/* --- Variables de Color (para un diseño consistente) --- */
+:root {
+    --primary-blue: #007bff;
+    --primary-blue-dark: #0056b3;
+    --accent-green: #28a745;
+    --accent-red: #dc3545;
+    --light-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-border: #e9ecef;
+    --text-muted: #6c757d;
+}
+
+/* --- Estilos Generales y del Body --- */
+body {
+    background-color: var(--light-bg);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --- Hero Section de Bienvenida --- */
+.doctor-home-hero {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 6rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 15px 15px;
+}
+
+.doctor-home-hero h1 {
+    font-weight: 700;
+}
+
+.doctor-home-hero p {
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* --- Estilos para las Tarjetas del Panel (Dashboard Cards) --- */
+.dashboard-card {
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer; /* Indica que la tarjeta es interactiva */
+    transition: box-shadow 0.3s ease-out; /* Transición para la sombra */
+}
+
+/* Estilo para el estado activo (con la animación JS) */
+.dashboard-card.active-hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Estilos para los iconos dentro de las tarjetas */
+.card-icon-primary, .card-icon-success, .card-icon-info, .card-icon-warning {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    background-color: transparent;
+    transition: transform 0.3s ease-out, color 0.3s ease; /* Añadimos la transición para la transformación */
+}
+
+/* Estilo para los íconos cuando la tarjeta está activa */
+.dashboard-card.active-hover .card-icon-primary { color: var(--primary-blue-dark); transform: scale(1.1); }
+.dashboard-card.active-hover .card-icon-success { color: var(--accent-green); transform: scale(1.1); }
+.dashboard-card.active-hover .card-icon-info { color: #17a2b8; transform: scale(1.1); }
+.dashboard-card.active-hover .card-icon-warning { color: #ffc107; transform: scale(1.1); }
+
+/* --- Estilos para las Listas de Citas/Pacientes --- */
+.dashboard-list .list-group-item {
+    border-color: var(--card-border);
+    background-color: transparent;
+    padding: 0.75rem 0;
+}
+
+.dashboard-list .list-group-item:first-child { border-top: none; }
+.dashboard-list .list-group-item:last-child { border-bottom: none; }
+.dashboard-list .list-group-item span { color: var(--text-muted); }
+
+/* --- Estilos para los Botones --- */
+.btn-outline-primary { color: var(--primary-blue); border-color: var(--primary-blue); }
+.btn-outline-primary:hover { color: var(--white); background-color: var(--primary-blue); }
+
+.btn-primary-light {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: var(--primary-blue);
+    border: 1px solid rgba(0, 123, 255, 0.2);
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+.btn-primary-light:hover { background-color: rgba(0, 123, 255, 0.2); }
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .doctor-home-hero { padding: 4rem 0; }
+    .doctor-home-hero h1 { font-size: 2.5rem; }
+}

@@ -1,0 +1,133 @@
+
+{# Pacientes/templates/cuestionario/historia_clinica_exploracion_1.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica Musculo Esquelético - Examen Físico{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+<div class="form-body">
+            <h3>Inspección General</h3>
+            <p>
+                <label id='campo' for="{{ form.Constitucional.id_for_label }}">Constitucional:</label>
+                {{ form.Constitucional }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Marcha.id_for_label }}">Marcha:</label>
+                {{ form.Marcha }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Actitud.id_for_label }}">Actitud:</label>
+                {{ form.Actitud }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Ubicacion.id_for_label }}">Ubicación:</label>
+                {{ form.Ubicacion }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Impresion_general.id_for_label }}">Impresión General:</label>
+                {{ form.Impresion_general }}
+            </p>
+
+            <h3>Signos Vitales</h3>
+            <p>
+                <label id='campo' for="{{ form.FC.id_for_label }}">Frecuencia Cardiaca:</label>
+                {{ form.FC }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.TA.id_for_label }}">Tensión Arterial:</label>
+                {{ form.TA }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.FR.id_for_label }}">Frecuencia Respiratoria:</label>
+                {{ form.FR }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.T_Auxiliar.id_for_label }}">Temperatura Auxiliar:</label>
+                {{ form.T_Auxiliar }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.T_rectal.id_for_label }}">Temperatura Rectal:</label>
+                {{ form.T_rectal }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Peso_Habitual.id_for_label }}">Peso Habitual:</label>
+                {{ form.Peso_Habitual }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Peso_Actual.id_for_label }}">Peso Actual:</label>
+                {{ form.Peso_Actual }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Talla.id_for_label }}">Talla:</label>
+                {{ form.Talla }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.IMC.id_for_label }}">Índice de Masa Corporal:</label>
+                {{ form.IMC }}
+            </p>
+
+            <h3>Piel, Faneras y Tejido Celular Subcutáneo</h3>
+            <p>
+                <label id='campo' for="{{ form.Aspecto.id_for_label }}">Aspecto:</label>
+                {{ form.Aspecto }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Distribuición_pilosa.id_for_label }}">Distribución pilosa:</label>
+                {{ form.Distribuición_pilosa }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Lesiones.id_for_label }}">Lesiones:</label>
+                {{ form.Lesiones }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Faneras.id_for_label }}">Faneras:</label>
+                {{ form.Faneras }}
+            </p>
+            <p>
+                <label id='campo' for="{{ form.Tejido_celular_subcutaneo.id_for_label }}">Tejido celular subcutáneo:</label>
+                {{ form.Tejido_celular_subcutaneo }}
+            </p>
+
+
+            <div class="form-group">
+                <label id='campo'>Tejido celular:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Tejido_celular %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

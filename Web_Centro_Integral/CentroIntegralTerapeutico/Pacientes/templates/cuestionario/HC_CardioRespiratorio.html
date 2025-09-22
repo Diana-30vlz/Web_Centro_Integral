@@ -1,0 +1,290 @@
+{# Pacientes/templates/cuestionario/historia_clinica_cardio_respiratorio.html #}
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historia Clínica - Aparato Cardiovascular y Respiratorio{% endblock %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            <h3>Aparato Cardiovascular</h3>
+            <div class="form-group-horizontal">
+                <label id='campo'>Tos seca</label>
+                <div class="form-switch">
+                    {{ form.cardio_tos_seca }}
+                    <label for="{{ form.cardio_tos_seca.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Tos espasmódica</label>
+                <div class="form-switch">
+                    {{ form.cardio_tos_espasmodica }}
+                    <label for="{{ form.cardio_tos_espasmodica.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Hemoptisis</label>
+                <div class="form-switch">
+                    {{ form.cardio_hemoptisis }}
+                    <label for="{{ form.cardio_hemoptisis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Dolor precordial</label>
+                <div class="form-switch">
+                    {{ form.cardio_dolor_precordial }}
+                    <label for="{{ form.cardio_dolor_precordial.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Palpitaciones</label>
+                <div class="form-switch">
+                    {{ form.cardio_palpitaciones }}
+                    <label for="{{ form.cardio_palpitaciones.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Cianosis</label>
+                <div class="form-switch">
+                    {{ form.cardio_cianosis }}
+                    <label for="{{ form.cardio_cianosis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Edema</label>
+                <div class="form-switch">
+                    {{ form.cardio_edema }}
+                    <label for="{{ form.cardio_edema.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <h2 id = "sub">Manifestaciones Periféricas</h2>
+            <div class="form-group-horizontal">
+                <label id='campo'>Acúfenos</label>
+                <div class="form-switch">
+                    {{ form.cardio_acufenos }}
+                    <label for="{{ form.cardio_acufenos.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Fosfenos</label>
+                <div class="form-switch">
+                    {{ form.cardio_fosfenos }}
+                    <label for="{{ form.cardio_fosfenos.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Sincope</label>
+                <div class="form-switch">
+                    {{ form.cardio_sincope }}
+                    <label for="{{ form.cardio_sincope.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Lipotimia</label>
+                <div class="form-switch">
+                    {{ form.cardio_lipotimia }}
+                    <label for="{{ form.cardio_lipotimia.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Cefaleas</label>
+                <div class="form-switch">
+                    {{ form.cardio_cefaleas }}
+                    <label for="{{ form.cardio_cefaleas.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            
+
+            <h2 id = 'sub'>Pulsos</h2>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Derecho</th>
+                            <th>Izquierdo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Carotideo</td>
+                            <td>{{ form.pulso_carotideo }}</td>
+                            <td>{{ form.pulso_carotideo_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Humeral</td>
+                            <td>{{ form.pulso_humeral }}</td>
+                            <td>{{ form.pulso_humeral_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Radial</td>
+                            <td>{{ form.pulso_radial }}</td>
+                            <td>{{ form.pulso_radial_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Femoral</td>
+                            <td>{{ form.pulso_femoral }}</td>
+                            <td>{{ form.pulso_femoral_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Poplíteo</td>
+                            <td>{{ form.pulso_popliteo }}</td>
+                            <td>{{ form.pulso_popliteo_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tibial Posterior</td>
+                            <td>{{ form.pulso_tibial_posterior }}</td>
+                            <td>{{ form.pulso_tibial_posterior_izq }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pedio</td>
+                            <td>{{ form.pulso_pedio }}</td>
+                            <td>{{ form.pulso_pedio_izq }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group-horizontal">
+                <label id = 'campo'>Comentarios&nbsp;</label> 
+                {{ form.Comentarios_cardio }}
+            </div>
+
+
+            <h3>Aparato Respiratorio</h3>
+            <div class="form-group-horizontal">
+                <label id='campo'>Tos</label>
+                <div class="form-switch">
+                    {{ form.resp_tos }}
+                    <label for="{{ form.resp_tos.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Disnea</label>
+                <div class="form-switch">
+                    {{ form.resp_disnea }}
+                    <label for="{{ form.resp_disnea.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Dolor Torácico</label>
+                <div class="form-switch">
+                    {{ form.resp_dolor_toracico }}
+                    <label for="{{ form.resp_dolor_toracico.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Hemoptisis</label>
+                <div class="form-switch">
+                    {{ form.resp_hemoptisis }}
+                    <label for="{{ form.resp_hemoptisis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Cianosis</label>
+                <div class="form-switch">
+                    {{ form.resp_cianosis }}
+                    <label for="{{ form.resp_cianosis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Vómica</label>
+                <div class="form-switch">
+                    {{ form.resp_vomica }}
+                    <label for="{{ form.resp_vomica.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group-horizontal">
+                <label id='campo'>Alteraciones de la Voz</label>
+                <div class="form-switch">
+                    {{ form.resp_alteraciones_voz }}
+                    <label for="{{ form.resp_alteraciones_voz.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group-horizontal">
+                <label id = 'campo'>Comentarios&nbsp;</label> 
+                {{ form.Comentarios_respiratorio }}
+            </div>
+        </div>
+        
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

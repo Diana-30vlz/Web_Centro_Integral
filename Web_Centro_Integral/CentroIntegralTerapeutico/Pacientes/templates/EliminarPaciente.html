@@ -1,0 +1,20 @@
+{# Pacientes/templates/Pacientes/confirmar_eliminar_paciente.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center">
+    <h1>Confirmar Eliminación</h1>
+    <div class="alert alert-warning" role="alert">
+        <p>¿Estás seguro de que quieres eliminar al paciente <strong>{{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</strong>?</p>
+        <p>¡Esta acción es irreversible!</p>
+    </div>
+    <form method="post" action="{% url 'eliminar_paciente' paciente.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger me-2">Sí, Eliminar</button>
+        <a href="{% url 'lista_pacientes' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

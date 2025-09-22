@@ -1,0 +1,90 @@
+/* HomeSinInicio.css */
+
+/* Estilos Generales del Body */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4; /* Un gris claro de fondo */
+    color: #333; /* Color de texto general */
+}
+
+/* Estilos para los encabezados */
+h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50; /* Un azul oscuro para los títulos */
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 2.2em;
+    border-bottom: 2px solid #3498db; /* Una línea azul debajo del título principal */
+    padding-bottom: 10px;
+}
+
+/* Estilos para los párrafos */
+p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+/* Estilos para el bloque de contenido (asumiendo que 'content' block es un div o section) */
+/* Si tu 'content' block se renderiza dentro de un elemento específico, puedes darle una clase o ID */
+/* Por ejemplo, si tu Base.html lo envuelve en <div class="main-content"> */
+/* .main-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 30px auto;
+} */
+
+/* Un estilo simple para los bloques de contenido (si los bloques se comportan como tal) */
+/* Esto afectaría al contenido dentro del {% block content %} */
+/* Puedes envolver el contenido del bloque en un div si necesitas más control */
+/* Por ejemplo, en tu plantilla:
+   {% block content %}
+     <div class="intro-section">
+       <h2>Bienvenido a nuestro sistema</h2>
+       <p>...</p>
+     </div>
+   {% endblock %}
+*/
+.intro-section { /* Ejemplo de una clase para envolver tu contenido */
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Ancho máximo para el contenido */
+    margin: 30px auto; /* Centrar en la página */
+    text-align: center; /* Centrar el texto */
+}
+
+
+/* Estilos para enlaces (si añades uno para el registro) */
+a {
+    color: #3498db; /* Azul para enlaces */
+    text-decoration: none; /* Quitar subrayado por defecto */
+}
+
+a:hover {
+    text-decoration: underline; /* Subrayar al pasar el ratón */
+}
+
+/* Pequeños ajustes para el diseño responsive (básico) */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    h2 {
+        font-size: 1.8em;
+    }
+    p {
+        font-size: 1em;
+    }
+    .intro-section {
+        margin: 15px;
+        padding: 20px;
+    }
+}

@@ -1,0 +1,44 @@
+{# Pacientes/templates/historia_clinica.html #}
+{% extends "BaseSinInicio.html" %}
+{% block title %}Historia Clínica de {{ paciente.nombre }}{% endblock %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+{% endblock %}
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title }}</h2>
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="form-body">
+            {{ form.as_p }}
+        </div>
+
+        <div class="form-navigation">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
+            {% endif %}
+
+            <button type="submit" class="btn-wizard btn-siguiente">
+                {% if wizard.steps.last %}
+                    Terminar
+                {% else %}
+                    Siguiente
+                {% endif %}
+            </button>
+        </div>
+    </form>
+
+    {% if wizard.steps.current == '0' %}
+        <div class="volver-container">
+            <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn-volver">Volver a Registros del Paciente</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

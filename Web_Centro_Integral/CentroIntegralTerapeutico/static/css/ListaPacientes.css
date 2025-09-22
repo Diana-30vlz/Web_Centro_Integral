@@ -1,0 +1,177 @@
+/* Estilos para la Lista de Pacientes - Versión Profesional */
+
+/* --------------------
+   Estilos Generales de la Página
+   -------------------- */
+body {
+    background-color: #f0f2f5; /* Un gris muy claro y moderno */
+    font-family: 'Inter', sans-serif; /* Consistencia con CrearPaciente.css */
+    color: #333;
+}
+
+.container.my-5 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+h1 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* --------------------
+   Botón "Crear Nuevo Paciente"
+   -------------------- */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex; /* Para alinear el ícono y el texto */
+    align-items: center;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.btn-primary i {
+    margin-right: 0.5rem; /* Espacio entre el ícono y el texto */
+}
+
+/* --------------------
+   Estilos de la Tabla
+   -------------------- */
+.table-responsive {
+    border-radius: 0.75rem; /* Bordes redondeados para el contenedor de la tabla */
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra para la tabla */
+    background-color: #ffffff; /* Fondo blanco para la tabla */
+}
+
+.table {
+    margin-bottom: 0; /* Elimina el margen inferior por defecto de la tabla */
+}
+
+.table thead.table-dark th {
+    background-color: #34495e; /* Un gris azulado oscuro para el encabezado */
+    color: #ecf0f1; /* Texto blanco suave */
+    border-bottom: none; /* Sin borde inferior para un look más limpio */
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa; /* Color al pasar el ratón por encima */
+}
+
+.table tbody tr td,
+.table tbody tr th {
+    padding: 0.85rem 1.25rem;
+    vertical-align: middle; /* Alinea verticalmente el contenido */
+    border-top: 1px solid #dee2e6; /* Borde superior suave para las celdas */
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Estilo para los botones de acción en la tabla */
+.table tbody .btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px; /* Ancho mínimo para que los íconos se vean bien */
+    height: 30px; /* Altura para que los íconos se vean bien */
+}
+
+/* Colores específicos para los botones de acción */
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Estilo para los mensajes de alerta (Bootstrap-like) */
+.messages {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+}
+
+.messages li {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+}
+
+.alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+}
+
+.btn-close {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+}
+
+/* Mensaje de no hay pacientes */
+.alert.alert-info.text-center {
+    margin-top: 2rem;
+    background-color: #e2f1f8; /* Un azul claro más suave */
+    color: #0d6efd; /* Texto azul de Bootstrap */
+    border-color: #b9e0f2;
+}
