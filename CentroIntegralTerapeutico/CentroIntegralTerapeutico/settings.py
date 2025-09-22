@@ -39,7 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Pacientes',
+<<<<<<< HEAD
+    'Inventario',    
+    'InventarioInsumos',
+
+=======
     'Inventario',
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
     
 ]
@@ -82,8 +88,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pruebafinal',
+<<<<<<< HEAD
+        'USER': 'postgres',
+        'PASSWORD': 'Mjl41412',
+=======
         'USER': 'datacenter',
         'PASSWORD': '1234',
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         'HOST': 'localhost', # O la IP del servidor de tu base de datos
         'PORT': '5432', # El puerto por defecto de PostgreSQL
     }

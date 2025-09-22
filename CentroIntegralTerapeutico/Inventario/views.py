@@ -219,14 +219,29 @@ def dibujar_una_etiqueta(p, medicamento, x_offset, y_offset):
 # --- VISTAS EXISTENTES (sin cambios) ---
 @login_required
 def lista_medicamentos(request):
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+    medicamentos = Medicamento.objects.all().order_by('nombre')
+    context = {
+        'medicamentos': medicamentos,
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
+=======
     medicamentos = Medicamento.objects.all().order_by('nombre')
     context = {
         'medicamentos': medicamentos
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     return render(request, 'inventario/lista_medicamentos.html', context)
 
 @login_required
 def crear_medicamento(request):
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     if request.method == 'POST':
         form = MedicamentoForm(request.POST)
         if form.is_valid():
@@ -238,12 +253,25 @@ def crear_medicamento(request):
     
     context = {
         'form': form,
+<<<<<<< HEAD
+        'titulo': 'Añadir Nuevo Medicamento',
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
+=======
         'titulo': 'Añadir Nuevo Medicamento'
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     return render(request, 'inventario/medicamento_form.html', context)
 
 @login_required
 def editar_medicamento(request, pk):
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+    
+    
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         form = MedicamentoForm(request.POST, instance=medicamento)
@@ -257,12 +285,23 @@ def editar_medicamento(request, pk):
     context = {
         'form': form,
         'medicamento': medicamento,
+<<<<<<< HEAD
+        'titulo': 'Editar Medicamento',
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
+=======
         'titulo': 'Editar Medicamento'
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     return render(request, 'inventario/medicamento_form.html', context)
 
 @login_required
 def eliminar_medicamento(request, pk):
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         medicamento.delete()
@@ -270,7 +309,13 @@ def eliminar_medicamento(request, pk):
         return redirect('lista_medicamentos')
     
     context = {
+<<<<<<< HEAD
+        'medicamento': medicamento,
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
+=======
         'medicamento': medicamento
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     return render(request, 'inventario/confirmar_eliminar_medicamento.html', context)
 
@@ -291,8 +336,16 @@ def imprimir_etiqueta_medicamento(request, pk):
 # --- VISTA PARA MOSTRAR EL FORMULARIO DE SELECCIÓN DE MEDICAMENTOS ---
 @login_required
 def seleccionar_medicamentos_para_imprimir(request):
+<<<<<<< HEAD
+    
+
     # Este formulario solo se usa para obtener la lista de medicamentos para la plantilla
     form = SeleccionarMedicamentosForm() #
+
+=======
+    # Este formulario solo se usa para obtener la lista de medicamentos para la plantilla
+    form = SeleccionarMedicamentosForm() #
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     return render(request, 'inventario/seleccionar_medicamentos.html', {'form': form}) #
 
 
@@ -382,10 +435,14 @@ def punto_venta(request):
     """
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
+<<<<<<< HEAD
+
+=======
     
     if not is_farmacia:
         messages.warning(request, "No tienes permiso para acceder al punto de venta.")
         return redirect('HomeSinInicio')
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     
     venta_actual_id = request.session.get('venta_actual_id')
     venta_actual = None

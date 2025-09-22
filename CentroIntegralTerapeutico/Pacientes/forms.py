@@ -255,12 +255,30 @@ class CitaForm(forms.ModelForm):
 #Formulario Consentimiento
 
 class ConsentimientoInformadoForm(forms.ModelForm):
+<<<<<<< HEAD
+    # Campo para mostrar el nombre del paciente, de solo lectura
+    # Esto evitará que se renderice el campo de selección.
+    nombre_paciente = forms.CharField(
+        label='Nombre del Paciente',
+        required=False,
+        disabled=True
+    )
+
+    class Meta:
+        model = ConsentimientoInformado
+        # Aquí defines los campos que el usuario debe llenar.
+        # Excluye 'paciente' para evitar que Django lo renderice como un Select.
+        fields = ['nombre_paciente', 'fecha', 'edad', 'temp', 'peso', 'talla', 'ta', 'rp']
+
+        widgets = {
+=======
     class Meta:
         model = ConsentimientoInformado
         fields = '__all__' # Incluye todos los campos del nuevo modelo
 
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'my-input'}),
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
             'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'my-input my-date-input'}),
             'edad': forms.NumberInput(attrs={'class': 'my-input'}),
             'temp': forms.TextInput(attrs={'class': 'my-input'}),
@@ -269,6 +287,22 @@ class ConsentimientoInformadoForm(forms.ModelForm):
             'ta': forms.TextInput(attrs={'class': 'my-input'}),
             'rp': forms.Textarea(attrs={'class': 'my-textarea', 'rows': 5}),
         }
+<<<<<<< HEAD
+        
+    def __init__(self, *args, **kwargs):
+        # La vista pasará la instancia del paciente usando la palabra clave `paciente_instance`
+        paciente_instance = kwargs.pop('paciente_instance', None)
+        super().__init__(*args, **kwargs)
+
+        if paciente_instance:
+            # Completa el campo de solo lectura con el nombre completo
+            nombre_completo = f'{paciente_instance.nombre} {paciente_instance.apellido_paterno}'
+            if paciente_instance.apellido_materno:
+                nombre_completo += f' {paciente_instance.apellido_materno}'
+            
+            self.initial['nombre_paciente'] = nombre_completo
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
 
 

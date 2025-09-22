@@ -29,6 +29,11 @@ urlpatterns = [
     
     # URLS para inventario
     path('inventario/', include('Inventario.urls')),
+<<<<<<< HEAD
+    path('insumos/', include('InventarioInsumos.urls')), # <-- Añade esta línea
+
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
 
         #FARMACIA

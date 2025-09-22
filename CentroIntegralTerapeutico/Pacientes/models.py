@@ -113,7 +113,11 @@ class Paciente(models.Model):
     apellido_paterno = models.CharField(max_length=100)
     apellido_materno = models.CharField(max_length=100, blank=True, null=True)
 
+<<<<<<< HEAD
+    fecha_nacimiento = models.DateField(blank=True, null=True) # <-- Modifica esta línea
+=======
     fecha_nacimiento = models.DateField()
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     genero = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino'), ('Otro', 'Otro')])
     telefono = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True) # Uso null=True para la BD
@@ -171,7 +175,11 @@ class Cita(models.Model):
         ('Consulta', 'Consulta General'),
         ('Seguimiento', 'Seguimiento'),
         ('Terapia', 'Sesión de Terapia'),
+<<<<<<< HEAD
+        ('Suero', 'Suero'),
+=======
         ('Emergencia', 'Emergencia'),
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         ('Otro', 'Otro'),
     ]
     motivo = models.CharField(

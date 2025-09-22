@@ -38,7 +38,11 @@ from .forms import *
 #VIEWS REPORTLAB
 
 
+<<<<<<< HEAD
+from reportlab.lib.pagesizes import letter, landscape
+=======
 from reportlab.lib.pagesizes import A4, landscape
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, ListFlowable,  ListItem
 import os
@@ -47,7 +51,11 @@ from django.conf import settings
 
 
 from reportlab.pdfgen import canvas
+<<<<<<< HEAD
+from reportlab.lib.pagesizes import letter, portrait, landscape, A5
+=======
 from reportlab.lib.pagesizes import A4, portrait, landscape
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.platypus import Paragraph, Table, TableStyle, Spacer, PageBreak
@@ -531,15 +539,24 @@ def recovery_password_reset_view(request):
 @login_required
 def Crear_Pacientes_view(request):
     user = request.user
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+=======
     is_doctor = user.user_type == "doctor"
     is_farmacia = user.user_type == "farmacia"
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
     if request.method == 'POST':
         form = PacienteForm(request.POST)
         if form.is_valid():
             paciente = form.save(commit=False)
 
+<<<<<<< HEAD
+            if is_doctora:
+=======
             if is_doctor:
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
                 # Asignar el doctor responsable si el usuario es un doctor
                 try:
                     paciente.doctor_responsable = user.doctor_profile
@@ -560,13 +577,21 @@ def Crear_Pacientes_view(request):
             messages.success(request, "Paciente creado exitosamente.")
             return redirect("lista_pacientes")
         else:
+<<<<<<< HEAD
+            messages.error(request, "Hubo un error al crear el paciente, favor de revisar los campos.")
+=======
             messages.error(request, "Hubo un error al crear el paciente.")
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     else:
         form = PacienteForm()
 
     context = {
         "form": form,
+<<<<<<< HEAD
+        "is_doctora": is_doctora,
+=======
         "is_doctor": is_doctor,
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         "is_farmacia": is_farmacia,
     }
     return render(request, "CrearPaciente.html", context)
@@ -579,6 +604,27 @@ def Crear_Pacientes_view(request):
 @login_required
 def Lista_Pacientes_view(request):
     # Lógica para pasar las variables del Navbar
+<<<<<<< HEAD
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+
+    pacientes = Paciente.objects.none()  # Por defecto vacío
+
+    if is_doctora:
+        try:
+            doctor_profile = request.user.doctor_profile
+            pacientes = Paciente.objects.filter(doctor_responsable=doctor_profile).order_by('apellido_paterno', 'apellido_materno', 'nombre')
+        except Doctor.DoesNotExist:
+            pacientes = Paciente.objects.none()
+    elif is_farmacia:
+        # Mostrar todos los pacientes para Farmacia
+        pacientes = Paciente.objects.all().order_by('apellido_paterno', 'apellido_materno', 'nombre')
+
+    context = {
+        'pacientes': pacientes,
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
+=======
     is_farmacia = False
     is_doctora = False
     
@@ -596,12 +642,18 @@ def Lista_Pacientes_view(request):
         'pacientes': pacientes,
         'is_farmacia': is_farmacia, # <-- AGREGADO
         'is_doctora': is_doctora, # <-- AGREGADO
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     return render(request, 'Pacientes.html', context)
 
 
 
 
+<<<<<<< HEAD
+# Modificación en Pacientes/views.py
+
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 @login_required
 def editar_paciente_view(request, pk):
     # Lógica para pasar las variables del Navbar
@@ -617,7 +669,21 @@ def editar_paciente_view(request, pk):
     if request.method == 'POST':
         form = PacienteForm(request.POST, instance=paciente)
         if form.is_valid():
+<<<<<<< HEAD
+            # Obtén los datos limpios del formulario, pero no los guardes aún
+            paciente_editado = form.save(commit=False)
+            
+            # --- NUEVA LÓGICA AGREGADA ---
+            # Si el campo de fecha de nacimiento en el formulario está vacío,
+            # lo asignamos al valor del paciente original.
+            if not request.POST.get('fecha_nacimiento'):
+                paciente_editado.fecha_nacimiento = paciente.fecha_nacimiento
+            # --- FIN DE LA NUEVA LÓGICA ---
+            
+            paciente_editado.save()
+=======
             form.save()
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
             messages.success(request, f'Paciente {paciente.nombre} actualizado exitosamente.')
             return redirect('lista_pacientes')
         else:
@@ -628,11 +694,20 @@ def editar_paciente_view(request, pk):
     context = {
         'form': form,
         'paciente': paciente,
+<<<<<<< HEAD
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
+    }
+    return render(request, 'EditarPaciente.html', context)
+
+
+=======
         'is_farmacia': is_farmacia, # <-- AGREGADO
         'is_doctora': is_doctora, # <-- AGREGADO
     }
     return render(request, 'EditarPaciente.html', context)
 
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 # 2. Vista para ELIMINAR Paciente
 @login_required
 def eliminar_paciente_view(request, pk):
@@ -2034,6 +2109,10 @@ def agenda_view(request):
     is_doctora = request.user.groups.filter(name='Doctora').exists()
     
     if not is_doctora and not is_farmacia:
+<<<<<<< HEAD
+        messages.error(request, "No tienes permiso para ver esta página.")
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         return redirect('HomeSinInicio')
     
     year_str = request.GET.get('year')
@@ -2058,6 +2137,24 @@ def agenda_view(request):
     first_day_of_month = date(selected_year, selected_month, 1)
     last_day_of_month = date(selected_year, selected_month, calendar.monthrange(selected_year, selected_month)[1])
 
+<<<<<<< HEAD
+    doctor_user_obj = get_doctor_user(request.user)
+    
+    if doctor_user_obj:
+        # Obtener todas las citas del mes
+        citas_mes = Cita.objects.filter(
+            doctor=doctor_user_obj, 
+            fecha__range=[first_day_of_month, last_day_of_month]
+        ).order_by('fecha', 'hora_inicio')
+    else:
+        messages.error(request, "No se encontró un perfil de doctor asociado.")
+        return redirect('HomeSinInicio')
+
+    # Separar las citas en dos categorías
+    # Se corrige el nombre del campo de 'motivo_cita' a 'motivo'
+    citas_suero = citas_mes.filter(motivo='Suero')
+    citas_generales = citas_mes.exclude(motivo='Suero')
+=======
     # Utiliza la nueva función de ayuda para obtener el usuario del doctor
     doctor_user_obj = get_doctor_user(request.user)
     
@@ -2071,23 +2168,42 @@ def agenda_view(request):
         citas_mes = Cita.objects.none()
         messages.error(request, "No se encontró un perfil de doctor asociado.")
 
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
     cal = calendar.Calendar()
     month_calendar = cal.monthdatescalendar(selected_year, selected_month)
 
+<<<<<<< HEAD
+    calendar_days_with_counts = []
+    for week in month_calendar:
+        week_data = []
+        for day_obj in week:
+            count_suero = citas_suero.filter(fecha=day_obj).count()
+            count_generales = citas_generales.filter(fecha=day_obj).count()
+=======
     calendar_days_with_citas = []
     for week in month_calendar:
         week_data = []
         for day_obj in week:
             citas_del_dia = citas_mes.filter(fecha=day_obj)
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
             
             week_data.append({
                 'date': day_obj,
                 'is_current_month': day_obj.month == selected_month,
                 'is_today': day_obj == date.today(),
+<<<<<<< HEAD
+                'count_suero': count_suero,
+                'count_generales': count_generales,
+                'citas_del_dia_suero': citas_suero.filter(fecha=day_obj),
+                'citas_del_dia_generales': citas_generales.filter(fecha=day_obj),
+            })
+        calendar_days_with_counts.append(week_data)
+=======
                 'citas': citas_del_dia
             })
         calendar_days_with_citas.append(week_data)
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
     prev_month_date = first_day_of_month - timedelta(days=1)
     next_month_date = last_day_of_month + timedelta(days=1)
@@ -2096,7 +2212,11 @@ def agenda_view(request):
         'selected_year': selected_year,
         'selected_month': selected_month,
         'month_name': first_day_of_month.strftime('%B'),
+<<<<<<< HEAD
+        'calendar_days_with_citas': calendar_days_with_counts,
+=======
         'calendar_days_with_citas': calendar_days_with_citas,
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         'today': date.today(),
         
         'prev_month_year': prev_month_date.year,
@@ -2110,8 +2230,11 @@ def agenda_view(request):
     return render(request, 'agenda.html', context)
 
 # 2. Vista para CREAR Citas
+<<<<<<< HEAD
+=======
 # Pacientes/views.py
 
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 @login_required
 def crear_cita_view(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
@@ -2121,8 +2244,11 @@ def crear_cita_view(request):
         messages.error(request, "No tienes permiso para ver esta página.")
         return redirect('HomeSinInicio')
     
+<<<<<<< HEAD
+=======
     # Obtener el CustomUser del doctor y su perfil de Doctor
     # Usamos las funciones de ayuda para unificar la lógica
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     doctor_user_obj = get_doctor_user(request.user)
     doctor_profile_obj = get_doctor_profile(request.user)
 
@@ -2134,10 +2260,14 @@ def crear_cita_view(request):
         form = CitaForm(request.POST)
         if form.is_valid():
             cita = form.save(commit=False)
+<<<<<<< HEAD
+            cita.doctor = doctor_user_obj
+=======
             
             # Asignamos el CustomUser del doctor, independientemente de si es doctor o farmacia
             cita.doctor = doctor_user_obj
             
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
             cita.save()
             messages.success(request, 'Cita creada exitosamente.')
             return redirect('agenda')
@@ -2145,8 +2275,11 @@ def crear_cita_view(request):
             messages.error(request, 'Hubo un error al crear la cita. Por favor, revisa los datos.')
     else:
         form = CitaForm()
+<<<<<<< HEAD
+=======
         # Filtra el queryset del campo 'paciente' para mostrar solo los pacientes del doctor
         # Esto asegura que la lista de pacientes se muestre correctamente
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         form.fields['paciente'].queryset = Paciente.objects.filter(doctor_responsable=doctor_profile_obj).order_by('nombre')
     
     context = {
@@ -2182,6 +2315,14 @@ def editar_cita_view(request, pk):
         else:
             messages.error(request, 'Hubo un error al actualizar la cita. Por favor, revisa los datos.')
     else:
+<<<<<<< HEAD
+        form = CitaForm(instance=cita)
+
+        form.fields['fecha'].initial = cita.fecha.isoformat() if cita.fecha else None
+        form.fields['hora_inicio'].initial = cita.hora_inicio.strftime('%H:%M') if cita.hora_inicio else None
+        form.fields['hora_fin'].initial = cita.hora_fin.strftime('%H:%M') if cita.hora_fin else None
+
+=======
         # Aquí, inicializamos el formulario con la instancia de la cita
         form = CitaForm(instance=cita)
 
@@ -2194,6 +2335,7 @@ def editar_cita_view(request, pk):
         form.fields['hora_fin'].initial = cita.hora_fin.strftime('%H:%M') if cita.hora_fin else None
 
         # Filtra el queryset del campo 'paciente'
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
         doctor_profile_obj = get_doctor_profile(request.user)
         if doctor_profile_obj:
             form.fields['paciente'].queryset = Paciente.objects.filter(doctor_responsable=doctor_profile_obj).order_by('nombre')
@@ -2212,6 +2354,19 @@ def editar_cita_view(request, pk):
 # 4. Vista para ELIMINAR Citas
 @login_required
 def eliminar_cita_view(request, pk):
+<<<<<<< HEAD
+    cita = get_object_or_404(Cita, pk=pk)
+
+    if cita.doctor != request.user:
+        messages.error(request, 'No tienes permiso para eliminar esta cita.')
+        return redirect('agenda') 
+
+    if request.method == 'POST':
+        cita.delete()
+        messages.success(request, 'Cita eliminada exitosamente.')
+        return redirect('agenda') 
+    
+=======
     # Obtener la cita por su PK (Primary Key) o devolver un 404 si no existe
     cita = get_object_or_404(Cita, pk=pk)
 
@@ -2232,6 +2387,7 @@ def eliminar_cita_view(request, pk):
     # Puedes renderizar una página de confirmación si lo prefieres, o simplemente redirigir.
     # La solución recomendada es usar el confirm de JavaScript en el botón, como se muestra en la plantilla.
     # Si llegas aquí con GET y no quieres una página de confirmación separada:
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     messages.error(request, 'Acceso inválido. La eliminación de citas solo se permite a través de una solicitud POST.')
     return redirect('agenda')
 
@@ -2239,11 +2395,31 @@ def eliminar_cita_view(request, pk):
 
 
 
+<<<<<<< HEAD
+=======
 #Vistas para formatos de consentimiento
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 @login_required
 def consentimiento_create(request, paciente_pk):
     paciente = get_object_or_404(Paciente, pk=paciente_pk)
     
+<<<<<<< HEAD
+    # Lógica para determinar el grupo del usuario
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+
+    if request.method == 'POST':
+        # Pasa la instancia del paciente al formulario POST
+        form = ConsentimientoInformadoForm(request.POST, paciente_instance=paciente)
+        if form.is_valid():
+            consentimiento = form.save(commit=False)
+            consentimiento.paciente = paciente  # Asigna el objeto Paciente
+            consentimiento.save()
+            return redirect('consentimiento_detail', pk=consentimiento.pk)
+    else:
+        # Pasa la instancia del paciente al formulario GET
+        form = ConsentimientoInformadoForm(paciente_instance=paciente)
+=======
     # Lógica para determinar el grupo del usuario y pasar a la plantilla
     is_farmacia = False
     is_doctora = False
@@ -2266,12 +2442,18 @@ def consentimiento_create(request, paciente_pk):
             'nombre': f'{paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno}',
         }
         form = ConsentimientoInformadoForm(initial=initial_data)
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     
     context = {
         'form': form,
         'paciente': paciente,
+<<<<<<< HEAD
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
+=======
         'is_farmacia': is_farmacia,  # Pasamos la variable a la plantilla
         'is_doctora': is_doctora,    # Pasamos la variable a la plantilla
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     }
     
     return render(request, 'consentimientos/consentimiento_form.html', context)
@@ -2347,7 +2529,11 @@ def imprimir_consentimiento_pdf(request, pk):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="nota_expediente_{consentimiento.nombre}.pdf"'
 
+<<<<<<< HEAD
+    doc = SimpleDocTemplate(response, pagesize=portrait(letter),
+=======
     doc = SimpleDocTemplate(response, pagesize=portrait(A4),
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
                             topMargin=1.5 * cm, bottomMargin=1.5 * cm,
                             leftMargin=2.0 * cm, rightMargin=2.0 * cm)
     elements = []
@@ -2368,7 +2554,11 @@ def imprimir_consentimiento_pdf(request, pk):
         logo_cit_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png') # Ajusta la ruta si es diferente
         if os.path.exists(logo_cit_path):
             img = ImageReader(logo_cit_path)
+<<<<<<< HEAD
+            page_width, page_height = portrait(letter)
+=======
             page_width, page_height = portrait(A4)
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
             img_width = 12 * cm
             img_height = 10 * cm
             x = (page_width - img_width) / 2
@@ -2620,6 +2810,10 @@ def detalle_receta_view(request, pk):
 
 
 
+<<<<<<< HEAD
+# ... (importaciones y decorador @login_required)
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 
 @login_required
 def imprimir_receta_pdf(request, pk):
@@ -2629,6 +2823,130 @@ def imprimir_receta_pdf(request, pk):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="receta_{paciente.nombre}.pdf"'
 
+<<<<<<< HEAD
+    def draw_background_and_footer(canvas, doc):
+        # -- Dibuja la marca de agua --
+        logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
+        if os.path.exists(logo_path):
+            img = ImageReader(logo_path)
+            page_width, page_height = doc.width + doc.leftMargin + doc.rightMargin, doc.height + doc.topMargin + doc.bottomMargin
+            img_width, img_height = 7*cm, 7*cm 
+            x = (page_width - img_width) / 2
+            y = (page_height - img_height) / 2
+            canvas.saveState()
+            canvas.setFillGray(0.8, 0.15) 
+            canvas.drawImage(img, x, y, width=img_width, height=img_height, mask='auto')
+            canvas.restoreState()
+
+        # -- Dibuja el rectángulo verde del pie de página --
+        footer_height = 1.8 * cm 
+        page_width_full = doc.width + doc.leftMargin + doc.rightMargin
+        
+        canvas.saveState()
+        canvas.setFillColor(colors.HexColor('#18b1a3'))
+        canvas.rect(0, 0, page_width_full, footer_height, fill=1, stroke=0)
+        canvas.restoreState()
+
+    doc = SimpleDocTemplate(response, pagesize=landscape(A5), topMargin=0.2*cm, bottomMargin=0.2*cm, leftMargin=0.2*cm, rightMargin=0.2*cm)
+    doc.onFirstPage = draw_background_and_footer
+    doc.onLaterPages = draw_background_and_footer
+    
+    elements = []
+
+    styles = {
+        'HeaderName': ParagraphStyle(name='HeaderName', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#021b6dff'), alignment=1),
+        'HeaderCedula': ParagraphStyle(name='HeaderCedula', fontName='Helvetica', fontSize=8, textColor=colors.darkgrey, alignment=1),
+        'PatientLabel': ParagraphStyle(name='PatientLabel', fontName='Helvetica', fontSize=8, textColor=colors.HexColor('#18b1a3'), leading=11),
+        'PatientData': ParagraphStyle(name='PatientData', fontName='Helvetica-Bold', fontSize=8, textColor=colors.black, leading=11),
+        'SectionTitle': ParagraphStyle(name='SectionTitle', fontName='Helvetica', fontSize=8, textColor=colors.HexColor('#18b1a3'), spaceAfter=3),
+        'Normal': ParagraphStyle(name='Normal', fontName='Helvetica', fontSize=8, spaceAfter=6, leading=10),
+        'FooterText': ParagraphStyle(name='FooterText', fontName='Helvetica', fontSize=8, textColor=colors.white, leading=12),
+    }
+
+    logo_cit_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
+    logo_uni_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'uni.jpeg')
+    logo_size = 2 * cm
+    
+    logo_cit = Image(logo_cit_path, width=logo_size, height=logo_size) if os.path.exists(logo_cit_path) else Spacer(0, 0)
+    logo_uni = Image(logo_uni_path, width=logo_size, height=logo_size) if os.path.exists(logo_uni_path) else Spacer(0, 0)
+
+    header_name = Paragraph("Dra. Jaqueline Vázquez Gómez", styles['HeaderName'])
+    header_cedula = Paragraph("CÉDULA PROFESIONAL: 11708282", styles['HeaderCedula'])
+
+    header_data = [[logo_cit, header_name, header_cedula, logo_uni]]
+    
+    header_table = Table(header_data, colWidths=[logo_size, 10*cm, 6.6*cm, logo_size])
+    
+    header_table.setStyle(TableStyle([
+        # --- INICIO DE LA MODIFICACIÓN ---
+        # NUEVO: Comando para el color de fondo gris claro
+        ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
+        # --- FIN DE LA MODIFICACIÓN ---
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+        ('ALIGN', (2, 0), (2, 0), 'CENTER'),
+        ('ALIGN', (3, 0), (3, 0), 'RIGHT'),
+        # Comando para el borde exterior
+        ('BOX', (0, 0), (-1, -1), 1, colors.grey),
+    ]))
+
+    elements.append(header_table)
+    elements.append(Spacer(1, 0.5*cm))
+
+    fecha_receta = receta.fecha.strftime("%d/%m/%Y") if receta.fecha else "N/A"
+
+    patient_info_data = [
+        [Paragraph('PACIENTE:', styles['PatientLabel']), Paragraph(f'{paciente.nombre} {paciente.apellido_paterno}', styles['PatientData']), Paragraph('FECHA:', styles['PatientLabel']), Paragraph(fecha_receta, styles['PatientData'])],
+        [Paragraph('PESO:', styles['PatientLabel']), Paragraph(f'{receta.peso or "N/A"} kg', styles['PatientData']), '', ''],
+        [Paragraph('TALLA:', styles['PatientLabel']), Paragraph(f'{receta.talla or "N/A"} cm', styles['PatientData']), '', ''],
+        [Paragraph('T/A:', styles['PatientLabel']), Paragraph(f'{receta.ta or "N/A"}', styles['PatientData']), '', ''],
+        [Paragraph('FC:', styles['PatientLabel']), Paragraph(f'{receta.fc or "N/A"}', styles['PatientData']), '', ''],
+        [Paragraph('SAT. O2:', styles['PatientLabel']), Paragraph(f'{receta.sat_o2 or "N/A"}', styles['PatientData']), '', ''],
+    ]
+
+    patient_table = Table(patient_info_data, colWidths=[2*cm, 6.5*cm, 2*cm, 6.5*cm])
+    patient_table.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'), ('LEFTPADDING', (0, 0), (-1, -1), 0), ('RIGHTPADDING', (0, 0), (-1, -1), 0)]))
+    elements.append(patient_table)
+    elements.append(Spacer(1, 0.3*cm))
+
+    elements.append(Paragraph("Diagnóstico:", styles['SectionTitle']))
+    elements.append(Paragraph(receta.diagnostico, styles['Normal']))
+    elements.append(Spacer(1, 0.3*cm))
+    elements.append(Paragraph("Prescripción:", styles['SectionTitle']))
+    elements.append(Paragraph(receta.medicamento.replace('\n', '<br/>'), styles['Normal']))
+    elements.append(Paragraph(receta.indicaciones.replace('\n', '<br/>'), styles['Normal']))
+    elements.append(Spacer(1, 0.3*cm))
+    elements.append(Paragraph("Previa Cita", styles['SectionTitle']))
+    
+    elements.append(Spacer(1, 1, 'flexible'))
+
+    icon_size = 0.4 * cm
+    phone_icon_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'phone_icon.png')
+    location_icon_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'location_icon.png')
+    
+    phone_icon = Image(phone_icon_path, width=icon_size, height=icon_size) if os.path.exists(phone_icon_path) else '*'
+    location_icon = Image(location_icon_path, width=icon_size, height=icon_size) if os.path.exists(location_icon_path) else '*'
+
+    footer_col1_data = [[phone_icon, Paragraph('55 1309 8145', styles['FooterText'])], [Spacer(0, 0.1*cm)], [phone_icon, Paragraph('55 2231 5535', styles['FooterText'])]]
+    footer_col1_table = Table(footer_col1_data, colWidths=[0.6*cm, None])
+    footer_col1_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+
+    footer_col2_data = [[location_icon, Paragraph('Prolongación Emiliano Zapata...', styles['FooterText'])]]
+    footer_col2_table = Table(footer_col2_data, colWidths=[0.6*cm, None])
+    footer_col2_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+
+    footer_table = Table([[footer_col1_table, footer_col2_table]], colWidths=['45%', '55%'])
+    footer_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+    ]))
+    
+    elements.append(footer_table)
+
+    doc.build(elements)
+=======
     # Función para dibujar la marca de agua
     def add_watermark(canvas, doc):
         uni_logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'uniByN.jpeg')
@@ -2791,11 +3109,17 @@ def imprimir_receta_pdf(request, pk):
     # Construye el PDF y lo envía
     doc.build(elements)
 
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
     return response
 
 
 
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> eb0a250e227e6cfb1e03d0168ee1d6bcbf15e81b
 @login_required
 def eliminar_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
