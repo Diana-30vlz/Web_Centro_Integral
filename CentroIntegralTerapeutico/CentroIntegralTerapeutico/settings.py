@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s&7s(!9)mle=gz1y&!npcobj%z8dhr5^2va%^v^j$cz8x-3)_#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'CentroIntegral.pythonanywhere.com' ]
 
 AUTH_USER_MODEL = 'Pacientes.CustomUser'
 # Application definition
@@ -40,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Pacientes',
     'Inventario',
+    'InventarioInsumos',
 
-    
 ]
 
 MIDDLEWARE = [
@@ -81,13 +82,15 @@ WSGI_APPLICATION = 'CentroIntegralTerapeutico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pruebafinal',
-        'USER': 'datacenter',
-        'PASSWORD': '1234',
-        'HOST': 'localhost', # O la IP del servidor de tu base de datos
-        'PORT': '5432', # El puerto por defecto de PostgreSQL
+        'NAME': 'myappdb',
+        'USER': 'myappuser',
+        'PASSWORD': 'gansito',
+        'HOST': 'CentroIntegral-4779.postgres.pythonanywhere-services.com',
+        'PORT': 14779,
     }
 }
+
+
 # Configuración de URLs para redirección después de login/logout
 LOGIN_REDIRECT_URL = '/doctor_home/' # Redirige aquí después de iniciar sesión con éxito
 LOGOUT_REDIRECT_URL = '/'          # Redirige aquí después de cerrar sesión
@@ -153,3 +156,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SESSION_COOKIE_AGE = 40 * 60
+# 4. Forzar el uso de HTTPS y HSTS
+# Django redirigirá todo el tráfico de HTTP a HTTPS.
+SECURE_SSL_REDIRECT = True
+# HSTS instruye a los navegadores a usar solo HTTPS durante un año.
+SECURE_HSTS_SECONDS = 31536000
+
+# 5. Proteger las cookies y los tokens de sesión
+# Las cookies de sesión y de CSRF solo se enviarán a través de conexiones HTTPS.
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

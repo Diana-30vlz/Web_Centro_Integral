@@ -38,7 +38,7 @@ from .forms import *
 #VIEWS REPORTLAB
 
 
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, ListFlowable,  ListItem
 import os
@@ -47,7 +47,7 @@ from django.conf import settings
 
 
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4, portrait, landscape
+from reportlab.lib.pagesizes import letter, portrait, landscape
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.platypus import Paragraph, Table, TableStyle, Spacer, PageBreak
@@ -130,20 +130,20 @@ def HomeSinInicio(request):
     if request.user.is_authenticated:
         if request.user.groups.filter(name='Farmacia').exists():
             return redirect('dashboard_farmacia')
-        
+
         if request.user.groups.filter(name='Doctora').exists():
             return redirect('doctor_home')
 
     # Si no está autenticado, renderizar la página de inicio sin sesión
     is_farmacia = False
     is_doctora = False
-    
+
 
     context = {
         'is_farmacia': is_farmacia,
         'is_doctora': is_doctora
     }
-    
+
     return render(request, 'HomeSinInicio.html', context)
 
 
@@ -185,10 +185,10 @@ def signup_view(request):
 
         else:
             messages.error(request, 'Hubo un error en los datos. Por favor, verifica el formulario.')
-    
+
     else:
         form = CustomUserCreationForm()
-    
+
     return render(request, 'signup.html', {'form': form})
 
 def signin_view(request):
@@ -206,12 +206,12 @@ def signin_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user() # Obtiene el usuario autenticado (pero aún no logueado)
-            
+
             # --- NUEVA LÓGICA DE VERIFICACIÓN DEL GRUPO 'Doctora' ---
             if user.groups.filter(name='Doctora').exists():
                 login(request, user) # Inicia la sesión solo si es del grupo 'Doctora'
                 messages.success(request, f'¡Bienvenido de nuevo, {user.username}!')
-            
+
                 # Redireccionar después de login
                 next_url = request.GET.get('next')
                 if next_url:
@@ -222,14 +222,14 @@ def signin_view(request):
                 # Si el usuario no es del grupo 'Doctora', mostramos un error y no lo logueamos
                 messages.error(request, "Tus credenciales no corresponden a un rol de Doctora.")
                 # El código simplemente continuará para volver a renderizar el formulario
-        
+
         # Si el formulario no es válido o el usuario no es del grupo 'Doctora',
         # el código llega aquí y se renderiza el template nuevamente
         form = AuthenticationForm(request.POST) # Para mantener los datos del formulario
 
     else:
         form = AuthenticationForm() # Crea un formulario vacío para peticiones GET
-    
+
     return render(request, 'signin.html', {'form': form})
 
 # VISTA PARA CERRAR SESIÓN (usando la función logout de Django)
@@ -247,7 +247,7 @@ def login_view(request):
     # Si el usuario ya está autenticado Y pertenece al grupo 'Farmacia', redirige al dashboard.
     if request.user.is_authenticated and request.user.groups.filter(name='Farmacia').exists():
         return redirect('dashboard_farmacia')
-    
+
     # Si el usuario está autenticado pero NO es de Farmacia, le deslogueamos.
     # Esto evita que un Doctor inicie sesión a través de este formulario.
     if request.user.is_authenticated:
@@ -300,7 +300,7 @@ def registro_farmacia_view(request):
             # Es crucial verificar que se haya seleccionado un doctor antes de continuar.
             if not doctor_seleccionado:
                 # Si no se seleccionó un doctor, borramos el usuario recién creado para no dejar datos inconsistentes.
-                user.delete() 
+                user.delete()
                 messages.error(request, "Error: Debes seleccionar un doctor para asociar a la cuenta de farmacia.")
                 # Volvemos a renderizar el formulario para que el usuario corrija el error.
                 return render(request, 'registration/registro_farmacia.html', {'form': form})
@@ -323,7 +323,7 @@ def registro_farmacia_view(request):
                 farmacia_group = Group.objects.create(name='Farmacia')
 
             user.groups.add(farmacia_group)
-            
+
             messages.success(request, "¡Cuenta de Farmacia creada exitosamente! Por favor, inicia sesión.")
             return redirect('HomeSinInicio')
         else:
@@ -351,7 +351,7 @@ def logout_view(request):
 def dashboard_farmacia(request):
     # Verifica si el usuario pertenece al grupo 'Farmacia'
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
-    
+
     if not is_farmacia:
         messages.warning(request, "No tienes permiso para acceder a este área de Farmacia.")
         return redirect('HomeSinInicio') # Redirige a un lugar seguro si no tiene permiso
@@ -375,7 +375,7 @@ def doctor_home_view(request):
     # --- Lógica para pasar las variables del Navbar ---
     is_farmacia = False
     is_doctora = False
-    
+
     if request.user.is_authenticated:
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
@@ -391,7 +391,7 @@ def doctor_home_view(request):
 
     # --- Tu lógica para el Dashboard del Doctor ---
     ultimos_pacientes = Paciente.objects.filter(doctor_responsable__user=request.user).order_by('-fecha_registro')[:3]
-    now = datetime.now() 
+    now = datetime.now()
     today = date.today()
 
     citas_hoy_pendientes = Cita.objects.filter(
@@ -414,13 +414,13 @@ def doctor_home_view(request):
     # --- Modificamos el Contexto para incluir las variables del Navbar ---
     context = {
         'doctor_name': request.user.first_name if request.user.first_name else request.user.username,
-        'ultimos_pacientes': ultimos_pacientes, 
+        'ultimos_pacientes': ultimos_pacientes,
         'total_citas_hoy_pendientes': citas_hoy_pendientes,
         'proximas_citas': proximas_citas,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
-    
+
     return render(request, 'doctor_home.html', context)
 
 
@@ -450,7 +450,7 @@ def recovery_request_view(request):
             return render(request, 'registration/recovery_request.html', {'form': form})
     else:
         form = RecoveryRequestForm()
-    
+
     return render(request, 'registration/recovery_request.html', {'form': form})
 
 
@@ -468,7 +468,7 @@ def recovery_verify_view(request):
     except CustomUser.DoesNotExist:
         messages.error(request, 'Usuario no válido. Vuelve a empezar el proceso.')
         return redirect('recovery_request')
-    
+
     if request.method == 'POST':
         form = RecoveryVerifyForm(request.POST)
         if form.is_valid():
@@ -486,7 +486,7 @@ def recovery_verify_view(request):
             return render(request, 'registration/recovery_verify.html', {'form': form})
     else:
         form = RecoveryVerifyForm()
-    
+
     return render(request, 'registration/recovery_verify.html', {'form': form})
 
 
@@ -512,7 +512,7 @@ def recovery_password_reset_view(request):
             new_password = form.cleaned_data.get('new_password')
             user.set_password(new_password)
             user.save()
-            
+
             # Limpia la sesión y notifica al usuario
             del request.session['recovery_user_id']
             messages.success(request, 'Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión.')
@@ -531,15 +531,15 @@ def recovery_password_reset_view(request):
 @login_required
 def Crear_Pacientes_view(request):
     user = request.user
-    is_doctor = user.user_type == "doctor"
-    is_farmacia = user.user_type == "farmacia"
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
 
     if request.method == 'POST':
         form = PacienteForm(request.POST)
         if form.is_valid():
             paciente = form.save(commit=False)
 
-            if is_doctor:
+            if is_doctora:
                 # Asignar el doctor responsable si el usuario es un doctor
                 try:
                     paciente.doctor_responsable = user.doctor_profile
@@ -560,13 +560,13 @@ def Crear_Pacientes_view(request):
             messages.success(request, "Paciente creado exitosamente.")
             return redirect("lista_pacientes")
         else:
-            messages.error(request, "Hubo un error al crear el paciente.")
+            messages.error(request, "Hubo un error al crear el paciente, favor de revisar los campos.")
     else:
         form = PacienteForm()
 
     context = {
         "form": form,
-        "is_doctor": is_doctor,
+        "is_doctora": is_doctora,
         "is_farmacia": is_farmacia,
     }
     return render(request, "CrearPaciente.html", context)
@@ -579,35 +579,39 @@ def Crear_Pacientes_view(request):
 @login_required
 def Lista_Pacientes_view(request):
     # Lógica para pasar las variables del Navbar
-    is_farmacia = False
-    is_doctora = False
-    
-    if request.user.is_authenticated:
-        is_farmacia = request.user.groups.filter(name='Farmacia').exists()
-        is_doctora = request.user.groups.filter(name='Doctora').exists()
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    try:
-        doctor_profile = request.user.doctor_profile
-        pacientes = Paciente.objects.filter(doctor_responsable=doctor_profile).order_by('apellido_paterno', 'apellido_materno', 'nombre')
-    except Doctor.DoesNotExist:
-        pacientes = Paciente.objects.none()
+    pacientes = Paciente.objects.none()  # Por defecto vacío
+
+    if is_doctora:
+        try:
+            doctor_profile = request.user.doctor_profile
+            pacientes = Paciente.objects.filter(doctor_responsable=doctor_profile).order_by('apellido_paterno', 'apellido_materno', 'nombre')
+        except Doctor.DoesNotExist:
+            pacientes = Paciente.objects.none()
+    elif is_farmacia:
+        # Mostrar todos los pacientes para Farmacia
+        pacientes = Paciente.objects.all().order_by('apellido_paterno', 'apellido_materno', 'nombre')
 
     context = {
         'pacientes': pacientes,
-        'is_farmacia': is_farmacia, # <-- AGREGADO
-        'is_doctora': is_doctora, # <-- AGREGADO
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
     }
     return render(request, 'Pacientes.html', context)
 
 
 
 
+# Modificación en Pacientes/views.py
+
 @login_required
 def editar_paciente_view(request, pk):
     # Lógica para pasar las variables del Navbar
     is_farmacia = False
     is_doctora = False
-    
+
     if request.user.is_authenticated:
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
@@ -617,7 +621,17 @@ def editar_paciente_view(request, pk):
     if request.method == 'POST':
         form = PacienteForm(request.POST, instance=paciente)
         if form.is_valid():
-            form.save()
+            # Obtén los datos limpios del formulario, pero no los guardes aún
+            paciente_editado = form.save(commit=False)
+
+            # --- NUEVA LÓGICA AGREGADA ---
+            # Si el campo de fecha de nacimiento en el formulario está vacío,
+            # lo asignamos al valor del paciente original.
+            if not request.POST.get('fecha_nacimiento'):
+                paciente_editado.fecha_nacimiento = paciente.fecha_nacimiento
+            # --- FIN DE LA NUEVA LÓGICA ---
+
+            paciente_editado.save()
             messages.success(request, f'Paciente {paciente.nombre} actualizado exitosamente.')
             return redirect('lista_pacientes')
         else:
@@ -628,10 +642,11 @@ def editar_paciente_view(request, pk):
     context = {
         'form': form,
         'paciente': paciente,
-        'is_farmacia': is_farmacia, # <-- AGREGADO
-        'is_doctora': is_doctora, # <-- AGREGADO
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
     }
     return render(request, 'EditarPaciente.html', context)
+
 
 # 2. Vista para ELIMINAR Paciente
 @login_required
@@ -644,7 +659,7 @@ def eliminar_paciente_view(request, pk):
         paciente.delete()
         messages.success(request, f'Paciente {paciente_nombre} eliminado exitosamente.')
         return redirect('lista_pacientes') # Redirige a la lista después de eliminar
-    
+
     # Si la petición no es POST (ej. alguien intenta acceder directamente a la URL GET),
     # podríamos redirigir o mostrar un error. Por simplicidad, solo aceptamos POST.
     # Opcionalmente, podrías renderizar una página de confirmación aquí si no usas el confirm JS.
@@ -657,7 +672,7 @@ def registros_paciente_view(request, pk):
     # Lógica para pasar las variables del Navbar
     is_farmacia = False
     is_doctora = False
-    
+
     if request.user.is_authenticated:
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
@@ -669,7 +684,7 @@ def registros_paciente_view(request, pk):
     # --- FIN DE LA LÓGICA DE RESTRICCIÓN ---
 
     paciente = get_object_or_404(Paciente, pk=pk)
-    
+
     context = {
         'paciente': paciente,
         'is_farmacia': is_farmacia, # <-- AGREGADO
@@ -679,7 +694,7 @@ def registros_paciente_view(request, pk):
 
 ##################################################################################################################
 #################################################################################################################
-########################MODIFICACIONES 
+########################MODIFICACIONES
 
 
 
@@ -705,7 +720,7 @@ def historia_clinica_paciente_me(request, pk):
 def eliminar_historial_clinico_view(request, historia_pk):
     # Obtener el registro de la historia clínica o mostrar 404
     historia_clinica = get_object_or_404(HistoriaClinica, pk=historia_pk)
-    
+
     # Obtener el paciente asociado para redirigir correctamente
     paciente_pk = historia_clinica.paciente.pk
 
@@ -713,13 +728,13 @@ def eliminar_historial_clinico_view(request, historia_pk):
         # Eliminar el registro
         historia_clinica.delete()
         messages.success(request, f'Registro de historial clínico (ID: {historia_pk}) eliminado exitosamente.')
-    
+
     # Redirigir de vuelta a la historia clínica del paciente
     return redirect('historia_clinica_paciente', pk=paciente_pk)
 @login_required
 def eliminar_historial_clinico_me(request, pk):
     historia = get_object_or_404(HistoriaClinicaMusculoEsqueletico, pk=pk)
-    
+
     # Guarda el pk del paciente para redirigir
     paciente_pk = historia.paciente.pk
 
@@ -728,7 +743,7 @@ def eliminar_historial_clinico_me(request, pk):
         messages.success(request, 'Registro de historial clínico eliminado exitosamente.')
         # Redirige de vuelta a la página del historial del paciente
         return redirect('historia_clinica_paciente_me', pk=paciente_pk)
-    
+
     messages.error(request, 'Método no permitido.')
     return redirect('historia_clinica_paciente_me', pk=paciente_pk)
 
@@ -748,7 +763,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
         # Puedes añadir contexto extra aquí, por ejemplo el nombre del paso actual
         context['step_title'] = self.steps.current
         print(f"[Wizard] get_context_data para step: {self.steps.current}")
-        print(f"[Wizard] Form errors: {form.errors if form else 'No form'}")    
+        print(f"[Wizard] Form errors: {form.errors if form else 'No form'}")
         return context
 
     def get_form_list(self):
@@ -763,10 +778,10 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
                     print(f"[Wizard] Omitiendo formulario ginecologico para paciente masculino")
             except Paciente.DoesNotExist:
                 pass
-        
+
         print(f"[Wizard] Form list: {list(form_list.keys())}")
         return form_list
-        
+
     def done(self, form_list, **kwargs):
         form_data = {}
         for idx, form in enumerate(form_list):
@@ -818,7 +833,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
         # Obtenemos el objeto paciente para pasarlo al template
         paciente_id = self.kwargs.get('paciente_id')
         context['paciente'] = get_object_or_404(Paciente, id=paciente_id)
-        
+
         # Título para cada paso en la plantilla
         step_titles = {
             'parte_1': 'Datos de la Consulta',
@@ -826,7 +841,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
             'examen_fisico': 'Examen Físico'
         }
         context['step_title'] = step_titles.get(self.steps.current, 'Cuestionario')
-        
+
         return context
 
     def done(self, form_list, **kwargs):
@@ -834,7 +849,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
         form_data = {}
         for form in form_list:
             form_data.update(form.cleaned_data)
-        
+
         # Obtiene el paciente y crea la instancia del modelo
         paciente_id = self.kwargs.get('paciente_id')
         paciente_obj = Paciente.objects.get(id=paciente_id)
@@ -855,7 +870,7 @@ def historia_clinica_musculo_esqueletico_paciente(request):
 def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
     # Asegurarse de que el historial pertenece al paciente
     paciente = get_object_or_404(Paciente, pk=pk)
-    historia_clinicaME = get_object_or_404(HistoriaClinicaMusculoEsqueletico, pk=historia_pk, paciente=paciente) 
+    historia_clinicaME = get_object_or_404(HistoriaClinicaMusculoEsqueletico, pk=historia_pk, paciente=paciente)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="Historial_Musculo_Esqueletico_{historia_clinicaME.fecha_registro.strftime("%Y-%m-%d_%H-%M-%S")}.pdf"'
@@ -873,7 +888,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
     styles.add(ParagraphStyle(name='Etiqueta', fontSize=10, fontName='Helvetica-Bold', leading=12, textColor=colors.HexColor("#333333")))
     styles.add(ParagraphStyle(name='Dato', fontSize=10, fontName='Helvetica', leading=12, textColor=colors.HexColor("#666666")))
     styles.add(ParagraphStyle(name='Lista', fontSize=10, fontName='Helvetica', leftIndent=12, leading=12, textColor=colors.HexColor("#666666")))
-    
+
     # --- Función para agregar la marca de agua ---
     def add_watermark(canvas, doc):
         logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
@@ -894,7 +909,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
     doc.onLaterPages = add_watermark
 
     # --- Contenido del PDF ---
-    
+
     # 1. Logos y Título del Encabezado
     logo1_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
     logo2_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'Uni.jpge')
@@ -923,7 +938,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
     def crear_seccion_recuadro(titulo, datos_dict):
         # Título de la sección
         elements.append(Paragraph(titulo, styles['TituloSeccion']))
-        
+
         # Tabla para los datos dentro del recuadro
         table_data = []
         for etiqueta, dato in datos_dict.items():
@@ -943,7 +958,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
                     Paragraph(f"<b>{etiqueta}:</b>", styles['Etiqueta']),
                     Paragraph(f"{dato}", styles['Dato'])
                 ])
-        
+
         # Estilo de la tabla con color de fondo
         section_table = Table(table_data, colWidths=[6*cm, None])
         section_table.setStyle(TableStyle([
@@ -988,7 +1003,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
 
     # 3. Hábitos y patologías (divididos en subsecciones)
     elements.append(Paragraph("Hábitos y Patologías", styles['TituloSeccion']))
-    
+
     # Subsección: Antecedentes
     datos_antecedentes = {
         "Enfermedad actual": historia_clinicaME.enfermedad_actual,
@@ -1012,7 +1027,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
         "Somnia": historia_clinicaME.Somnia,
     }
     crear_seccion_recuadro("Fisiológicos", datos_fisiologicos)
-    
+
     # Subsección: Patológicos
     # Corregí el nombre del campo para 'Otro' y lo puse en singular
     datos_patologicos = {
@@ -1033,7 +1048,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
         "Actitud": historia_clinicaME.Actitud,
         "Ubicacion": historia_clinicaME.Ubicacion,
         "Impresion general": historia_clinicaME.Impresion_general,
-        
+
         "Frecuencia Cardiaca": historia_clinicaME.FC,
         "Tensión Arterial": historia_clinicaME.TA,
         "Frecuencia Respiratoria": historia_clinicaME.FR,
@@ -1043,7 +1058,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
         "Peso Actual": historia_clinicaME.Peso_Actual,
         "Talla": historia_clinicaME.Talla,
         "Índice de Masa Corporal": historia_clinicaME.IMC,
-        
+
         "Aspecto": historia_clinicaME.Aspecto,
         "Distribución pilosa": historia_clinicaME.Distribuición_pilosa,
         "Lesiones": historia_clinicaME.Lesiones,
@@ -1055,7 +1070,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
 
     # --- Construimos el PDF final ---
     doc.build(elements)
-    
+
     return response
 
 
@@ -1063,7 +1078,7 @@ def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
 def HistorialClinicoPDF(request, pk, historia_pk):
     # Asegurarse de que el historial pertenece al paciente
     paciente = get_object_or_404(Paciente, pk=pk)
-    historia_clinica = get_object_or_404(HistoriaClinica, pk=historia_pk, paciente=paciente) 
+    historia_clinica = get_object_or_404(HistoriaClinica, pk=historia_pk, paciente=paciente)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="Historial_Clinico_{historia_clinica.fecha_registro.strftime("%Y-%m-%d_%H-%M-%S")}.pdf"'
@@ -1081,7 +1096,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
     styles.add(ParagraphStyle(name='Etiqueta', fontSize=10, fontName='Helvetica-Bold', leading=10, textColor=colors.HexColor("#333333")))
     styles.add(ParagraphStyle(name='Dato', fontSize=10, fontName='Helvetica', leading=10, textColor=colors.HexColor("#666666")))
     styles.add(ParagraphStyle(name='Lista', fontSize=10, fontName='Helvetica', leftIndent=10, leading=12, textColor=colors.HexColor("#666666")))
-    
+
     # --- Función para agregar la marca de agua ---
     def add_watermark(canvas, doc):
         logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
@@ -1102,7 +1117,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
     doc.onLaterPages = add_watermark
 
     # --- Contenido del PDF ---
-    
+
     # 1. Logos y Título del Encabezado
     logo1_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
     logo2_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'Uni.jpge')
@@ -1131,7 +1146,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
     def crear_seccion_recuadro(titulo, datos_dict):
         # Título de la sección
         elements.append(Paragraph(titulo, styles['TituloSeccion']))
-        
+
         # Tabla para los datos dentro del recuadro
         table_data = []
         for etiqueta, dato in datos_dict.items():
@@ -1151,7 +1166,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
                     Paragraph(f"<b>{etiqueta}:</b>", styles['Etiqueta']),
                     Paragraph(f"{dato}", styles['Dato'])
                 ])
-        
+
         # Estilo de la tabla con color de fondo
         section_table = Table(table_data, colWidths=[6*cm, None])
         section_table.setStyle(TableStyle([
@@ -1198,7 +1213,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
 
     # 3. Hábitos tóxicos, fisiológicos y patológicos
     elements.append(Paragraph("Hábitos, Fisiológicos y Patológicos", styles['TituloSeccion']))
-    
+
     # Subsección: Hábitos tóxicos
     datos_habitos_toxicos = {
         "Hábitos tóxicos": historia_clinica.habitos_toxicos,
@@ -1214,7 +1229,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Somnia": historia_clinica.Somnia,
     }
     crear_seccion_recuadro("Fisiológicos", datos_fisiologicos)
-    
+
     # Subsección: Patológicos
     datos_patologicos = {
         "Infancia": historia_clinica.Infancia,
@@ -1284,7 +1299,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
     # 6. Cuestionario del Sistema Cardiovascular (Pulsos)
     elements.append(Paragraph("Cuestionario del Sistema Cardiovascular", styles['TituloSeccion']))
     elements.append(Paragraph("<b>Pulsos</b>", styles['Subtitulo']))
-    
+
     pulso_data = [
         [Paragraph("<b></b>", styles['Etiqueta']), Paragraph("<b>Derecho</b>", styles['Etiqueta']), Paragraph("<b>Izquierdo</b>", styles['Etiqueta'])],
         [Paragraph("<b>Pulso Carotídeo</b>", styles['Etiqueta']), Paragraph(f"{historia_clinica.me_pulso_carotideo_derecho}", styles['Dato']), Paragraph(f"{historia_clinica.me_pulso_carotideo_izquierdo}", styles['Dato'])],
@@ -1295,7 +1310,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         [Paragraph("<b>Pulso Tibial Posterior</b>", styles['Etiqueta']), Paragraph(f"{historia_clinica.me_pulso_tibial_posterior_derecho}", styles['Dato']), Paragraph(f"{historia_clinica.me_pulso_tibial_posterior_izquierdo}", styles['Dato'])],
         [Paragraph("<b>Pulso Pedio</b>", styles['Etiqueta']), Paragraph(f"{historia_clinica.me_pulso_pedio_derecho}", styles['Dato']), Paragraph(f"{historia_clinica.me_pulso_pedio_izquierdo}", styles['Dato'])],
     ]
-    
+
     pulso_table = Table(pulso_data, colWidths=[6*cm, None, None])
     pulso_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#EBF5FF")), # Color de fondo del encabezado
@@ -1311,7 +1326,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         ('BOTTOMPADDING', (0,0), (-1,-1), 5),
     ]))
     elements.append(pulso_table)
-    elements.append(Spacer(1, 0.5 * cm)) 
+    elements.append(Spacer(1, 0.5 * cm))
 
     # 7. Cuestionario del Sistema Respiratorio
     datos_respiratorio = {
@@ -1324,10 +1339,10 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Alteraciones de la voz": "Sí" if historia_clinica.resp_alteraciones_voz else "No",
     }
     crear_seccion_recuadro("Cuestionario del Sistema Respiratorio", datos_respiratorio)
-    
+
     # 8. Cuestionario Genital y Urinario
     elements.append(Paragraph("Cuestionario Genital y Urinario", styles['TituloSeccion']))
-    
+
     # Subsección: Genital
     datos_genital = {
         "Criptorquidea": "Sí" if historia_clinica.genital_criptorquidea else "No",
@@ -1341,11 +1356,11 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Comentarios": historia_clinica.Comentarios_genital
     }
     crear_seccion_recuadro("Genital", datos_genital)
-    
-    # Subsección: Urinario  
+
+    # Subsección: Urinario
     # Subsección: Urinario (cambios aplicados aquí)
     elements.append(Paragraph("Urinario", styles['TituloSeccion']))
-    
+
     datos_alteraciones_miccion = {
         "Poliuria": "Sí" if historia_clinica.Poliuria else "No",
         "Anuria": "Sí" if historia_clinica.Anuria else "No",
@@ -1361,7 +1376,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Ninguna": "Sí" if historia_clinica.Ninguna else "No",
     }
     crear_seccion_recuadro("Alteraciones de la Micción", datos_alteraciones_miccion)
-    
+
     datos_caracteristicas_orina = {
         "Volumen de la orina": historia_clinica.urin_volumen_orina,
         "Color de la orina": historia_clinica.urin_color_orina,
@@ -1376,10 +1391,10 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Comentarios": historia_clinica.Comentarios_urinario
     }
     crear_seccion_recuadro("Características de la Orina", datos_caracteristicas_orina)
-    
+
     # 9. Cuestionario Endocrino y de Cuello
     elements.append(Paragraph("Cuestionario Endocrino y de Cuello", styles['TituloSeccion']))
-    
+
     # Subsección: Hematológico
     # Subsección: Hematológico (corregida)
     datos_hematologico = {
@@ -1391,10 +1406,10 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         "Adenopatías": "Sí" if historia_clinica.hemato_adenopatias else "No",
         "Esplenomegalia": "Sí" if historia_clinica.hemato_esplenomegalia else "No",
         "Comentarios": historia_clinica.Comentarios_anemia,
- 
+
     }
     crear_seccion_recuadro("Hematológico", datos_hematologico)
-    
+
     # Subsección: Endocrino
     datos_endocrino = {
         "Bocio": "Sí" if historia_clinica.endocr_bocio else "No",
@@ -1440,7 +1455,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
 
     # --- NUEVAS SECCIONES ---
         ###PALBRA CLAVE DE DIVICIÓN: GATO DIVISOR, SUBTITULO: EXPLORACIÓN FÍSICA: COLUMNA Y MIEMBROS SUPERIORES
-    
+
     # 11. Exploración Física: Columna y Miembros Superiores
     elements.append(Paragraph("Exploración Física: Columna y Miembros Superiores", styles['TituloSeccion']))
 
@@ -1700,7 +1715,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
     }
     crear_seccion_recuadro("Otros", datos_otros)
     elements.append(Spacer(1, 0.5 * cm))
-    
+
         # 13. Cuestionario Glasgow y Visual
     elements.append(Paragraph("Cuestionario Glasgow y Visual", styles['TituloSeccion']))
     elements.append(Spacer(1, 0.5 * cm))
@@ -1853,7 +1868,7 @@ def HistorialClinicoPDF(request, pk, historia_pk):
         ("Cúbito Pronador", historia_clinica.Cubito_Pronador),
         ("Medio Pubiano", historia_clinica.Medio_Pubiano),
         ("Rotuliano", historia_clinica.Rotuliano),
-        
+
     ]
 
     # Encabezado de la tabla
@@ -1999,25 +2014,25 @@ def HistorialClinicoPDF(request, pk, historia_pk):
 
     # --- Construimos el PDF final ---
     doc.build(elements)
-    
+
     return response
 
 ##################################################################################################################
 #################################################################################################################
-########################MODIFICACIONES 
+########################MODIFICACIONES
 
 @login_required
 def orden_medica_paciente(request, pk):
     # Lógica para pasar las variables del Navbar
     is_farmacia = False
     is_doctora = False
-    
+
     if request.user.is_authenticated:
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
-        
+
     paciente = get_object_or_404(Paciente, pk=pk)
-    context = { 
+    context = {
         'paciente': paciente,
         'is_farmacia': is_farmacia, # <-- AGREGADO
         'is_doctora': is_doctora, # <-- AGREGADO
@@ -2027,15 +2042,22 @@ def orden_medica_paciente(request, pk):
 
 
 
+
+
+
+
+
+
 # 1. Vista para la LISTA/CALENDARIO de la Agenda
-@login_required 
+@login_required
 def agenda_view(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     if not is_doctora and not is_farmacia:
+        messages.error(request, "No tienes permiso para ver esta página.")
         return redirect('HomeSinInicio')
-    
+
     year_str = request.GET.get('year')
     month_str = request.GET.get('month')
 
@@ -2054,40 +2076,47 @@ def agenda_view(request):
         selected_date = date.today()
         selected_year = selected_date.year
         selected_month = selected_date.month
-    
+
     first_day_of_month = date(selected_year, selected_month, 1)
     last_day_of_month = date(selected_year, selected_month, calendar.monthrange(selected_year, selected_month)[1])
 
-    # Utiliza la nueva función de ayuda para obtener el usuario del doctor
     doctor_user_obj = get_doctor_user(request.user)
-    
+
     if doctor_user_obj:
+        # Obtener todas las citas del mes
         citas_mes = Cita.objects.filter(
-            doctor=doctor_user_obj, # ¡Ahora filtra por el usuario correcto!
+            doctor=doctor_user_obj,
             fecha__range=[first_day_of_month, last_day_of_month]
         ).order_by('fecha', 'hora_inicio')
     else:
-        # Si no se encuentra un doctor válido, no se muestran citas
-        citas_mes = Cita.objects.none()
         messages.error(request, "No se encontró un perfil de doctor asociado.")
+        return redirect('HomeSinInicio')
 
+    # Separar las citas en dos categorías
+    # Se corrige el nombre del campo de 'motivo_cita' a 'motivo'
+    citas_suero = citas_mes.filter(motivo='Suero')
+    citas_generales = citas_mes.exclude(motivo='Suero')
 
     cal = calendar.Calendar()
     month_calendar = cal.monthdatescalendar(selected_year, selected_month)
 
-    calendar_days_with_citas = []
+    calendar_days_with_counts = []
     for week in month_calendar:
         week_data = []
         for day_obj in week:
-            citas_del_dia = citas_mes.filter(fecha=day_obj)
-            
+            count_suero = citas_suero.filter(fecha=day_obj).count()
+            count_generales = citas_generales.filter(fecha=day_obj).count()
+
             week_data.append({
                 'date': day_obj,
                 'is_current_month': day_obj.month == selected_month,
                 'is_today': day_obj == date.today(),
-                'citas': citas_del_dia
+                'count_suero': count_suero,
+                'count_generales': count_generales,
+                'citas_del_dia_suero': citas_suero.filter(fecha=day_obj),
+                'citas_del_dia_generales': citas_generales.filter(fecha=day_obj),
             })
-        calendar_days_with_citas.append(week_data)
+        calendar_days_with_counts.append(week_data)
 
     prev_month_date = first_day_of_month - timedelta(days=1)
     next_month_date = last_day_of_month + timedelta(days=1)
@@ -2096,48 +2125,41 @@ def agenda_view(request):
         'selected_year': selected_year,
         'selected_month': selected_month,
         'month_name': first_day_of_month.strftime('%B'),
-        'calendar_days_with_citas': calendar_days_with_citas,
+        'calendar_days_with_citas': calendar_days_with_counts,
         'today': date.today(),
-        
+
         'prev_month_year': prev_month_date.year,
         'prev_month_month': prev_month_date.month,
         'next_month_year': next_month_date.year,
         'next_month_month': next_month_date.month,
-        
+
         'is_farmacia': is_farmacia,
         'is_doctora': is_doctora,
     }
     return render(request, 'agenda.html', context)
 
 # 2. Vista para CREAR Citas
-# Pacientes/views.py
-
 @login_required
 def crear_cita_view(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     if not is_doctora and not is_farmacia:
         messages.error(request, "No tienes permiso para ver esta página.")
         return redirect('HomeSinInicio')
-    
-    # Obtener el CustomUser del doctor y su perfil de Doctor
-    # Usamos las funciones de ayuda para unificar la lógica
+
     doctor_user_obj = get_doctor_user(request.user)
     doctor_profile_obj = get_doctor_profile(request.user)
 
     if not doctor_user_obj or not doctor_profile_obj:
         messages.error(request, "Tu perfil no está completo. No se puede agendar la cita.")
         return redirect('HomeSinInicio')
-            
+
     if request.method == 'POST':
         form = CitaForm(request.POST)
         if form.is_valid():
             cita = form.save(commit=False)
-            
-            # Asignamos el CustomUser del doctor, independientemente de si es doctor o farmacia
             cita.doctor = doctor_user_obj
-            
             cita.save()
             messages.success(request, 'Cita creada exitosamente.')
             return redirect('agenda')
@@ -2145,10 +2167,8 @@ def crear_cita_view(request):
             messages.error(request, 'Hubo un error al crear la cita. Por favor, revisa los datos.')
     else:
         form = CitaForm()
-        # Filtra el queryset del campo 'paciente' para mostrar solo los pacientes del doctor
-        # Esto asegura que la lista de pacientes se muestre correctamente
         form.fields['paciente'].queryset = Paciente.objects.filter(doctor_responsable=doctor_profile_obj).order_by('nombre')
-    
+
     context = {
         'form': form,
         'is_farmacia': is_farmacia,
@@ -2161,7 +2181,7 @@ def crear_cita_view(request):
 def editar_cita_view(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     if not is_doctora and not is_farmacia:
         messages.error(request, "No tienes permiso para ver esta página.")
         return redirect('HomeSinInicio')
@@ -2182,18 +2202,12 @@ def editar_cita_view(request, pk):
         else:
             messages.error(request, 'Hubo un error al actualizar la cita. Por favor, revisa los datos.')
     else:
-        # Aquí, inicializamos el formulario con la instancia de la cita
         form = CitaForm(instance=cita)
 
-        # Y aquí, asignamos explícitamente el valor inicial del campo de fecha.
-        # El widget DateInput necesita la fecha en formato 'YYYY-MM-DD'.
         form.fields['fecha'].initial = cita.fecha.isoformat() if cita.fecha else None
-        
-        # También puedes hacerlo con los campos de tiempo para asegurarte
         form.fields['hora_inicio'].initial = cita.hora_inicio.strftime('%H:%M') if cita.hora_inicio else None
         form.fields['hora_fin'].initial = cita.hora_fin.strftime('%H:%M') if cita.hora_fin else None
 
-        # Filtra el queryset del campo 'paciente'
         doctor_profile_obj = get_doctor_profile(request.user)
         if doctor_profile_obj:
             form.fields['paciente'].queryset = Paciente.objects.filter(doctor_responsable=doctor_profile_obj).order_by('nombre')
@@ -2212,26 +2226,17 @@ def editar_cita_view(request, pk):
 # 4. Vista para ELIMINAR Citas
 @login_required
 def eliminar_cita_view(request, pk):
-    # Obtener la cita por su PK (Primary Key) o devolver un 404 si no existe
     cita = get_object_or_404(Cita, pk=pk)
 
-    # Opcional pero muy RECOMENDADO: Asegurarse de que solo el doctor asignado a la cita pueda eliminarla
-    # O que el usuario tenga un permiso específico para eliminar.
     if cita.doctor != request.user:
         messages.error(request, 'No tienes permiso para eliminar esta cita.')
-        return redirect('agenda') # Redirige a la agenda si no tiene permiso
+        return redirect('agenda')
 
-    # La eliminación siempre debe ser a través de una solicitud POST por seguridad.
-    # Evita que se eliminen recursos accidentalmente con una simple petición GET.
     if request.method == 'POST':
-        cita.delete() # Elimina la cita de la base de datos
+        cita.delete()
         messages.success(request, 'Cita eliminada exitosamente.')
-        return redirect('agenda') # Redirige de vuelta a la vista de la agenda
-    
-    # Si la solicitud es GET (por ejemplo, si el usuario navega directamente a la URL de eliminar)
-    # Puedes renderizar una página de confirmación si lo prefieres, o simplemente redirigir.
-    # La solución recomendada es usar el confirm de JavaScript en el botón, como se muestra en la plantilla.
-    # Si llegas aquí con GET y no quieres una página de confirmación separada:
+        return redirect('agenda')
+
     messages.error(request, 'Acceso inválido. La eliminación de citas solo se permite a través de una solicitud POST.')
     return redirect('agenda')
 
@@ -2239,41 +2244,40 @@ def eliminar_cita_view(request, pk):
 
 
 
-#Vistas para formatos de consentimiento
+
+
+
+
+
+
+
 @login_required
 def consentimiento_create(request, paciente_pk):
     paciente = get_object_or_404(Paciente, pk=paciente_pk)
-    
-    # Lógica para determinar el grupo del usuario y pasar a la plantilla
-    is_farmacia = False
-    is_doctora = False
 
-    if request.user.is_authenticated:
-        is_farmacia = request.user.groups.filter(name='Farmacia').exists()
-        is_doctora = request.user.groups.filter(name='Doctora').exists()
+    # Lógica para determinar el grupo del usuario
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
 
     if request.method == 'POST':
-        form = ConsentimientoInformadoForm(request.POST)
+        # Pasa la instancia del paciente al formulario POST
+        form = ConsentimientoInformadoForm(request.POST, paciente_instance=paciente)
         if form.is_valid():
             consentimiento = form.save(commit=False)
-            consentimiento.paciente = paciente
+            consentimiento.paciente = paciente  # Asigna el objeto Paciente
             consentimiento.save()
-            # Redirigimos al detalle del nuevo consentimiento
             return redirect('consentimiento_detail', pk=consentimiento.pk)
     else:
-        # Llenamos el formulario con la información del paciente
-        initial_data = {
-            'nombre': f'{paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno}',
-        }
-        form = ConsentimientoInformadoForm(initial=initial_data)
-    
+        # Pasa la instancia del paciente al formulario GET
+        form = ConsentimientoInformadoForm(paciente_instance=paciente)
+
     context = {
         'form': form,
         'paciente': paciente,
-        'is_farmacia': is_farmacia,  # Pasamos la variable a la plantilla
-        'is_doctora': is_doctora,    # Pasamos la variable a la plantilla
+        'is_farmacia': is_farmacia,
+        'is_doctora': is_doctora,
     }
-    
+
     return render(request, 'consentimientos/consentimiento_form.html', context)
 
 
@@ -2298,7 +2302,7 @@ def consentimiento_list_by_paciente(request, paciente_pk):
         'is_farmacia': is_farmacia,
         'is_doctora': is_doctora,
     }
-    
+
     return render(request, 'consentimientos/consentimiento_list.html', context)
 
 
@@ -2323,7 +2327,7 @@ def consentimiento_detail(request, pk):
         'is_farmacia': is_farmacia,  # Pasamos la variable a la plantilla
         'is_doctora': is_doctora,    # Pasamos la variable a la plantilla
     }
-    
+
     return render(request, 'consentimientos/consentimiento_detail.html', context)
 
 
@@ -2347,7 +2351,7 @@ def imprimir_consentimiento_pdf(request, pk):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="nota_expediente_{consentimiento.nombre}.pdf"'
 
-    doc = SimpleDocTemplate(response, pagesize=portrait(A4),
+    doc = SimpleDocTemplate(response, pagesize=portrait(letter),
                             topMargin=1.5 * cm, bottomMargin=1.5 * cm,
                             leftMargin=2.0 * cm, rightMargin=2.0 * cm)
     elements = []
@@ -2358,17 +2362,17 @@ def imprimir_consentimiento_pdf(request, pk):
     styles.add(ParagraphStyle(name='Subtitulo', fontSize=12, fontName='Helvetica-Bold', spaceAfter=10, alignment=TA_CENTER, textColor=colors.HexColor("#7f0ceb")))
     styles.add(ParagraphStyle(name='Direccion', fontSize=9, fontName='Helvetica', spaceAfter=5, alignment=TA_CENTER))
     styles.add(ParagraphStyle(name='Telefono', fontSize=9, fontName='Helvetica', alignment=TA_LEFT))
-    
+
     normal_style = styles['Normal']
     bold_style = styles['Normal']
     bold_style.fontName = 'Helvetica-Bold'
-    
+
     # --- Función para agregar la marca de agua ---
     def add_watermark(canvas, doc):
         logo_cit_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png') # Ajusta la ruta si es diferente
         if os.path.exists(logo_cit_path):
             img = ImageReader(logo_cit_path)
-            page_width, page_height = portrait(A4)
+            page_width, page_height = portrait(letter)
             img_width = 12 * cm
             img_height = 10 * cm
             x = (page_width - img_width) / 2
@@ -2466,7 +2470,7 @@ def imprimir_consentimiento_pdf(request, pk):
     elements.append(Paragraph("<b>Rp.</b>", bold_style))
     rp_texto = consentimiento.rp.replace('\n', '<br/>')
     elements.append(Paragraph(rp_texto, normal_style))
-    
+
     # 5. Agregamos un Spacer flexible para empujar el contenido al final
     elements.append(Spacer(1, 1, doc.height))
 
@@ -2503,19 +2507,19 @@ def eliminar_consentimiento(request, pk):
 def historia_clinica_list(request):
     is_farmacia = False
     is_doctora = False
-    
+
     if request.user.is_authenticated:
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     if not is_doctora and not is_farmacia:
         return redirect('HomeSinInicio')
-        
+
     historias = HistoriaClinica.objects.all()
     paciente_id = request.GET.get('paciente')
     if paciente_id:
         historias = historias.filter(paciente__pk=paciente_id)
-        
+
     context = {
         'historias': historias,
         'is_farmacia': is_farmacia,
@@ -2594,9 +2598,9 @@ def lista_recetas_view(request, paciente_pk):
     # Lógica para determinar el grupo del usuario y pasar a la plantilla
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     paciente = get_object_or_404(Paciente, pk=paciente_pk)
-    
+
     context = {
         'paciente': paciente,
         'is_farmacia': is_farmacia,  # Agregado para el navbar
@@ -2620,7 +2624,7 @@ def detalle_receta_view(request, pk):
 
 
 
-
+MitadA4=12*cm, 18*cm
 @login_required
 def imprimir_receta_pdf(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
@@ -2635,27 +2639,27 @@ def imprimir_receta_pdf(request, pk):
         if os.path.exists(uni_logo_path):
             img = ImageReader(uni_logo_path)
             # Dibuja la imagen en el centro de la página
-            page_width, page_height = landscape(A4)
-            img_width, img_height = 8*cm, 8*cm # Tamaño de la imagen de marca de agua
-            
-            x = (page_width - img_width) / 2
-            y = (page_height - img_height) / 2
-            
+            page_width, page_height = letter
+            img_width, img_height = 6*cm, 6*cm # Tamaño de la imagen de marca de agua
+
+            x = (page_width - img_width) /2
+            y = (page_height - img_height) /1.4
+
             canvas.saveState()
             canvas.setFillGray(0.2, 0.2)
             canvas.drawImage(img, x, y, width=img_width, height=img_height, mask='auto')
             canvas.restoreState()
 
-    doc = SimpleDocTemplate(response, pagesize=landscape(A4), topMargin=1.5*cm, bottomMargin=1.5*cm, leftMargin=1.5*cm, rightMargin=1.5*cm)
+    doc = SimpleDocTemplate(response, pagesize=letter, topMargin=0.4*cm, bottomMargin=0.4*cm, leftMargin=0.5*cm, rightMargin=0.5*cm)
     doc.onFirstPage = add_watermark
     doc.onLaterPages = add_watermark
     elements = []
-    
+
     # 1. Definición de estilos en un diccionario.
     custom_styles = {
-        'Title': ParagraphStyle(name='Title', fontSize=18, spaceAfter=20, alignment=1, textColor=colors.HexColor('#021b6dff')),
-        'Titulo2':ParagraphStyle(name='Titulo2',fontSize=14,spaceAfter=20,alignment=1,textColor=colors.HexColor('#021b6dff')),
-        'Heading3': ParagraphStyle(name='Heading3', fontSize=12, spaceAfter=10, textColor=colors.HexColor('#021b6dff')),
+        'Title': ParagraphStyle(name='Title', fontSize=18, spaceAfter=5, alignment=1, textColor=colors.blue),
+        'Titulo2':ParagraphStyle(name='Titulo2',fontSize=14,spaceAfter=5,alignment=1,textColor=colors.royalblue),
+        'Heading3': ParagraphStyle(name='Heading3', fontSize=12, spaceAfter=1, textColor=colors.royalblue),
         'Normal': ParagraphStyle(name='Normal', fontSize=10, spaceAfter=5, leading=14),
     }
 
@@ -2675,24 +2679,24 @@ def imprimir_receta_pdf(request, pk):
     # 2. Creamos el contenido de la receta en una función reutilizable
     def create_receta_content():
         content_elements = []
-        
+
                 # Encabezado (logo y título) usando una tabla para un posicionamiento preciso
         logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
         uni_logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'uni.jpeg')
-        
+
         logo = None
         if os.path.exists(logo_path):
             logo = Image(logo_path, width=2.5*cm, height=2.5*cm)
-        
+
         uni_logo = None
         if os.path.exists(uni_logo_path):
             uni_logo = Image(uni_logo_path, width=2.5*cm, height=2.5*cm)
-        
+
         # Creamos una lista con los elementos de la tabla.
         header_data = [
-            [uni_logo, Paragraph("<b>Dra. Jaqueline Vásquez Gómez</b>", custom_styles['Title']), logo]
+            [uni_logo, Paragraph("<b>Dra. Jaqueline Vázquez Gómez</b>", custom_styles['Title']), logo]
         ]
-        
+
         # Creamos la tabla y definimos sus estilos. ¡Aquí está el cambio!
         header_table = Table(header_data, colWidths=[3*cm, None, 3*cm])
         header_table.setStyle(TableStyle([
@@ -2708,37 +2712,44 @@ def imprimir_receta_pdf(request, pk):
         content_elements.append(Paragraph("Ced. Profesional: 11708282", custom_styles['Titulo2']))
         content_elements.append(Spacer(1, 1*cm))
 
-        
+
 # --- INICIO DEL CÓDIGO CORREGIDO PARA LA LÍNEA ---
         line_width = 10 * cm  # Ancho deseado de la línea (10 cm)
-        page_width = landscape(A4)[0]
-        
+        page_width = letter[0]
+
         # El punto de inicio X se calcula para centrar el elemento en la página
         start_x = (page_width - line_width) / 2
-        
+
         # Se crea el objeto Drawing con el ancho de la línea deseado
         d = Drawing(line_width, 1)
         # La línea se dibuja dentro del Drawing, de 0 a su ancho total
         d.add(Line(0, 0, line_width, 0, strokeWidth=2, strokeColor=colors.black))
-        
+
         # Se crea una tabla para centrar el Drawing en la página
         line_table = Table([[d]], colWidths=[None])
         line_table.setStyle(TableStyle([
             ('ALIGN', (0,0), (0,0), 'CENTER'),
         ]))
-        
+
         content_elements.append(line_table)
         content_elements.append(Spacer(1, 0.5*cm))
         # --- FIN DEL CÓDIGO CORREGIDO ---
-        
+        # --- INICIO DEL CÓDIGO CORREGIDO PARA LA FECHA DE NACIMIENTO ---
+    # Verifica si la fecha de nacimiento no es nula antes de formatearla
+        if paciente.fecha_nacimiento:
+            fecha_nacimiento_formateada = paciente.fecha_nacimiento.strftime("%d/%m/%Y")
+        else:
+            fecha_nacimiento_formateada = "N/A" # O cualquier otro texto que desees
+    # --- FIN DEL CÓDIGO CORREGIDO ---
         # Tabla de datos del paciente
         paciente_data = [
-            [Paragraph(f'<b>NOMBRE COMPLETO:</b> {paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno}', custom_styles['Normal']),
-             Paragraph(f'<b>EDAD:</b> {receta.edad} años', custom_styles['Normal'])],
-            [Paragraph(f'<b>FECHA DE NACIMIENTO:</b> {paciente.fecha_nacimiento.strftime("%d/%m/%Y")}', custom_styles['Normal']),
-             Paragraph(f'<b>ESTATURA:</b> {receta.talla} cm', custom_styles['Normal'])],
-            [Paragraph(f'<b>DOMICILIO:</b> {paciente.direccion or "N/A"}', custom_styles['Normal']),
-             Paragraph(f'<b>PESO:</b> {receta.peso} kg', custom_styles['Normal'])],
+        [Paragraph(f'<b>NOMBRE COMPLETO:</b> {paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno or ""}', custom_styles['Normal']),
+         Paragraph(f'<b>EDAD:</b> {receta.edad} años', custom_styles['Normal'])],
+        # Usa la variable formateada aquí
+        [Paragraph(f'<b>FECHA DE NACIMIENTO:</b> {fecha_nacimiento_formateada}', custom_styles['Normal']),
+         Paragraph(f'<b>ESTATURA:</b> {receta.talla} cm', custom_styles['Normal'])],
+        [Paragraph(f'<b>DOMICILIO:</b> {paciente.direccion or "N/A"}', custom_styles['Normal']),
+         Paragraph(f'<b>PESO:</b> {receta.peso} kg', custom_styles['Normal'])],
         ]
         paciente_table = Table(paciente_data, colWidths=[10*cm, 8*cm])
         paciente_table.setStyle(paciente_table_style)
@@ -2748,14 +2759,14 @@ def imprimir_receta_pdf(request, pk):
         # Sección de Diagnóstico
         content_elements.append(Paragraph("<b>Diagnóstico</b>", custom_styles['Heading3']))
         content_elements.append(Paragraph(receta.diagnostico, custom_styles['Normal']))
-        content_elements.append(Spacer(1, 0.5*cm))
-        
+        content_elements.append(Spacer(1, 0.2*cm))
+
         # Sección de Prescripción
         content_elements.append(Paragraph("<b>Prescripción</b>", custom_styles['Heading3']))
         content_elements.append(Paragraph(f' {receta.medicamento}', custom_styles['Normal']))
         content_elements.append(Paragraph(f' {receta.indicaciones}', custom_styles['Normal']))
-        content_elements.append(Spacer(1, 2*cm))
-        
+        content_elements.append(Spacer(1, 0.2*cm))
+
         # --- INICIO DEL CÓDIGO MODIFICADO PARA BAJAR LA FIRMA ---
         # Añade un espacio flexible que se expande para empujar la firma hacia abajo
         content_elements.append(Spacer(1, 1, 'flexible'))
@@ -2765,7 +2776,7 @@ def imprimir_receta_pdf(request, pk):
             [Paragraph('<b>Nombre del consultorio:</b> Centro Integral Terapeutico<br/><b>Teléfono:</b> 55 13 09 81 45<br/><b>Domicilio:</b> Prolongación Emiliano Zapata Sn.Bo. de la Luz Santiago Cuautlalpan', custom_styles['Normal']),
              Paragraph('__________________________<br/><b>Firma de la Doctora</b>', custom_styles['Normal'])]
         ]
-        
+
         firma_table = Table(firma_data, colWidths=[None, None])
         firma_table.setStyle(TableStyle([
             ('ALIGN', (0,0), (0,0), 'LEFT'),
@@ -2774,7 +2785,7 @@ def imprimir_receta_pdf(request, pk):
             ('LEFTPADDING', (0,0), (-1,-1), 0),
             ('RIGHTPADDING', (0,0), (-1,-1), 0),
         ]))
-        
+
         content_elements.append(firma_table)
 
         return content_elements
@@ -2782,8 +2793,8 @@ def imprimir_receta_pdf(request, pk):
     # 3. Se añade el contenido al documento final
     elements.extend(create_receta_content())
      # Creación de una línea horizontal gruesa
-    d = Drawing(landscape(A4)[0], 1)
-    d.add(Line(0, 0, landscape(A4)[0] - 3*cm, 0, strokeWidth=2, strokeColor=colors.black)) # Ajusta el strokeWidth para el grosor
+    d = Drawing(letter[0], 1)
+    d.add(Line(0, 0, letter[0] - 3*cm, 0, strokeWidth=2, strokeColor=colors.black)) # Ajusta el strokeWidth para el grosor
     elements.append(d)
     elements.append(Spacer(1, 1*cm))
     # --- FIN DEL CÓDIGO MODIFICADO ---
@@ -2799,15 +2810,15 @@ def imprimir_receta_pdf(request, pk):
 @login_required
 def eliminar_receta(request, pk):
     receta = get_object_or_404(Receta, pk=pk)
-    
+
     # Nota: Ya no es necesario guardar el PK del paciente, ya que no vamos a redirigir a su expediente.
-    
+
     if request.method == 'POST':
         receta.delete()
         messages.success(request, 'La receta ha sido eliminada exitosamente.')
-        
+
         # CAMBIO AQUÍ: Redirige a la URL de la lista de todos los pacientes
         return redirect('lista_pacientes')
-    
+
     # Si la solicitud no es POST, por ejemplo GET, redirige de vuelta
     return redirect('lista_pacientes')

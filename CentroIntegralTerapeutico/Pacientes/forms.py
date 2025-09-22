@@ -15,7 +15,7 @@ from datetime import date
 class MyForm(forms.Form):
     my_array_field = forms.MultipleChoiceField(required=False)
 
-User = get_user_model() 
+User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
     # Definimos los campos personalizados del modelo CustomUser
@@ -30,7 +30,7 @@ class CustomUserCreationForm(UserCreationForm):
         help_text="Introduce un NIP de 4 dígitos para recuperar tu cuenta.",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'NIP de 4 dígitos'})
     )
-    
+
     # Campos de contraseña actualizados a password1 y password2
     password1 = forms.CharField(
         label='Contraseña',
@@ -48,22 +48,22 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         # Definimos todos los campos que queremos que aparezcan en el formulario
         fields = ('username', 'first_name', 'last_name', 'email', 'user_type', 'recovery_nip')
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         for field_name in self.fields:
             self.fields[field_name].widget.attrs['class'] = 'form-control'
-        
+
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Las dos contraseñas no coinciden.")
-        
+
         validate_password(password2, self.instance)
         return password2
-        
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
@@ -73,7 +73,7 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         return user
 
-   
+
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -82,7 +82,7 @@ class CustomUserChangeForm(UserChangeForm):
         fields = '__all__'
 
 
-    
+
 class LoginForm(AuthenticationForm):
     """
     Formulario de inicio de sesión personalizado.
@@ -131,7 +131,7 @@ class FarmaciaRegistrationForm(forms.ModelForm):
         strip=False,
         help_text="Introduce la misma contraseña de nuevo, para su verificación.",
     )
-    
+
     recovery_nip = forms.CharField(
         max_length=4,
         label="NIP de Recuperación",
@@ -151,11 +151,11 @@ class FarmaciaRegistrationForm(forms.ModelForm):
         model = CustomUser
         # Aquí está la corrección: 'user_type' no debe ir en los campos de un formulario
         # que lo asigna automáticamente.
-        fields = ('username', 'first_name', 'last_name', 'email', 'recovery_nip') 
+        fields = ('username', 'first_name', 'last_name', 'email', 'recovery_nip')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         # Este campo no debería estar en el modelo, se maneja de forma oculta en la vista
         # Lo ocultamos del formulario
         self.fields['user_type'] = forms.CharField(
@@ -220,7 +220,7 @@ class PacienteForm(forms.ModelForm):
             'direccion': 'Dirección',
 
         }
-        
+
 # Nuevo formulario para Citas
 class CitaForm(forms.ModelForm):
     class Meta:
@@ -282,7 +282,7 @@ class CuestionarioParte1Form(forms.ModelForm):
         fields = [
             'motivo_consulta',
             'comentarios',
-            
+
         ]
 
 # ----------------------------------------------------
@@ -302,31 +302,31 @@ class CuestionarioParte2Form(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.SERVICIOS_VIVIENDA_CHOICES),
         label="Servicios con los que cuenta la vivienda"
     )
-    
+
     Antecedentes_familiares = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.ANTECENDENTES_FAMILIARES_CHOICES),
         label='Antecedentes Familiares'
     )
-    
+
     habitos_toxicos = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.HABITOS_TOXICOS_CHOICES),
         label='Hábitos tóxicos'
     )
-    
+
     Patologias = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.PATOLOGIAS_CHOICES),
         label='Patologías'
     )
-    
+
     Allimentación = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.ALIMENTACION_CHOICES),
         label='Alimentación'
     )
-    
+
     class Meta:
         model = HistoriaClinica
         fields = [
@@ -355,7 +355,7 @@ class CuestionarioParte2Form(forms.ModelForm):
             'traumatismo_o_fractura',
             'Otro'
         ]
-        
+
         widgets = {
             'baño_diario': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
             'aseo_dental': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
@@ -370,8 +370,8 @@ class CuestionarioParte2Form(forms.ModelForm):
             'habitos_toxicos': CheckboxCardSelectMultiple(choices=HistoriaClinica.HABITOS_TOXICOS_CHOICES),
             'Patologias': CheckboxCardSelectMultiple(choices=HistoriaClinica.PATOLOGIAS_CHOICES),
             'Allimentación': CheckboxCardSelectMultiple(choices=HistoriaClinica.ALIMENTACION_CHOICES),
-        
-        }      
+
+        }
 
 # ----------------------------------------------------
 # Formulario 3: Datos ginecológicos (condicional)
@@ -399,7 +399,7 @@ class CuestionarioGinecologicoForm(forms.ModelForm):
             'cirugia_ginecologica',
             'otros_ginecologicos',
         ]
-        
+
         widgets = {
             'fum': forms.DateInput(attrs={'type': 'date'}),
             'fpp': forms.DateInput(attrs={'type': 'date'}),
@@ -506,21 +506,21 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
             'genital_criptorquidea', 'genital_fimosis', 'genital_funcion_sexual',
             'genital_sangrado_genital', 'genital_flujo_leucorrea', 'genital_dolor_ginecologico',
             'genital_prurito_vulvar','Comentarios_genital',
-            
+
             # Nuevos campos de Alteraciones en la Micción
             'Poliuria', 'Anuria', 'Oliguria', 'Nicturia', 'Opsuria',
             'Disuria', 'Tenesmo_vesical', 'Urgencia', 'Chorro',
             'Enuresis', 'Incontinencia', 'Ninguna',
-            
+
             'urin_volumen_orina',
             'urin_color_orina', 'urin_olor_orina', 'urin_aspecto_orina',
             'urin_dolor_lumbar', 'urin_edema_palpebral_sup', 'urin_edema_palpebral_inf',
             'urin_edema_renal', 'urin_hipertension_arterial', 'urin_datos_clinicos_anemia',
-            
+
             # Nuevo campo de comentarios
             'Comentarios_urinario',
         ]
-        
+
         widgets = {
             'genital_criptorquidea': forms.CheckboxInput(),
             'genital_fimosis': forms.CheckboxInput(),
@@ -529,7 +529,7 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
             'genital_flujo_leucorrea': forms.CheckboxInput(),
             'genital_dolor_ginecologico': forms.CheckboxInput(),
             'genital_prurito_vulvar': forms.CheckboxInput(),
-            
+
             # Widgets para los nuevos campos de Alteraciones en la Micción
             'Poliuria': forms.CheckboxInput(),
             'Anuria': forms.CheckboxInput(),
@@ -543,7 +543,7 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
             'Enuresis': forms.CheckboxInput(),
             'Incontinencia': forms.CheckboxInput(),
             'Ninguna': forms.CheckboxInput(),
-            
+
             'urin_dolor_lumbar': forms.CheckboxInput(),
             'urin_edema_palpebral_sup': forms.CheckboxInput(),
             'urin_edema_palpebral_inf': forms.CheckboxInput(),
@@ -556,7 +556,7 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
 # Formulario 4: Hematológico, Endocrino y Exploración de Cuello
 # ----------------------------------------------------
 class CuestionarioEndocrinoCuelloForm(forms.ModelForm):
-    
+
     class Meta:
         model = HistoriaClinica
         fields = [
@@ -564,18 +564,18 @@ class CuestionarioEndocrinoCuelloForm(forms.ModelForm):
             'Palidez', 'Astenia', 'Adinamia', 'Otros',
             'hemato_hemorragias', 'hemato_adenopatias', 'hemato_esplenomegalia',
             'Comentarios_anemia',
-            
+
             # Campos de Aparato Endocrino
             'endocr_bocio', 'endocr_letargia', 'endocr_bradipsiquia_idia',
             'endocr_intolerancia_calor_frio', 'endocr_nerviosismo', 'endocr_hiperquinesis',
             'endocr_caracteres_sexuales', 'endocr_galactorrea', 'endocr_amenorrea',
             'endocr_ginecomastia', 'endocr_obesidad', 'endocr_ruborizacion',
             'Comentarios_endocrino',
-            
+
             # Campos de Exploración de Cuello
             'cuello_tiroides', 'cuello_musculos', 'cuello_ganglios_linfaticos',
         ]
-        
+
         widgets = {
             # Widgets de Aparato Hematológico
             'Palidez': forms.CheckboxInput(),
@@ -584,7 +584,7 @@ class CuestionarioEndocrinoCuelloForm(forms.ModelForm):
             'hemato_hemorragias': forms.CheckboxInput(),
             'hemato_adenopatias': forms.CheckboxInput(),
             'hemato_esplenomegalia': forms.CheckboxInput(),
-            
+
             # Widgets de Aparato Endocrino
             'endocr_bocio': forms.CheckboxInput(),
             'endocr_letargia': forms.CheckboxInput(),
@@ -608,15 +608,15 @@ class CuestionarioExploracion1Form(forms.ModelForm):
     ecv_cervical_asc = forms.CharField(label='Ascendente', required=False)
     ecv_cervical_desc = forms.CharField(label='Descendente', required=False)
     ecv_cervical_obs = forms.CharField(label='Observaciones', required=False)
-    
+
     ecv_dorsal_asc = forms.CharField(label='Ascendente', required=False)
     ecv_dorsal_desc = forms.CharField(label='Descendente', required=False)
     ecv_dorsal_obs = forms.CharField(label='Observaciones', required=False)
-    
+
     ecv_lumbosacra_asc = forms.CharField(label='Ascendente', required=False)
     ecv_lumbosacra_desc = forms.CharField(label='Descendente', required=False)
     ecv_lumbosacra_obs = forms.CharField(label='Observaciones', required=False)
-    
+
     # Campos para la Exploración de Miembros Superiores - Hombros
     mmss_hombros_cs_ad = forms.CharField(label='Adducción', required=False)
     mmss_hombros_cs_ab = forms.CharField(label='Abducción', required=False)
@@ -626,7 +626,7 @@ class CuestionarioExploracion1Form(forms.ModelForm):
     mmss_hombros_cv_ab = forms.CharField(label='Abducción', required=False)
     mmss_hombros_cv_f = forms.CharField(label='Flexión', required=False)
     mmss_hombros_cv_e = forms.CharField(label='Extensión', required=False)
-    
+
     # Campos para la Evaluación articular de MMSS Codo y Muñeca
     art_codo_e = forms.CharField(label='E', required=False)
     art_codo_f = forms.CharField(label='F', required=False)
@@ -651,11 +651,11 @@ class CuestionarioExploracion1Form(forms.ModelForm):
             'ecv_cervical_asc', 'ecv_cervical_desc', 'ecv_cervical_obs',
             'ecv_dorsal_asc', 'ecv_dorsal_desc', 'ecv_dorsal_obs',
             'ecv_lumbosacra_asc', 'ecv_lumbosacra_desc', 'ecv_lumbosacra_obs',
-            
+
             'mmss_hombros_cs_ad', 'mmss_hombros_cs_ab', 'mmss_hombros_cs_f',
             'mmss_hombros_cs_e', 'mmss_hombros_cv_ad', 'mmss_hombros_cv_ab',
             'mmss_hombros_cv_f', 'mmss_hombros_cv_e',
-            
+
             'art_codo_e', 'art_codo_f',
             'art_muneca_e', 'art_muneca_f', 'art_muneca_p', 'art_muneca_s',
             'art_pulgar_ab', 'art_pulgar_ad', 'art_pulgar_e', 'art_pulgar_f',
@@ -672,7 +672,7 @@ class CuestionarioExploracion2Form(forms.ModelForm):
             'art_cadera_ab', 'art_cadera_ad', 'art_cadera_f', 'art_cadera_e',
             'art_tobillo_f', 'art_tobillo_e',
             'art_subastragalina_f', 'art_subastragalina_ev',
-            
+
             'nasal_mucosa', 'nasal_cochas', 'nasal_vascularizacion',
         ]
 #######################################################################################################
@@ -706,7 +706,7 @@ class CuestionarioGlasgowVisualForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.CAMPOS_VISUALES_CHOICES),
         label='Campos Visuales Opciones'
     )
-    
+
     class Meta:
         model = HistoriaClinica
         fields = [
@@ -717,10 +717,10 @@ class CuestionarioGlasgowVisualForm(forms.ModelForm):
             'reflejo_fotomotor_respuestas_luz', 'par_craneal_iii_oculomotor',
             'par_craneal_iv_patetico', 'par_craneal_vi_motor_ocular_externo',
             'retina_relacion_arterio_venosa',
-            'retina_macula', 'campos_visuales_opciones', 'par_craneal_iii_oculomotor_cv', 
+            'retina_macula', 'campos_visuales_opciones', 'par_craneal_iii_oculomotor_cv',
             'par_craneal_iv_patetico_cv', 'par_craneal_vi_motor_ocular_externo_cv'
         ]
-        
+
 #######################################################################################################
 ################QUINTA HOJA ##########################################################################
 class CuestionarioExploracionFinalForm(forms.ModelForm):
@@ -850,7 +850,7 @@ class CuestionarioExploracionFinalForm(forms.ModelForm):
         widget=forms.RadioSelect(choices=HistoriaClinica.CHOICES_NUMERICAS),
         label='Brudzinski'
     )
-    
+
     class Meta:
         model = HistoriaClinica
         fields = [
@@ -905,7 +905,7 @@ class RecoveryRequestForm(forms.Form):
                 user = CustomUser.objects.get(email=data)
             except CustomUser.DoesNotExist:
                 raise forms.ValidationError("Usuario no encontrado.")
-        
+
         # Guarda el usuario en el formulario para usarlo en la vista
         self.user = user
         return data
@@ -921,7 +921,7 @@ class RecoveryVerifyForm(forms.Form):
         min_length=4,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'NIP de 4 dígitos'})
     )
-    
+
     def clean_nip(self):
         nip = self.cleaned_data.get('nip')
         if not nip.isdigit():
@@ -949,11 +949,11 @@ class RecoveryPasswordResetForm(forms.Form):
         confirm_password = self.cleaned_data.get('confirm_password')
         if new_password and confirm_password and new_password != confirm_password:
             raise forms.ValidationError("Las contraseñas no coinciden.")
-        return confirm_password    
-    
-    
-    
-    
+        return confirm_password
+
+
+
+
 class RecetaForm(forms.ModelForm):
     class Meta:
         model = Receta
@@ -964,9 +964,9 @@ class RecetaForm(forms.ModelForm):
             'diagnostico': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Ej. HTA, Gripe'}),
             'indicaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Indicaciones adicionales'}),
         }
-        
-        
-        
+
+
+
 
 
 
@@ -989,9 +989,9 @@ class CuestionarioParte1FormME(forms.ModelForm):
         fields = [
             'motivo_consulta',
             'comentarios',
-            
+
         ]
-    
+
 
 # ----------------------------------------------------
 # Formulario 2: Datos generales y vivienda
@@ -1003,19 +1003,19 @@ class CuestionarioParte2FormME(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.SERVICIOS_VIVIENDA_CHOICES),
         label="Servicios con los que cuenta la vivienda"
     )
-    
+
     Antecedentes_familiares = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.ANTECENDENTES_FAMILIARES_CHOICES),
         label='Antecedentes Familiares'
     )
-    
+
     habitos_toxicos = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.HABITOS_TOXICOS_CHOICES),
         label='Hábitos tóxicos'
     )
-    
+
     Patologias = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.PATOLOGIAS_CHOICES),
@@ -1027,7 +1027,7 @@ class CuestionarioParte2FormME(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.ALIMENTACION_CHOICES),
         label='Alimentación'
     )
-    
+
     class Meta:
         model = HistoriaClinicaMusculoEsqueletico
         fields = [
@@ -1056,7 +1056,7 @@ class CuestionarioParte2FormME(forms.ModelForm):
             'traumatismo_o_fractura',
             'Otro'
         ]
-        
+
         widgets = {
             'baño_diario': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
             'aseo_dental': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
@@ -1074,7 +1074,7 @@ class ExamenFisicoForm(forms.ModelForm):
         label='Tejido celular',
         required=False
     )
-    
+
     class Meta:
         model = HistoriaClinicaMusculoEsqueletico
         fields = [

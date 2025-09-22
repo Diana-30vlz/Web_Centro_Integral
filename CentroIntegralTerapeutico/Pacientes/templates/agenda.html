@@ -6,14 +6,27 @@
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/agenda.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .citas-container {
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .modal-body .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <h1 class="text-center">Agenda Mensual</h1>
-<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-    Regresar a la página anterior
-</a>
+    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+        Regresar a la página anterior
+    </a>
     {% if messages %}
         <ul class="messages list-unstyled">
             {% for message in messages %}
@@ -54,33 +67,108 @@
     <div class="calendar-grid">
         {% for week in calendar_days_with_citas %}
             {% for day_data in week %}
-                <div class="day-cell 
+                <div class="day-cell
                     {% if day_data.is_today %}today{% endif %}
                     {% if not day_data.is_current_month %}not-current-month{% endif %}">
                     <div class="day-number">{{ day_data.date.day }}</div>
-                    
-                    {# --- ASEGURATE DE QUE ESTO ESTÉ ASÍ --- #}
-                    {% if day_data.citas %} 
-                        {% for cita in day_data.citas|slice:":3" %} 
-                            <a href="{% url 'editar_cita' cita.pk %}" class="cita-mini-item">
-                                <span class="time">{{ cita.hora_inicio|time:"H:i" }}</span>
-                                <span class="patient-name">{{ cita.paciente.nombre }}</span>
-                            </a>
-                            {# --- AQUI DENTRO DEL BUCLE DE CITA --- #}
-                            <form action="{% url 'eliminar_cita' cita.pk %}" method="post" class="d-inline ms-1">
-                                {% csrf_token %} 
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar Cita" 
-                                        onclick="return confirm('¿Estás seguro de que quieres eliminar esta cita de {{ cita.paciente.nombre }} el {{ cita.fecha|date:"d M Y" }} a las {{ cita.hora_inicio|time:"H:i" }}? Esta acción es irreversible.');">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        {% endfor %}
-                        {% if day_data.citas|length > 3 %}
-                            <p class="more-citas-text">+{{ day_data.citas|length|add:"-3" }} más</p>
-                        {% endif %}
-                    {% endif %}
-                    {# --- FIN DEL BLOQUE day_data.citas --- #}
 
+                    {% if day_data.count_generales > 0 %}
+                        <p class="text-success fw-bold text-center mt-2" style="font-size: 0.8rem;">
+                            {{ day_data.count_generales }} citas generales
+                        </p>
+                        <button type="button" class="btn btn-sm btn-success w-100" data-bs-toggle="modal" data-bs-target="#citasGeneralesModal-{{ day_data.date|date:"Y-m-d" }}">
+                            Ver
+                        </button>
+                    {% endif %}
+
+                    {% if day_data.count_suero > 0 %}
+                        <p class="text-primary fw-bold text-center mt-2" style="font-size: 0.8rem;">
+                            {{ day_data.count_suero }} citas suero
+                        </p>
+                        <button type="button" class="btn btn-sm btn-primary w-100" data-bs-toggle="modal" data-bs-target="#citasSueroModal-{{ day_data.date|date:"Y-m-d" }}">
+                            Ver
+                        </button>
+                    {% endif %}
+                </div>
+
+                <div class="modal fade" id="citasGeneralesModal-{{ day_data.date|date:"Y-m-d" }}" tabindex="-1" aria-labelledby="citasGeneralesModalLabel-{{ day_data.date|date:"Y-m-d" }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="citasGeneralesModalLabel-{{ day_data.date|date:"Y-m-d" }}">Citas Generales del {{ day_data.date|date:"d/m/Y" }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if day_data.citas_del_dia_generales %}
+                                    <div class="list-group">
+                                    {% for cita in day_data.citas_del_dia_generales %}
+                                        <div class="list-group-item">
+                                            <div>
+                                                <h6 class="mb-1">{{ cita.paciente.nombre }} {{ cita.paciente.apellido_paterno }}</h6>
+                                                <small class="d-block">{{ cita.hora_inicio|time:"H:i" }} - {{ cita.hora_fin|time:"H:i" }}</small>
+                                                <p class="mb-1">{{ cita.motivo }}</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <a href="{% url 'editar_cita' cita.pk %}" class="btn btn-sm btn-outline-info me-2" title="Editar Cita">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <form action="{% url 'eliminar_cita' cita.pk %}" method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar Cita"
+                                                            onclick="return confirm('¿Estás seguro de que quieres eliminar esta cita de {{ cita.paciente.nombre }} {{ cita.paciente.apellido_paterno }}?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="text-center">No hay citas generales para este día.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="citasSueroModal-{{ day_data.date|date:"Y-m-d" }}" tabindex="-1" aria-labelledby="citasSueroModalLabel-{{ day_data.date|date:"Y-m-d" }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="citasSueroModalLabel-{{ day_data.date|date:"Y-m-d" }}">Citas de Suero del {{ day_data.date|date:"d/m/Y" }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if day_data.citas_del_dia_suero %}
+                                    <div class="list-group">
+                                    {% for cita in day_data.citas_del_dia_suero %}
+                                        <div class="list-group-item">
+                                            <div>
+                                                <h6 class="mb-1">{{ cita.paciente.nombre }} {{ cita.paciente.apellido_paterno }}</h6>
+                                                <small class="d-block">{{ cita.hora_inicio|time:"H:i" }} - {{ cita.hora_fin|time:"H:i" }}</small>
+                                                <p class="mb-1">{{ cita.motivo }}</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <a href="{% url 'editar_cita' cita.pk %}" class="btn btn-sm btn-outline-info me-2" title="Editar Cita">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <form action="{% url 'eliminar_cita' cita.pk %}" method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar Cita"
+                                                            onclick="return confirm('¿Estás seguro de que quieres eliminar esta cita de {{ cita.paciente.nombre }} {{ cita.paciente.apellido_paterno }}?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="text-center">No hay citas de suero para este día.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         {% endfor %}

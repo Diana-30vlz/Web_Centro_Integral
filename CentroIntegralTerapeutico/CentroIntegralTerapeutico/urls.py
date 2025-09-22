@@ -1,4 +1,3 @@
-
 # mi_proyecto/urls.py
 
 from django.contrib import admin
@@ -16,27 +15,29 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('signin/', views.signin_view, name='signin'),
     path('logout/', views.logout_view, name='logout'),
-    
+
     # Esta es la línea clave para incluir todas las URLs de tu app 'Pacientes'
     path('pacientes/', include('Pacientes.urls')),
 
-        
+
     # NUEVAS URLs para la Agenda
     path('agenda', views.agenda_view, name='agenda'), # Vista de la agenda
     path('crear', views.crear_cita_view, name='crear_cita'), # Crear nueva cita
     path('<int:pk>/editarcita/', views.editar_cita_view, name='editar_cita'), # Editar cita
     path('<int:pk>/eliminarcita/', views.eliminar_cita_view, name='eliminar_cita'), # Eliminar cita
-    
+
     # URLS para inventario
     path('inventario/', include('Inventario.urls')),
+    path('insumos/', include('InventarioInsumos.urls')), # <-- Añade esta línea
+
 
 
         #FARMACIA
     path('login/', views.login_view, name='login'), # URL de inicio de sesión de Farmacia
     path('farmacia/dashboard/', views.dashboard_farmacia, name='dashboard_farmacia'), # Dashboard de Farmacia
     path('farmacia/registro/', views.registro_farmacia_view, name='registro_farmacia'), # Registro de Farmacia
-    
-    
+
+
 # ... (tus otras URLs)
     path('recuperar-cuenta/', views.recovery_request_view, name='recovery_request'),
     path('recuperar-cuenta/verificar/', views.recovery_verify_view, name='recovery_verify'),

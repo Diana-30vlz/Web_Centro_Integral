@@ -41,14 +41,15 @@
 <body>
     <div class="header">
         <h4>Centro Integral Terapéutico</h4>
-        <p>Tu dirección aquí</p>
-        <p>Teléfono: 55-XXXX-XXXX</p>
+        <p>Bo. La Luz, Santiago Cuautlalpán, Tepotzotlán</p>
+        <p>Teléfono: 55-1309-8145</p>
+        <p>Teléfono: 55-2231-5535
         <div class="divider"></div>
         <h4>RECIBO DE VENTA</h4>
         <p>Venta #{{ venta.pk }}</p>
         <div class="divider"></div>
     </div>
-    
+
     <p>Fecha: {{ venta.fecha_creacion|date:"d/m/Y H:i" }}</p>
     <p>Atendió: {{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</p>
     <div class="divider"></div>
@@ -73,9 +74,9 @@
             {% endfor %}
         </tbody>
     </table>
-    
+
     <div class="divider"></div>
-    
+
     <div class="text-right">
         <strong>Total: ${{ venta.total|floatformat:2 }}</strong>
     </div>

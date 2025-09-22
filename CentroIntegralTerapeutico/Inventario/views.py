@@ -33,7 +33,7 @@ from datetime import datetime
 def lista_medicamentos(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     medicamentos = Medicamento.objects.all().order_by('nombre')
     context = {
         'medicamentos': medicamentos,
@@ -46,7 +46,7 @@ def lista_medicamentos(request):
 def crear_medicamento(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     if request.method == 'POST':
         form = MedicamentoForm(request.POST)
         if form.is_valid():
@@ -55,7 +55,7 @@ def crear_medicamento(request):
             return redirect('lista_medicamentos')
     else:
         form = MedicamentoForm()
-    
+
     context = {
         'form': form,
         'titulo': 'Añadir Nuevo Medicamento',
@@ -68,7 +68,7 @@ def crear_medicamento(request):
 def editar_medicamento(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         form = MedicamentoForm(request.POST, instance=medicamento)
@@ -78,7 +78,7 @@ def editar_medicamento(request, pk):
             return redirect('lista_medicamentos')
     else:
         form = MedicamentoForm(instance=medicamento)
-    
+
     context = {
         'form': form,
         'medicamento': medicamento,
@@ -92,13 +92,13 @@ def editar_medicamento(request, pk):
 def eliminar_medicamento(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         medicamento.delete()
         messages.success(request, 'Medicamento eliminado del inventario.')
         return redirect('lista_medicamentos')
-    
+
     context = {
         'medicamento': medicamento,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
@@ -139,7 +139,7 @@ def dibujar_una_etiqueta(p, medicamento, x_offset, y_offset):
     margen_izquierdo_interno = x_offset + 5 * mm
     margen_superior_interno = y_offset + ETIQUETA_ALTO - 5 * mm
     current_y = margen_superior_interno
-    
+
     # --- CÁLCULO DE POSICIONES PARA EL CÓDIGO DE BARRAS Y EL ID (CORREGIDO) ---
     barcode_desired_height = 10 * mm
     id_text_desired_height = 3 * mm
@@ -187,7 +187,7 @@ def dibujar_una_etiqueta(p, medicamento, x_offset, y_offset):
     ean13_data = str(medicamento.pk).zfill(12)
     barcode_x_abs = x_offset + 5 * mm
     # Ya no es necesario reasignar barcode_y_abs, ya se calculó arriba.
-    
+
     id_text_x_abs_center = x_offset + (ETIQUETA_ANCHO / 2)
     # Ya no es necesario reasignar id_text_y_abs, ya se calculó arriba.
 
@@ -219,14 +219,20 @@ def dibujar_una_etiqueta(p, medicamento, x_offset, y_offset):
 # --- VISTAS EXISTENTES (sin cambios) ---
 @login_required
 def lista_medicamentos(request):
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
     medicamentos = Medicamento.objects.all().order_by('nombre')
     context = {
-        'medicamentos': medicamentos
+        'medicamentos': medicamentos,
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
     return render(request, 'inventario/lista_medicamentos.html', context)
 
 @login_required
 def crear_medicamento(request):
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
     if request.method == 'POST':
         form = MedicamentoForm(request.POST)
         if form.is_valid():
@@ -235,15 +241,21 @@ def crear_medicamento(request):
             return redirect('lista_medicamentos')
     else:
         form = MedicamentoForm()
-    
+
     context = {
         'form': form,
-        'titulo': 'Añadir Nuevo Medicamento'
+        'titulo': 'Añadir Nuevo Medicamento',
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
     return render(request, 'inventario/medicamento_form.html', context)
 
 @login_required
 def editar_medicamento(request, pk):
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+
+
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         form = MedicamentoForm(request.POST, instance=medicamento)
@@ -253,24 +265,30 @@ def editar_medicamento(request, pk):
             return redirect('lista_medicamentos')
     else:
         form = MedicamentoForm(instance=medicamento)
-    
+
     context = {
         'form': form,
         'medicamento': medicamento,
-        'titulo': 'Editar Medicamento'
+        'titulo': 'Editar Medicamento',
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
     return render(request, 'inventario/medicamento_form.html', context)
 
 @login_required
 def eliminar_medicamento(request, pk):
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
     medicamento = get_object_or_404(Medicamento, pk=pk)
     if request.method == 'POST':
         medicamento.delete()
         messages.success(request, 'Medicamento eliminado del inventario.')
         return redirect('lista_medicamentos')
-    
+
     context = {
-        'medicamento': medicamento
+        'medicamento': medicamento,
+        'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
+        'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
     return render(request, 'inventario/confirmar_eliminar_medicamento.html', context)
 
@@ -291,8 +309,11 @@ def imprimir_etiqueta_medicamento(request, pk):
 # --- VISTA PARA MOSTRAR EL FORMULARIO DE SELECCIÓN DE MEDICAMENTOS ---
 @login_required
 def seleccionar_medicamentos_para_imprimir(request):
+
+
     # Este formulario solo se usa para obtener la lista de medicamentos para la plantilla
     form = SeleccionarMedicamentosForm() #
+
     return render(request, 'inventario/seleccionar_medicamentos.html', {'form': form}) #
 
 
@@ -300,10 +321,10 @@ def seleccionar_medicamentos_para_imprimir(request):
 @login_required
 def imprimir_varias_etiquetas_pdf(request, selected_ids_str):
     # selected_ids_str ahora viene en formato "ID:CANTIDAD,ID:CANTIDAD,..."
-    
+
     # Diccionario para almacenar {medicamento_id: cantidad_a_imprimir}
     medicamentos_con_cantidades = {}
-    
+
     if selected_ids_str and selected_ids_str != '0': # '0' es el placeholder inicial
         for item in selected_ids_str.split(','):
             try:
@@ -358,7 +379,7 @@ def imprimir_varias_etiquetas_pdf(request, selected_ids_str):
     # Asegurarse de guardar la última página si no se llenó por completo
     if etiquetas_en_pagina_actual > 0:
         p.showPage()
-    
+
     p.save()
     buffer.seek(0)
 
@@ -382,11 +403,8 @@ def punto_venta(request):
     """
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
-    if not is_farmacia:
-        messages.warning(request, "No tienes permiso para acceder al punto de venta.")
-        return redirect('HomeSinInicio')
-    
+
+
     venta_actual_id = request.session.get('venta_actual_id')
     venta_actual = None
     if venta_actual_id:
@@ -399,7 +417,7 @@ def punto_venta(request):
     if not venta_actual:
         venta_actual = Venta.objects.create(farmaceuta=request.user, estado='pendiente')
         request.session['venta_actual_id'] = venta_actual.pk
-    
+
     context = {
         'medicamentos': Medicamento.objects.all().order_by('nombre'),
         'venta_actual': venta_actual,
@@ -429,7 +447,7 @@ def ajax_agregar_a_venta(request):
 
         with transaction.atomic():
             venta = get_object_or_404(Venta, pk=venta_actual_id, estado='pendiente', farmaceuta=request.user)
-            
+
             item, created = ItemVenta.objects.get_or_create(
                 venta=venta,
                 medicamento=medicamento,
@@ -447,12 +465,12 @@ def ajax_agregar_a_venta(request):
 
             medicamento.cantidad_disponible -= cantidad
             medicamento.save()
-            
+
             venta.total = venta.items.all().aggregate(total=models.Sum('subtotal'))['total'] or Decimal('0.00')
             venta.save()
-            
+
         return JsonResponse({'success': True, 'message': f'Se agregaron {cantidad} de {medicamento.nombre} a la venta.'})
-    
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 
@@ -468,10 +486,10 @@ def ajax_eliminar_de_venta(request):
         with transaction.atomic():
             item.medicamento.cantidad_disponible += item.cantidad
             item.medicamento.save()
-            
+
             venta = item.venta
             item.delete()
-            
+
             venta.total = venta.items.all().aggregate(total=models.Sum('subtotal'))['total'] or Decimal('0.00')
             venta.save()
 
@@ -484,13 +502,13 @@ def ajax_finalizar_venta(request):
     if request.method == 'POST':
         venta_actual_id = request.session.get('venta_actual_id')
         venta = get_object_or_404(Venta, pk=venta_actual_id, estado='pendiente', farmaceuta=request.user)
-        
+
         venta.estado = 'finalizada'
         venta.fecha_finalizacion = timezone.now()
         venta.save()
-        
+
         request.session.pop('venta_actual_id', None)
-        
+
         messages.success(request, f"Venta #{venta.pk} finalizada exitosamente.")
         return JsonResponse({'success': True, 'message': 'Venta finalizada.', 'venta_id': venta.pk})
 
@@ -505,17 +523,17 @@ def ajax_finalizar_venta(request):
 def imprimir_recibo(request, venta_id):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     venta = get_object_or_404(Venta.objects.select_related('farmaceuta'), pk=venta_id)
     items = ItemVenta.objects.select_related('medicamento').filter(venta=venta)
-    
+
     context = {
         'venta': venta,
         'items': items,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
-    
+
     return render(request, 'inventario/recibo.html', context)
 
 
@@ -523,26 +541,26 @@ def imprimir_recibo(request, venta_id):
 def historial_ventas(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    
+
     ventas = Venta.objects.filter(estado='finalizada').select_related('farmaceuta').order_by('-fecha_finalizacion')
 
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
-    
+
     if fecha_inicio_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
-            ventas = ventas.filter(fecha_finalizacion__date__gte=fecha_inicio)
+            ventas = ventas.filter(fecha_finalizacion_date_gte=fecha_inicio)
         except ValueError:
             messages.error(request, "El formato de la fecha de inicio no es válido.")
-    
+
     if fecha_fin_str:
         try:
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
-            ventas = ventas.filter(fecha_finalizacion__date__lte=fecha_fin)
+            ventas = ventas.filter(fecha_finalizacion_date_lte=fecha_fin)
         except ValueError:
             messages.error(request, "El formato de la fecha de fin no es válido.")
-    
+
     context = {
         'ventas': ventas,
         'fecha_inicio': fecha_inicio_str,
@@ -551,5 +569,5 @@ def historial_ventas(request):
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
-    
+
     return render(request, 'inventario/historial_ventas.html', context)

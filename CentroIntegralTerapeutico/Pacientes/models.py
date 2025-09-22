@@ -72,7 +72,7 @@ class Doctor(models.Model):
     # Campos adicionales para el doctor
     especialidad = models.CharField(max_length=100, blank=True, null=True, verbose_name="Especialidad")
     telefono_consultorio = models.CharField(max_length=20, blank=True, null=True, verbose_name="Teléfono del Consultorio")
-    
+
     def __str__(self):
         full_name = self.user.get_full_name()
         if not full_name:
@@ -113,7 +113,7 @@ class Paciente(models.Model):
     apellido_paterno = models.CharField(max_length=100)
     apellido_materno = models.CharField(max_length=100, blank=True, null=True)
 
-    fecha_nacimiento = models.DateField()
+    fecha_nacimiento = models.DateField(blank=True, null=True) # <-- Modifica esta línea
     genero = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino'), ('Otro', 'Otro')])
     telefono = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True) # Uso null=True para la BD
@@ -122,7 +122,7 @@ class Paciente(models.Model):
 
     numero_expediente = models.CharField(max_length=50, unique=True, blank=True, null=True)
     doctor_responsable = models.ForeignKey(
-        Doctor, 
+        Doctor,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -140,12 +140,11 @@ class Paciente(models.Model):
     class Meta:
         verbose_name = "Paciente"
         verbose_name_plural = "Pacientes"
-        
-        
-        
-        
-        
-        
+
+
+
+
+
 # Nuevo modelo para las Citas
 class Cita(models.Model):
     paciente = models.ForeignKey(
@@ -162,16 +161,16 @@ class Cita(models.Model):
         blank=True,
         verbose_name="Doctor"
     )
-    
+
     fecha = models.DateField(verbose_name="Fecha de la Cita")
     hora_inicio = models.TimeField(verbose_name="Hora de Inicio")
     hora_fin = models.TimeField(verbose_name="Hora de Fin")
-    
+
     MOTIVO_CHOICES = [
         ('Consulta', 'Consulta General'),
         ('Seguimiento', 'Seguimiento'),
         ('Terapia', 'Sesión de Terapia'),
-        ('Emergencia', 'Emergencia'),
+        ('Suero', 'Suero'),
         ('Otro', 'Otro'),
     ]
     motivo = models.CharField(
@@ -180,9 +179,9 @@ class Cita(models.Model):
         default='Consulta',
         verbose_name="Motivo de la Cita"
     )
-    
+
     notas = models.TextField(blank=True, null=True, verbose_name="Notas Adicionales")
-    
+
     ESTADO_CHOICES = [
         ('Pendiente', 'Pendiente'),
         ('Confirmada', 'Confirmada'),
@@ -206,7 +205,7 @@ class Cita(models.Model):
         ordering = ['fecha', 'hora_inicio'] # Ordena las citas por fecha y luego por hora
         unique_together = ('doctor', 'fecha', 'hora_inicio') # Un doctor no puede tener dos citas a la misma hora en la misma fecha
 
-    def __str__(self):
+    def _str_(self):
         doctor_str = self.doctor.username if self.doctor else "Sin Doctor"
         return f"Cita de {self.paciente.nombre} con {doctor_str} el {self.fecha} a las {self.hora_inicio}"
 
@@ -217,10 +216,9 @@ class Cita(models.Model):
             from django.core.exceptions import ValidationError
             raise ValidationError('La hora de inicio debe ser anterior a la hora de fin.')
         # Aquí podrías añadir validación para no superponer citas, etc.
-        
-        
-        
-        
+
+
+
 
 class ConsentimientoInformado(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='consentimientos_simplificados')
@@ -234,14 +232,14 @@ class ConsentimientoInformado(models.Model):
     rp = models.TextField(blank=True, null=True, verbose_name="Rp. (Receta o Recomendación)")
 
     def __str__(self):
-        return f"Consentimiento simplificado de {self.nombre} ({self.fecha})"       
-    
-    
-    
-    
-    
-    
-    
+        return f"Consentimiento simplificado de {self.nombre} ({self.fecha})"
+
+
+
+
+
+
+
 
 def get_default_servicios():
     return ['-----']
@@ -254,7 +252,7 @@ def get_default_servicios():
 class HistoriaClinica(models.Model):
     id = models.AutoField(primary_key=True)
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='PacienteHistoriaClinica')
-    no_historia_clinica = models.CharField(max_length=50, blank=True, null=True, verbose_name="Número de Historia Clínica") 
+    no_historia_clinica = models.CharField(max_length=50, blank=True, null=True, verbose_name="Número de Historia Clínica")
     fecha_registro = models.DateField(auto_now_add=True, verbose_name="Fecha de Registro")
     comentarios = models.TextField(blank=True, null=True, verbose_name="ComentariosAdicionales")
     fecha_internacion = models.DateField(blank=True, null=True)
@@ -322,7 +320,7 @@ class HistoriaClinica(models.Model):
     motivo_consulta = models.TextField(null=True, blank=True, verbose_name="Motivo de Consulta")
     enfermedad_actual = models.CharField(max_length=50, blank=True, null=True)
         #ANTECEDENTES FAMILIARES
-    Antecedentes_familiares = ArrayField(models.CharField(max_length=50, 
+    Antecedentes_familiares = ArrayField(models.CharField(max_length=50,
                                                         choices=ANTECENDENTES_FAMILIARES_CHOICES,
                                                         blank=True,
                                                         verbose_name='Antecendentes Familiares'))
@@ -336,7 +334,7 @@ class HistoriaClinica(models.Model):
             ('Drogas','Drogas'),
             ('Infusiones','Infusiones'),
             ('No aplica','No aplica'),
-            
+
         ]
     habitos_toxicos = ArrayField(models.CharField(max_length=50, choices=HABITOS_TOXICOS_CHOICES, blank=True,null=True, verbose_name='Hábitos tóxicos', default=get_default_servicios))
         #Hábitos fisiologicos
@@ -372,7 +370,7 @@ class HistoriaClinica(models.Model):
             ('Caries','Caries'),
             ('Rubeola','Rubeola'),
             ('Neoplasis','Neoplasis'),
-            ('Otros','Otros'),    
+            ('Otros','Otros'),
         ]
     Infancia = models.TextField(max_length=100, blank=True, null=True)
     Adulto = models.TextField(max_length=100, blank=True, null=True)
@@ -383,7 +381,7 @@ class HistoriaClinica(models.Model):
     traumatismo_o_fractura = models.BooleanField(blank=True, null=True)
     Otro = models.TextField(blank=True, null=True)
 
-  
+
         #GINECO - OBSTRETICOS
     fum = models.DateField(blank=True, null=True)
     fpp = models.DateField(blank=True, null=True)
@@ -589,7 +587,7 @@ class HistoriaClinica(models.Model):
 
 
 
-    
+
     # Evaluación articular de la cadera
     art_cadera_ab = models.CharField(max_length=50, blank=True, null=True)
     art_cadera_ad = models.CharField(max_length=50, blank=True, null=True)
@@ -639,7 +637,7 @@ class HistoriaClinica(models.Model):
     ascitis = models.BooleanField(default=False)
 
     Estado_Conciencia = models.TextField(blank=True, null = True)
-    
+
     ##ESCALA DE GLASLOW
 
     glasgow_apertura_ojos_respuesta = models.CharField(max_length=100, blank=True, null=True)
@@ -650,7 +648,7 @@ class HistoriaClinica(models.Model):
     glasgow_respuesta_motora_puntuacion = models.IntegerField(blank=True, null=True)
 
     ##reflejo fotomotor
-    
+
     reflejo_fotomotor_tamano = models.CharField(max_length=100, blank=True, null=True)
     reflejo_fotomotor_relaciones = models.CharField(max_length=100, blank=True, null=True)
     reflejo_fotomotor_respuestas_luz = models.CharField(max_length=100, blank=True, null=True)
@@ -679,13 +677,13 @@ class HistoriaClinica(models.Model):
 
     ###############################################################################
     # Siguente pagina
-    # 
+    #
     Conducta_auditiva = models.CharField(max_length=50, blank=True, null=True)
     Membrana_timpatica = models.CharField(max_length=50, blank=True, null=True)
     conduccion_osea = models.CharField(max_length=50, blank=True, null=True)
     conduccion_area = models.CharField(max_length=50, blank=True, null=True)
 
-    CHOICES_NUMERICAS = [ 
+    CHOICES_NUMERICAS = [
         ('1','1'),
         ('2','2'),
         ('3','3'),
@@ -736,27 +734,27 @@ class Receta(models.Model):
     diagnostico = models.TextField()
     medicamento = models.TextField()
     indicaciones = models.TextField()
-    
+
     # Campos existentes para la receta
     edad = models.IntegerField(null=True, blank=True)
     talla = models.FloatField(null=True, blank=True)
     peso = models.FloatField(null=True, blank=True)
-    
+
     # --- NUEVOS CAMPOS AÑADIDOS ---
     ta = models.CharField(max_length=20, verbose_name='T/A', null=True, blank=True) # Tensión Arterial
     fc = models.IntegerField(verbose_name='F.C.', null=True, blank=True) # Frecuencia Cardiaca
     sat_o2 = models.IntegerField(verbose_name='SAT. O2', null=True, blank=True) # Saturación de Oxígeno
-    
+
     def __str__(self):
         return f'Receta de {self.paciente.nombre} - {self.fecha}'
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
 class HistoriaClinicaMusculoEsqueletico(models.Model):
     id = models.AutoField(primary_key=True)
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='PacienteHistoriaClinicaME')
@@ -829,7 +827,7 @@ class HistoriaClinicaMusculoEsqueletico(models.Model):
     motivo_consulta = models.TextField()
     enfermedad_actual = models.CharField(max_length=50, blank=True, null=True)
         #ANTECEDENTES FAMILIARES
-    Antecedentes_familiares = ArrayField(models.CharField(max_length=50, 
+    Antecedentes_familiares = ArrayField(models.CharField(max_length=50,
                                                         choices=ANTECENDENTES_FAMILIARES_CHOICES,
                                                         blank=True,
                                                         verbose_name='Antecendentes Familiares', default=get_default_servicios, null=True))
@@ -843,7 +841,7 @@ class HistoriaClinicaMusculoEsqueletico(models.Model):
             ('Drogas','Drogas'),
             ('Infusiones','Infusiones'),
             ('No aplica','No aplica'),
-            
+
         ]
     habitos_toxicos = ArrayField(models.CharField(max_length=50, choices=HABITOS_TOXICOS_CHOICES, blank=True,null=True, default=get_default_servicios, verbose_name='Hábitos tóxicos'))
         #Hábitos fisiologicos
@@ -879,7 +877,7 @@ class HistoriaClinicaMusculoEsqueletico(models.Model):
             ('Caries','Caries'),
             ('Rubeola','Rubeola'),
             ('Neoplasis','Neoplasis'),
-            ('Otros','Otros'),    
+            ('Otros','Otros'),
         ]
     Infancia = models.TextField(max_length=100, blank=True, null=True)
     Adulto = models.TextField(max_length=100, blank=True, null=True)
