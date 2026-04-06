@@ -1,0 +1,36 @@
+{% extends "BaseSinInicio.html" %}
+{% block title %}Consentimientos Legales{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>Consentimientos Legales de {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
+    <a href="{% url 'consentimiento_real_create' paciente.pk %}" class="btn btn-primary my-3">
+        <i class="bi bi-shield-check"></i> Crear Nuevo Consentimiento Legal
+    </a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha del Procedimiento</th>
+                <th>Médico Autorizado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in consentimientos %}
+            <tr>
+                <td>{{ c.fecha_procedimiento|date:"d/m/Y" }}</td>
+                <td>{{ c.nombre_medico_autorizado }}</td>
+                <td>
+                    <a href="{% url 'consentimiento_real_detail' c.pk %}" class="btn btn-info btn-sm">Ver Detalles</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No hay consentimientos legales registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-secondary mt-3">Volver al Expediente</a>
+</div>
+{% endblock %}

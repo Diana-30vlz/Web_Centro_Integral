@@ -1,48 +1,863 @@
-
-{# Pacientes/templates/cuestionario/historia_clinica_parte1.html #}
 {% extends "BaseSinInicio.html" %}
 
-{% block title %}Historia Clínica - Parte 1{% endblock %}
-
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+<link rel="stylesheet" href="{% static 'css/historial_clinico_estilo.css' %}">
+
+{% block title %}Historia Clínica Única - {{ paciente.nombre }}{% endblock %}
+
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/historial_clinico_estilo.css' %}">
+    <style>
+
+        /*
+* ESTILOS PARA HISTORIAL CLÍNICO UNIFICADO (CENTRO INTEGRAL TERAPÉUTICO)
+* Basado en la paleta de colores del logo: #44916f (Verde/Teal principal)
+*/
+
+/* FUENTE Y CONTENEDOR BASE */
+body {
+    background-color: #f7f7f7; /* Fondo muy claro, simula papel */
+    font-family: 'Cambria', 'Times New Roman', serif; /* Tipografía formal, legible y profesional */
+    margin: 0;
+    padding: 0;
+}
+
+.formulario-documento {
+    max-width: 900px; /* Ancho cómodo para un documento */
+    margin: 30px auto;
+    color: #333;
+    background-color: #ffffff;
+    border: 1px solid #c0c0c0; /* Borde suave */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    padding: 0;
+}
+
+/* MARCA DE AGUA (para simular el fondo de una hoja membretada) */
+.marca-agua {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 80%;
+    /* Nota: 'logo.png' debe estar en la carpeta static/img/ para que esta URL funcione en Django */
+    background-image: url('{% static "img/logo.png" %}');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50%;
+    opacity: 0.08; /* Muy tenue */
+    z-index: 0; /* Detrás del contenido */
+    pointer-events: none; /* No interfiere con clics */
+}
+
+
+/* ENCABEZADO FORMAL */
+.documento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 4px solid #44916f; /* Línea gruesa de acento */
+    background-color: #fcfcfc;
+    position: relative;
+    z-index: 1;
+}
+
+.documento-header img {
+    height: 70px;
+    opacity: 0.95;
+}
+
+.documento-header h1 {
+    font-size: 30px;
+    font-weight: bold;
+    color: #1a4a39; /* Verde más oscuro para contraste */
+    margin: 0;
+    letter-spacing: 1.5px;
+}
+
+/* CUERPO DEL DOCUMENTO */
+.form-body {
+    padding: 30px 40px; /* Margen interno amplio */
+    position: relative;
+    z-index: 2;
+}
+
+/* Subtítulos de SECCIÓN (Formales y con buen espacio) */
+.form-body h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #44916f; /* Color de acento */
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 5px;
+    margin: 30px 0 15px 0;
+    text-transform: uppercase;
+}
+
+.form-body h4 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #275d45;
+    margin: 15px 0 10px 0;
+}
+
+/* Estilo para los datos del paciente (SIMULACIÓN DE LÍNEAS DE RELLENO) */
+.datos-paciente-fila {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.dato-paciente-item {
+    flex: 1 1 30%; /* Distribución en 3 columnas */
+    margin-right: 20px;
+    font-size: 16px;
+    color: #555;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Aseguramos el tamaño de los elementos individuales dentro de flexbox */
+.dato-paciente-item.w-45 {
+    flex: 1 1 45%;
+    min-width: 45%;
+}
+
+.dato-paciente-item strong {
+    color: #000;
+    font-weight: 600;
+}
+
+.linea-relleno {
+    display: inline-block;
+    border-bottom: 1px dashed #777;
+    flex-grow: 1;
+    margin-left: 5px;
+}
+
+/* Estilos de Campos (Reemplaza .formulario-wizard p) */
+.form-group-field {
+    font-size: 17px;
+    line-height: 1.4;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+}
+
+.form-group-field label,
+.form-group-field .label-horizontal {
+    font-weight: bold;
+    color: #1a4a39; /* Etiqueta en verde oscuro */
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* Simulación de líneas para Inputs (Motivo de Consulta, etc.) */
+.input-linea-larga,
+.input-linea-corta {
+    border: none !important;
+    border-bottom: 1px solid #777 !important;
+    padding: 5px 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    font-size: 16px !important;
+    font-family: 'Cambria', 'Times New Roman', serif;
+    box-shadow: none !important; /* Desactiva sombras para looks más planos */
+}
+
+.input-linea-larga:focus,
+.input-linea-corta:focus {
+    border-bottom: 2px solid #44916f !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Estilos de Django Form Inputs (para campos que no son de línea) */
+.form-body input:not([type="radio"]):not([type="checkbox"]):not(.input-linea-larga):not(.input-linea-corta),
+.form-body select,
+.form-body textarea:not(.input-linea-larga) {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-top: 5px;
+    background-color: #fafafa;
+}
+
+
+/* Estilo para la sección GINECO-OBSTÉTRICOS (Recuadro resaltado) */
+.seccion-ginecologica {
+    border: 2px dashed #44916f; /* Borde de acento */
+    background-color: #e9f5ed; /* Fondo muy claro */
+    padding: 20px 30px;
+    margin: 30px 0;
+}
+.seccion-ginecologica h3 {
+    color: #44916f;
+    border-bottom: 1px solid #44916f;
+}
+
+/* ORGANIZACIÓN DE CHECKBOXES Y RADIOS (Manteniendo tu lógica) */
+
+/* Contenedor de grupos horizontales (para hábitos) */
+.form-group-horizontal-doc {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 15px 0;
+    padding: 10px 0;
+    border-bottom: 1px dotted #eee;
+}
+
+.form-group-horizontal-doc .label-horizontal {
+    flex-basis: 60%;
+    font-size: 17px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Estilo para los grupos de radio (Sí/No) */
+.radio-button-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap; /* Permite que las opciones se envuelvan en pantallas pequeñas */
+}
+
+.radio-button-group label {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: normal;
+    font-size: 16px;
+    color: #333;
+}
+
+.radio-button-group input[type="radio"]:checked + label {
+    background-color: #44916f;
+    color: #ffffff;
+    border-color: #44916f;
+}
+
+/* Esto aplica el estilo verde a las etiquetas cuando el input (radio O checkbox) está marcado */
+.radio-button-group input[type="radio"]:checked + label,
+.radio-button-group input[type="checkbox"]:checked + label {
+    /* Aquí van los estilos que hacen que se vea como un botón verde */
+    background-color: #44916f;
+    color: #ffffff;
+    border-color: #44916f;
+    /* ... otros estilos visuales ... */
+}
+
+/* Estilo para checkbox cards (simulando selección en documento) */
+.checkbox-card-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 5px 0;
+}
+
+.checkbox-card-group label {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    background-color: #f9f9f9;
+    font-weight: normal;
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
+.checkbox-card-group input[type="checkbox"]:checked + label,
+.checkbox-card-group input[type="radio"]:checked + label {
+    background-color: #44916f;
+    color: #ffffff;
+    border-color: #44916f;
+}
+
+/* Ocultar los inputs reales para usar el estilo de la etiqueta */
+.radio-button-group input[type="radio"],
+.checkbox-card-group input[type="checkbox"],
+.checkbox-card-group input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* Botón de Guardar */
+.form-navigation {
+    padding: 20px 40px;
+    text-align: right; /* Centrado en el contexto de documento */
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn-siguiente {
+    background-color: #44916f;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-siguiente:hover {
+    background-color: #3e8163;
+}
+
+.datos-paciente-item input[type="date"] {
+    width: 100%; /* Asegura que ocupe todo el espacio de su contenedor */
+    min-width: 150px; /* Asegura que el selector del navegador quepa */
+    height: 30px; /* Altura visible */
+    padding: 3px 5px;
+    border: 1px solid #ccc; /* Evita que se vea como texto sin caja */
+}
+/* Estilo para el botón Anterior */
+.btn-anterior {
+    /* Fondo claro y color de texto sutil */
+    background-color: transparent !important; /* Hacemos el fondo invisible/blanco */
+    color: #44916f !important; /* Usamos tu color de marca (verde) para el texto */
+    padding: 8px 15px; /* Mantenemos un padding decente */
+    border: 1px solid transparent; /* Bordes transparentes */
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none; /* Quitamos el subrayado del enlace */
+    transition: background-color 0.2s;
+    
+}
+
+.btn-anterior:hover {
+    background-color: #f0f0f0 !important; /* Se ilumina al pasar el ratón */
+    border-color: #ddd !important;
+}
+    </style>
+
+
+
 {% endblock %}
 
 {% block content %}
-<div class="contenedor formulario-wizard">
-    <div class="header-presentacion">
-        <h2 class="titulo-paso">{{ step_title }}</h2>
-    </div>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ wizard.management_form }}
-        
-        <div class="form-body">
-            <p>
-                <label id ='campo' for="{{ form.motivo_consulta.id_for_label }}">Motivo de Consulta:</label>
-                {{ form.motivo_consulta }}
-            </p>
-            <p>
-                <label id ='campo' for="{{ form.comentarios.id_for_label }}">Comentarios:</label>
-                {{ form.comentarios }}
-            </p>
-        </div>
+<a href="{% url 'historia_clinica_paciente' pk=paciente.pk %}" 
+                     class="btn-wizard btn-anterior" title="Regresar al Historial">
+                        <i class="bi bi-arrow-left"></i> Regresar al Historial
+                    </a>
+<div class="formulario-documento">
+    <!-- Marca de agua (Logo) -->
+    <div class="marca-agua"></div>
 
-        <div class="form-navigation">
-            {% if wizard.steps.prev %}
-                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-wizard btn-anterior">Anterior</button>
-            {% endif %}
+    <!-- ENCABEZADO: Logo y Título -->
+    <div class="documento-header">
+        <img src="{% static 'img/logo.png' %}" alt="Centro Integral Terapéutico CIT Logo">
+        <h1>HISTORIA CLÍNICA MÚSCULO-ESQUELETICO</h1>
+    </div>
 
-            <button type="submit" class="btn-wizard btn-siguiente">
-                {% if wizard.steps.last %}
-                    Terminar
-                {% else %}
-                    Siguiente
-                {% endif %}
-            </button>
-        </div>
-    </form>
-</div>
+    <form action="{% url 'crear_historia_clinica_wizard_ME' paciente.id %}" method="post">
+        {% csrf_token %}
+        
+        {{ wizard.management_form }}
+
+        <div class="form-body">
+            {% if form.errors %}
+            <div style="
+                background-color: #f8d7da; 
+                color: #721c24; 
+                border: 1px solid #f5c6cb; 
+                padding: 15px; 
+                margin-bottom: 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 2px 5px rgba(255, 0, 0, 0.1);
+            ">
+                ⚠️ ATENCIÓN, Para pasar al siguiente formulario, necesitas completar los campos obligatorios.
+            </div>
+            {% endif %}
+            
+            <!-- SECCIÓN DE DATOS DEL PACIENTE (SIMULACIÓN DE BASE DE DATOS) -->
+            <h3>Datos de Identificación del Paciente</h3>
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item">
+                    Nombre: <strong>{{ paciente.nombre|default:"____________________" }}
+                                        {{ paciente.apellido_paterno|default:"____________________" }}
+                                        {% if paciente.apellido_materno %}{{ paciente.apellido_materno }}{% endif %}</strong>
+                </div>
+                <div class="dato-paciente-item">
+                    Edad: <strong>{{ paciente.edad|default:"____" }}</strong>
+                </div>
+                <div class="dato-paciente-item">
+                    Sexo: <strong>{{ paciente.genero|default:"__________" }}</strong>
+                </div>
+            </div>
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item">
+                    Ocupación: <strong>{{ paciente.Ocupacion|default:"____________________" }}</strong>
+                </div>
+                <div class="dato-paciente-item">
+                    Fecha de nacimiento: <strong>{{ paciente.fecha_nacimiento|date:"d/m/Y"|default:"___/___/______" }}</strong>
+                </div>
+                <div class="dato-paciente-item">
+                    No. de historia clínica:
+    <input type="text" name="numero_expediente" class="input-linea-corta" value="{{ historia_clinica.numero_expediente|default:'' }}" placeholder="_____________" />
+                </div>
+            </div>
+            <!-- Más campos de Paciente con simulación de línea de llenado -->
+            <p class="dato-paciente-item" style="display:flex; flex-direction:row; padding: 0; margin-top: 5px;">
+                <span style="flex-shrink: 0;">Nacionalidad:</span> <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Nacionalidad|default:" " }}</span>
+                <span style="flex-shrink: 0; margin-left: 20px;">Estado Civil:</span> <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Estado_Civil|default:" " }}</span>
+            </p>
+            <p class="dato-paciente-item" style="display:flex; flex-direction:row; padding: 0; margin-top: 5px;">
+                <span style="flex-shrink: 0;">Residencia Actual:</span> <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.direccion|default:" " }}</span>
+                <span style="flex-shrink: 0; margin-left: 20px;">Residencia Anterior:</span> 
+                <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Residencia_Anterior|default:" " }}</span>
+            </p>
+            <p class="dato-paciente-item" style="display:flex; flex-direction:row; padding: 0; margin-top: 5px;">
+                <span style="flex-shrink: 0;">Deporte que practica:</span> <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Deporte_que_practica|default:" " }}</span>
+                <span style="flex-shrink: 0; margin-left: 20px;">Religion:</span> 
+                <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Religion|default:" " }}</span>
+            <p class="dato-paciente-item" style="display:flex; flex-direction:row; padding: 0; margin-top: 5px;">
+                <span style="flex-shrink: 0;">Pasatiempo:</span> <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.Pasatiempo|default:" " }}</span>
+                <span style="flex-shrink: 0; margin-left: 20px;">Fecha Registro:</span> 
+                <span class="linea-relleno" style="flex-basis: 35%;">{{ paciente.fecha_registro|default:" " }}</span>
+            </p></p>
+
+            
+            <!-- SECCIÓN MOTIVO DE CONSULTA Y ENFERMEDAD ACTUAL -->
+            <h3>Motivo de la Consulta y Padecimiento Actual</h3>
+            
+            <!-- Motivo de Consulta (Textarea con estilo de línea) -->
+            <div class="form-group-field">
+                <label for="{{ form.motivo_consulta.id_for_label }}">MOTIVO DE LA CONSULTA:</label>
+                {{ form.motivo_consulta }}
+            </div>
+
+            <!-- Enfermedad Actual (Textarea con estilo de línea) -->
+            <div class="form-group-field">
+                <label for="{{ form.enfermedad_actual.id_for_label }}">ENFERMEDAD ACTUAL:</label>
+                {{ form.enfermedad_actual }}
+            </div>
+
+            <!-- SECCIÓN ANTECEDENTES HEREDOFAMILIARES -->
+            <h3>Antecedentes Heredofamiliares:</h3>
+            
+            <!-- ArrayField: Antecedentes_familiares -->
+            <div class="form-group-field">
+                <p class="label-horizontal">Seleccione las condiciones aplicables:</p>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Antecedentes_familiares %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SECCIÓN ANTECEDENTES PERSONALES -->
+            <h3>Antecedentes Personales:</h3>
+            <div class="form-group-field">
+                <div class="datos-paciente-fila" style="margin-bottom: 0;">
+
+                    <div class="dato-paciente-item w-45">
+                        <label for="{{ form.GradoInstruccion.id_for_label }}">Grado de Instrucción:</label>
+                        {{ form.GradoInstruccion }}
+                    </div>
+                    <div class="dato-paciente-item w-45">
+                        <label for="{{ form.inmunizaciones_o_vacunas.id_for_label }}">Inmunizaciones o Vacunas:</label>
+                        {{ form.inmunizaciones_o_vacunas }}
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!-- Grupo de Hábitos Tóxicos (Checkbox ArrayField) -->
+            <div class="form-group-field">
+                <label class="label-horizontal">1) HÁBITOS TÓXICOS:</label>
+                <div class="checkbox-card-group">
+                    {% for choice in form.habitos_toxicos %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Antecedentes Fisiológicos / Dieta -->
+            <div class="form-group-field">
+                <label class="label-horizontal">2) FISIOLÓGICOS:</label>
+                <div class="datos-paciente-fila" style="margin-bottom: 0;">
+                    <!-- Alimentación (Checkbox ArrayField) -->
+                    <div style="flex: 1 1 100%;">
+                        <label class="label-horizontal" style="display: inline;">Alimentación:</label>
+                        <div class="checkbox-card-group">
+                            {% for choice in form.Allimentación %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Campos de Ingesta/Catarsis/Somnia -->
+                <div class="datos-paciente-fila" style="margin-top: 10px;">
+                    <div class="dato-paciente-item">
+                        <label class="label-horizontal" for="{{ form.Ingesta_Agua.id_for_label }}" style="display: inline;">Ingesta de Agua (L):</label>
+                        {{ form.Ingesta_Agua }}
+                    </div>
+                    
+                    <div class="dato-paciente-item">
+                        <label class="label-horizontal" for="{{ form.Cantidad_veces_Orina.id_for_label }}" style="display: inline;">Veces que Orina:</label>
+                        {{ form.Cantidad_veces_Orina }}
+                    </div>
+                </div>
+
+
+
+                <div class="datos-paciente-fila" style="margin-top: 10px;">
+                    <div class="dato-paciente-item w-45">
+                            <label class="label-horizontal" for="{{ form.Catarsis.id_for_label }}" style="display: inline;">Catarsis:</label>
+                            {{ form.Catarsis }}
+                        </div>
+                        
+                        <div class="dato-paciente-item w-45">
+                            <label class="label-horizontal" for="{{ form.Somnia.id_for_label }}" style="display: inline;">Somnia:</label>
+                            {{ form.Somnia }}
+                        </div>
+                </div>
+
+
+                
+                
+
+            <!-- Patológicos y Quirúrgicos -->
+            <div class="form-group-field">
+                <label class="label-horizontal">3) PATOLÓGICOS:</label>
+                <div class="datos-paciente-fila" style="margin-bottom: 0;">
+                    <div class="dato-paciente-item w-45">
+                        <label for="{{ form.Infancia.id_for_label }}">Infancia:</label>
+                        {{ form.Infancia }}
+                    </div>
+                    <div class="dato-paciente-item w-45">
+                        <label for="{{ form.Adulto.id_for_label }}">Adulto:</label>
+                        {{ form.Adulto }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Patologías (Checkbox ArrayField) -->
+            <div class="form-group-field">
+                <p class="label-horizontal">Patologías Comunes:</p>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Patologias %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Historial Quirúrgico y Traumático -->
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item w-45">
+                    <div class="form-group-horizontal-doc">
+                        <label class="label-horizontal">¿Ha sido operado?</label>
+                        <div class="radio-button-group">
+                            {# Usando RadioSelect para ha_sido_operado #}
+                            {% for choice in form.ha_sido_operado %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group-field" style="margin-top: 5px;">
+                        <label for="{{ form.fecha_operacion.id_for_label }}">Fecha de Operación:</label>
+                        {{ form.fecha_operacion }}
+                    </div>
+                </div>
+                
+                <div class="dato-paciente-item w-45">
+                    <div class="form-group-field">
+                        <label for="{{ form.traumatismo_o_fractura.id_for_label }}">Traumatismo o Fractura:</label>
+                        {{ form.traumatismo_o_fractura }}
+                        
+                        <label for="{{ form.Otro.id_for_label }}" style="margin-top: 10px;">Otro (especificar):</label>
+                        {# Este campo ahora será un INPUT con la clase input-linea-corta #}
+                        {{ form.Otro }}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- SECCIÓN HIGIENE Y VIVIENDA -->
+            <div class="datos-paciente-fila">
+                
+                <div class="dato-paciente-item w-45">
+                    <h3>Hábitos de Higiene:</h3>
+                    <div class="form-group-horizontal-doc">
+                        <label class="label-horizontal">Baño diario:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.baño_diario %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-horizontal-doc">
+                        <label class="label-horizontal">Aseo dental:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.aseo_dental %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group-horizontal-doc">
+                        <label class="label-horizontal">Lavado manos antes de comer:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.lavado_manos_antes_comer %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group-horizontal-doc">
+                        <label class="label-horizontal">Lavado manos después de ir al baño:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.lavado_manos_despues %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+             </div> 
+            
+            
+            {# --- INICIO DE LA SECCIÓN INCOMPLETA (VIVIENDA) --- #}
+                <div class="dato-paciente-item w-45"> 
+                    <h3>Antecedentes de Vivienda:</h3>
+                    <div style="flex: 1 1 100%;">
+                        <label class="label-horizontal" style="display: inline;">Tamaño de la Vivienda:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.tamanio_vivienda %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                <br>
+                    <div style="flex: 1 1 100%; margin-top: 15px;">
+                        <label class="label-horizontal" style="display: inline;">Tipo de Vivienda:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.tipo_vivienda %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <br>
+                    <div style="flex: 1 1 100%; margin-top: 15px;">
+                        <label class="label-horizontal" style="display: inline;">Servicios de la vivienda:</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.servicio_vivienda %}
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+
+
+                    
+                </div>
+           
+            {# --- FIN DE LA SECCIÓN INCOMPLETA (VIVIENDA) --- #}
+
+            
+            
+            <!-- SECCIÓN EXAMEN FÍSICO GENERAL -->
+            <h3>Examen Físico General</h3>
+
+            <h4>2) Inspección General:</h4>
+            <div class="datos-paciente-fila">
+
+                <div class="dato-paciente-item" style="flex: 1 1 22%;">
+                    <label for="{{ form.Constitucional.id_for_label }}">Constitucional:</label>
+                    {{ form.Constitucional }}
+                </div>
+                
+                <div class="dato-paciente-item" style="flex: 1 1 22%;">
+                    <label for="{{ form.Marcha.id_for_label }}">Marcha:</label>
+                    {{ form.Marcha }}
+                </div>
+            </div>
+
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item" style="flex: 1 1 22%;">
+                    <label for="{{ form.Actitud.id_for_label }}">Actitud:</label>
+                    {{ form.Actitud }}
+                </div>
+                <div class="dato-paciente-item" style="flex: 1 1 22%;">
+                    <label for="{{ form.Ubicacion.id_for_label }}">Ubicación:</label>
+                    {{ form.Ubicacion }}
+                </div>
+            </div>
+            <div class="form-group-field">
+                <label for="{{ form.Impresion_general.id_for_label }}">Impresión General:</label>
+                {{ form.Impresion_general }}
+            </div>
+
+
+            <!-- 1. SIGNOS VITALES Y ANTROPOMETRÍA -->
+            <h4>Signos Vitales:</h4>
+            <div class="datos-paciente-fila" style="justify-content: space-between;">
+                <div class="dato-paciente-item" style="flex: 1 1 15%;">
+                    <label for="{{ form.FC.id_for_label }}">FC (lpm):</label>
+                    {{ form.FC }}
+                </div>
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.TA.id_for_label }}">TA (mmHg):</label>
+                    {{ form.TA }}
+                </div>
+            
+            </div>
+
+
+
+            <div class="datos-paciente-fila" style="justify-content: space-between;">
+                <div class="dato-paciente-item" style="flex: 1 1 15%;">
+                    <label for="{{ form.FR.id_for_label }}">FR (rpm):</label>
+                    {{ form.FR }}
+                </div>
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.T_Auxiliar.id_for_label }}">T Axiliar:</label>
+                    {{ form.T_Auxiliar }}
+                </div>
+            </div>
+            <div class="datos-paciente-fila" style="justify-content: space-between;">
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.T_rectal.id_for_label }}">T Rectal:</label>
+                    {{ form.T_rectal }}
+                </div>
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.Peso_Habitual.id_for_label }}">Peso Habitual (kg):</label>
+                    {{ form.Peso_Habitual }}
+                </div>
+            </div>
+
+
+
+
+            <div class="datos-paciente-fila" style="justify-content: space-between; margin-top: 15px;">
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.Peso_Actual.id_for_label }}">Peso Actual (kg):</label>
+                    {{ form.Peso_Actual }}
+                </div>
+                <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.Talla.id_for_label }}">Talla (m):</label>
+                    {{ form.Talla }}
+                </div>
+            </div>
+
+            <div class="datos-paciente-fila" style="justify-content: space-between; margin-top: 15px;">
+
+
+                            <div class="dato-paciente-item" style="flex: 1 1 20%;">
+                    <label for="{{ form.IMC.id_for_label }}">IMC :</label>
+                    {{ form.IMC }}
+                </div>
+            </div>
+
+
+            <!-- 2. INSPECCIÓN GENERAL -->
+            
+
+
+            <!-- 3. PIEL Y FANERAS -->
+            <h4>3) Piel, Faneras y Tejido celular subcutaneo:</h4>
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item w-45">
+                    <label for="{{ form.Aspecto.id_for_label }}">Aspecto:</label>
+                    {{ form.Aspecto }}
+                </div>
+                <div class="dato-paciente-item w-45">
+                    <label for="{{ form.Distribuición_pilosa.id_for_label }}">Distribución Pilosa:</label>
+                    {{ form.Distribuición_pilosa }}
+                </div>
+            </div>
+            
+            <div class="datos-paciente-fila">
+                <div class="dato-paciente-item w-45">
+                    <label for="{{ form.Lesiones.id_for_label }}">Lesiones:</label>
+                    {{ form.Lesiones }}
+                </div>
+                <div class="dato-paciente-item w-45">
+                    <label for="{{ form.Faneras.id_for_label }}">Faneras:</label>
+                    {{ form.Faneras }}
+                </div>
+            </div>
+            
+            <!-- Tejido celular ArrayField (Problemas de Piel) -->
+            <div class="form-group-field">
+                <p class="label-horizontal">Problemas en la Piel / Tejido Celular (Seleccione los aplicables):</p>
+                <div class="checkbox-card-group">
+                    {% for choice in form.Tejido_celular %}
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tejido celular subcutaneo (Textarea) -->
+            <div class="form-group-field">
+                <label for="{{ form.Tejido_celular_subcutaneo.id_for_label }}">Tejido Celular Subcutáneo (Descripción):</label>
+                {{ form.Tejido_celular_subcutaneo }}
+            </div>
+
+            
+            <!-- SECCIÓN COMENTARIOS FINALES -->
+            <h3>Comentarios Adicionales</h3>
+            <div class="form-group-field">
+                <label for="{{ form.comentarios.id_for_label }}">Comentarios, Observaciones o Nota de Evolución:</label>
+                {{ form.comentarios }}
+            </div>
+
+
+        </div> <!-- /.form-body -->
+
+        <!-- BOTONES DE NAVEGACIÓN -->
+        <form action="..." method="post">
+            {% csrf_token %}
+
+            {{ wizard.management_form }} 
+
+            <div class="form-navigation">
+                {# Botón Anterior (solo si no es el primer paso) #}
+                {% if wizard.steps.prev %}
+                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn btn-secondary btn-anterior">
+                        &lt; Anterior
+                    </button>
+                {% else %}
+                    {# Enlace de Regresar al Historial (solo en el primer paso) #}
+                    <a href="{% url 'historia_clinica_paciente_me' pk=paciente.pk %}" class="btn btn-secondary btn-regresar">
+                        <i class="bi bi-arrow-left"></i> Regresar al Historial
+                    </a>
+                {% endif %}
+
+                {# Botón Siguiente/Finalizar #}
+                <button class="btn-siguiente" type="submit">
+                    {% if wizard.steps.next %}Siguiente &gt;{% else %}Guardar Historia Clínica{% endif %}
+                </button>
+            </div>
+        </form>
+    </form>
+</div> <!-- /.formulario-documento -->
+
 {% endblock %}

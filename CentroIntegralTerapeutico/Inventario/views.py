@@ -2,22 +2,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import * # <-- Ahora importa desde el mismo directorio
-from .forms import MedicamentoForm, Tag # <-- Ahora importa desde el mismo directorio
+from .models import *
+# --- CORRECCIÓN 1: Se separó la línea 5 ---
+from .forms import MedicamentoForm, Tag
 import io
 from django.http import HttpResponse
-
+from .models import CorteDeCaja
 # Importaciones para ReportLab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4, mm
 from reportlab.lib.units import inch
-from reportlab.lib.colors import black, blue, red # Para colores de texto o error
-from reportlab.graphics.barcode import createBarcodeDrawing # <--- Importación corregida y clave
+from reportlab.lib.colors import black, blue, red
+from reportlab.graphics.barcode import createBarcodeDrawing
 
 from .models import Medicamento, Tag
-from .forms import SeleccionarMedicamentosForm, MedicamentoForm # Importa el nuevo formulario
+# --- CORRECCIÓN 2: Se movieron todas las importaciones al inicio ---
+from .forms import SeleccionarMedicamentosForm, MedicamentoForm, IniciarCorteForm, CerrarCorteForm
 
-from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.db import transaction
@@ -26,6 +27,9 @@ from decimal import Decimal
 from .models import Medicamento, Venta, ItemVenta, Tag
 from datetime import datetime
 
+# --- CORRECCIÓN 2: Se añadió la importación faltante ---
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import user_passes_test
 
 # ... (asegúrate de que los imports necesarios estén arriba) ...
 
@@ -105,6 +109,63 @@ def eliminar_medicamento(request, pk):
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
     return render(request, 'inventario/confirmar_eliminar_medicamento.html', context)
+
+
+
+
+
+
+
+# --- INICIO: NUEVA VISTA AJAX (Solo Doctora) ---
+
+@login_required
+@require_POST  # Asegura que esta vista solo acepte peticiones POST
+@transaction.atomic  # Asegura que la operación en la DB sea atómica
+def modificar_cantidad_medicamento(request, pk):
+    """
+    Modifica la cantidad de un medicamento (aumenta o disminuye en 1).
+    Responde con JSON para ser usada por AJAX.
+    SOLO 'Doctora' puede usarla.
+    """
+
+    # --- Validación de Permisos Estricta ---
+    if not request.user.groups.filter(name='Doctora').exists():
+        return JsonResponse({'error': 'No tienes permiso para esta acción.'}, status=403)
+
+    try:
+        medicamento = get_object_or_404(Medicamento, pk=pk)
+        action = request.POST.get('action')  # 'aumentar' o 'disminuir'
+
+        if action == 'aumentar':
+            medicamento.cantidad_disponible += 1
+
+        elif action == 'disminuir':
+            if medicamento.cantidad_disponible > 0:
+                medicamento.cantidad_disponible -= 1
+            else:
+                # Si ya es 0, no hacemos nada y solo informamos
+                return JsonResponse({
+                    'status': 'info',
+                    'message': 'La cantidad ya es 0.',
+                    'nueva_cantidad': 0
+                })
+        else:
+            return JsonResponse({'error': 'Acción no válida.'}, status=400)
+
+        # Guardar el cambio en la base de datos
+        medicamento.save()
+
+        # Responder con éxito y la nueva cantidad
+        return JsonResponse({
+            'success': True,
+            'nueva_cantidad': medicamento.cantidad_disponible
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# --- FIN: NUEVA VISTA AJAX ---
+
 
 
 
@@ -394,7 +455,6 @@ def imprimir_varias_etiquetas_pdf(request, selected_ids_str):
 
 
 # --- Vistas para el Punto de Venta ---
-# --- Vistas para el Punto de Venta ---
 @login_required
 def punto_venta(request):
     """
@@ -404,6 +464,16 @@ def punto_venta(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
+
+    # --- INICIO DE LA MODIFICACIÓN ---
+    # 1. Verificar si hay un corte de caja activo para el usuario.
+    try:
+        corte_activo = CorteDeCaja.objects.get(usuario=request.user, is_open=True)
+    except CorteDeCaja.DoesNotExist:
+        # Si no hay corte activo, no se puede vender.
+        messages.error(request, "No hay un corte de caja activo. Por favor, inicia uno para comenzar a vender.")
+        return redirect('iniciar_corte') # Redirige a la página para iniciar un corte
+    # --- FIN DE LA MODIFICACIÓN ---
 
     venta_actual_id = request.session.get('venta_actual_id')
     venta_actual = None
@@ -503,6 +573,19 @@ def ajax_finalizar_venta(request):
         venta_actual_id = request.session.get('venta_actual_id')
         venta = get_object_or_404(Venta, pk=venta_actual_id, estado='pendiente', farmaceuta=request.user)
 
+
+        # --- INICIO DE LA MODIFICACIÓN ---
+        # 1. Buscar el corte activo
+        try:
+            corte_activo = CorteDeCaja.objects.get(usuario=request.user, is_open=True)
+        except CorteDeCaja.DoesNotExist:
+            # Este es un caso de error extremo, pero es bueno manejarlo
+            return JsonResponse({'error': 'No se encontró un corte de caja activo. No se puede finalizar la venta.'}, status=400)
+
+        # 2. Asociar la venta al corte activo antes de finalizarla
+        venta.corte = corte_activo
+        # --- FIN DE LA MODIFICACIÓN ---
+
         venta.estado = 'finalizada'
         venta.fecha_finalizacion = timezone.now()
         venta.save()
@@ -550,14 +633,14 @@ def historial_ventas(request):
     if fecha_inicio_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
-            ventas = ventas.filter(fecha_finalizacion_date_gte=fecha_inicio)
+            ventas = ventas.filter(fecha_finalizacion__date__gte=fecha_inicio)
         except ValueError:
             messages.error(request, "El formato de la fecha de inicio no es válido.")
 
     if fecha_fin_str:
         try:
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
-            ventas = ventas.filter(fecha_finalizacion_date_lte=fecha_fin)
+            ventas = ventas.filter(fecha_finalizacion__date__lte=fecha_fin)
         except ValueError:
             messages.error(request, "El formato de la fecha de fin no es válido.")
 
@@ -571,3 +654,171 @@ def historial_ventas(request):
     }
 
     return render(request, 'inventario/historial_ventas.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
+def iniciar_corte_view(request):
+    # Reglas para no iniciar un corte si ya existe uno
+    if CorteDeCaja.objects.filter(usuario=request.user, is_open=True).exists():
+        messages.warning(request, "Ya tienes un corte de caja activo.")
+        return redirect('corte_activo') # Asegúrate que 'corte_activo' es el name= de tu URL
+
+    today = timezone.now().date()
+    if CorteDeCaja.objects.filter(usuario=request.user, fecha_cierre__date=today, is_open=False).exists():
+        messages.error(request, "Ya has realizado y cerrado tu corte de caja del día de hoy.")
+        if request.user.groups.filter(name='Farmacia').exists():
+            return render(request, 'Cortes/corte_ya_hecho.html')
+        return redirect('historial_cortes') # Asegúrate que 'historial_cortes' es el name= de tu URL
+
+    if request.method == 'POST':
+        form = IniciarCorteForm(request.POST)
+        if form.is_valid():
+            fondo_inicial = form.cleaned_data['fondo_inicial']
+            rol_usuario = 'doctora' if request.user.groups.filter(name='Doctora').exists() else 'farmacia'
+
+            CorteDeCaja.objects.create(
+                usuario=request.user,
+                fondo_inicial=fondo_inicial,
+                rol=rol_usuario,
+                is_open=True  # <--- ¡ESTA ES LA CORRECCIÓN!
+            )
+            messages.success(request, "Corte de caja iniciado exitosamente.")
+            return redirect('corte_activo') # Asegúrate que 'corte_activo' es el name= de tu URL
+    else:
+        form = IniciarCorteForm()
+
+    return render(request, 'Cortes/iniciar_corte.html', {'form': form})
+
+
+@login_required
+def corte_activo_view(request):
+    try:
+        corte_activo = CorteDeCaja.objects.get(usuario=request.user, is_open=True)
+    except CorteDeCaja.DoesNotExist:
+        messages.info(request, "No tienes un corte de caja activo. Por favor, inicia uno.")
+        return redirect('iniciar_corte')
+
+    ventas_del_corte = Venta.objects.filter(corte=corte_activo)
+    total_ventas = sum(venta.total for venta in ventas_del_corte if venta.total is not None)
+    total_esperado = corte_activo.fondo_inicial + total_ventas
+
+    context = {
+        'corte': corte_activo,
+        'ventas': ventas_del_corte,
+        'total_ventas': total_ventas,
+        'total_esperado': total_esperado,
+    }
+    return render(request, 'Cortes/corte_activo.html', context)
+
+
+@login_required
+def cerrar_corte_view(request):
+    corte_activo = get_object_or_404(CorteDeCaja, usuario=request.user, is_open=True)
+    ventas_del_corte = Venta.objects.filter(corte=corte_activo)
+    total_ventas = sum(venta.total for venta in ventas_del_corte if venta.total is not None)
+    total_esperado = float(corte_activo.fondo_inicial) + float(total_ventas)
+
+    if request.method == 'POST':
+        form = CerrarCorteForm(request.POST)
+        if form.is_valid():
+            monto_final_contado = form.cleaned_data['monto_final_contado']
+
+            corte_activo.monto_final_contado = monto_final_contado
+            corte_activo.total_ventas_calculado = total_ventas
+            corte_activo.diferencia = float(monto_final_contado) - total_esperado
+            corte_activo.is_open = False
+            corte_activo.fecha_cierre = timezone.now()
+            corte_activo.save()
+
+            if request.user.groups.filter(name='Farmacia').exists():
+                return redirect('corte_exitoso')
+            else:
+                messages.success(request, "Corte de caja cerrado exitosamente.")
+                return redirect('historial_cortes')
+    else:
+        form = CerrarCorteForm()
+
+    context = {
+        'corte': corte_activo,
+        'total_ventas': total_ventas,
+        'total_esperado': total_esperado,
+        'form': form,
+    }
+    return render(request, 'Cortes/cerrar_corte.html', context)
+
+
+@login_required
+def corte_exitoso_view(request):
+    return render(request, 'Cortes/corte_exitoso.html')
+
+
+# Función auxiliar para el decorador
+def es_doctora(user):
+    return user.groups.filter(name='Doctora').exists()
+
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import IniciarCorteForm, CerrarCorteForm
+
+
+
+
+@login_required
+@user_passes_test(es_doctora, login_url='/')
+def historial_cortes_view(request):
+    cortes = CorteDeCaja.objects.filter(is_open=False).order_by('-fecha_cierre')
+    return render(request, 'Cortes/historial_cortes.html', {'cortes': cortes})
+
+
+
+
+
+
+
+
+# Pacientes/context_processors.py
+
+def user_roles_processor(request):
+    """
+    Este procesador de contexto añade los roles del usuario (is_doctora, is_farmacia)
+    a todas las plantillas, siempre y cuando el usuario esté autenticado.
+    """
+    context = {
+        'is_doctora': False,
+        'is_farmacia': False,
+    }
+
+    # Solo calculamos los roles si el usuario ha iniciado sesión
+    if request.user.is_authenticated:
+        context['is_doctora'] = request.user.groups.filter(name='Doctora').exists()
+        context['is_farmacia'] = request.user.groups.filter(name='Farmacia').exists()
+
+    return context
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,661 @@
+{% extends "BaseSinInicio.html" %}
+
+{% load static %}
+{% load widget_tweaks %} {# Necesario para usar {% render_field %} y aplicar estilos CSS #}
+
+<link rel="stylesheet" href="{% static 'css/historial_clinico_estilo.css' %}">
+
+{% block title %}Historia Clínica - Interrogatorio por Sistemas{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/historial_clinico_estilo.css' %}">
+    <style>
+        /*
+         * ESTILOS PARA HISTORIAL CLÍNICO UNIFICADO (CENTRO INTEGRAL TERAPÉUTICO)
+         * Se incluyen todos los estilos CSS que proporcionaste más los AJUSTES
+         */
+
+        /* FUENTE Y CONTENEDOR BASE */
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Cambria', 'Times New Roman', serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .formulario-documento {
+            max-width: 900px;
+            margin: 30px auto;
+            color: #333;
+            background-color: #ffffff;
+            border: 1px solid #c0c0c0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            padding: 0;
+        }
+
+        /* MARCA DE AGUA */
+        .marca-agua {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 80%;
+            background-image: url('{% static "img/logo.png" %}');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 50%;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ENCABEZADO FORMAL */
+        .documento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 4px solid #44916f;
+            background-color: #fcfcfc;
+            position: relative;
+            z-index: 1;
+        }
+
+        .documento-header img {
+            height: 70px;
+            opacity: 0.95;
+        }
+
+        .documento-header h1 {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1a4a39;
+            margin: 0;
+            letter-spacing: 1.5px;
+        }
+
+        /* CUERPO DEL DOCUMENTO */
+        .form-body {
+            padding: 30px 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Subtítulos de SECCIÓN (Formales y con buen espacio) */
+        .form-body h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #44916f;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin: 30px 0 15px 0;
+            text-transform: uppercase;
+        }
+
+        .form-body h4 {
+            font-size: 19px;
+            font-weight: 600;
+            color: #275d45;
+            margin: 15px 0 10px 0;
+        }
+
+        /* AJUSTE CLAVE: Títulos de sección con fondo sutil (Fidelidad a la imagen) */
+        .section-title-box {
+            background-color: #e3efdd; /* Un verde claro más cálido, más cercano al original */
+            color: #1a4a39; 
+            font-size: 19px;
+            font-weight: 700;
+            padding: 8px 15px;
+            margin-top: 25px;
+            margin-bottom: 5px;
+            border-left: 5px solid #44916f; /* Línea de acento */
+            text-transform: uppercase;
+        }
+        
+        /* Estilos de Campos (Base) */
+        .form-group-field {
+            font-size: 17px;
+            line-height: 1.4;
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            padding: 5px 0;
+        }
+
+        .form-group-field label,
+        .form-group-field .label-horizontal {
+            font-weight: bold;
+            color: #1a4a39;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Simulación de líneas para Inputs (Textarea/Input) */
+        .input-linea-larga,
+        .input-linea-corta {
+            border: none !important;
+            border-bottom: 1px solid #777 !important;
+            padding: 5px 0 !important;
+            border-radius: 0 !important;
+            background-color: transparent !important;
+            font-size: 16px !important;
+            font-family: 'Cambria', 'Times New Roman', serif;
+        }
+
+        .input-linea-larga:focus,
+        .input-linea-corta:focus {
+            border-bottom: 2px solid #44916f !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* NUEVO ESTILO CLAVE: Contenedor para la sección de comentarios */
+        .comments-box {
+            background-color: #f8f8f8; /* Fondo gris muy claro, como el área de notas */
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        /* Aseguramos que el textarea dentro del comments-box se vea como un recuadro estándar */
+        .comments-box .input-linea-larga {
+            border: 1px solid #ccc !important; 
+            padding: 8px !important;
+            min-height: 60px !important; /* Altura mínima, permite crecer */
+            max-height: 120px !important; /* Altura máxima para evitar desbordes */
+            overflow-y: auto; /* Scroll si el contenido excede la altura */
+            background-color: white !important; 
+            resize: vertical; /* Permite al usuario redimensionar verticalmente */
+        }
+        
+        /* Estilo para checkbox cards (simulando selección en documento) */
+        .checkbox-card-group {
+            display: flex;
+            flex-wrap: wrap;
+            /*gap: 10px;*/ /* El 'gap' a veces deja demasiado espacio, lo quitamos para más control */
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+
+        /* AJUSTE CLAVE: Distribución de las tarjetas de checkbox para llenar más el espacio */
+        .checkbox-card-group .checkbox-paper-item {
+            flex-basis: auto; /* Para que cada item tome su ancho natural */
+            margin-right: 15px; /* Espacio entre items en la misma línea */
+            margin-bottom: 10px; /* Espacio entre líneas */
+            display: inline-flex; /* Para alinear el checkbox y el texto */
+            align-items: center;
+            background-color: #fcfaf6; /* Fondo beige muy sutil para dar más color */
+            border-color: #e0e0e0; /* Borde más suave */
+        }
+        
+        .checkbox-card-group input[type="checkbox"] {
+            margin-right: 8px; /* Espacio entre el checkbox y el texto */
+            transform: scale(1.1); /* Hacer el checkbox un poco más grande */
+        }
+
+        .checkbox-card-group input[type="checkbox"]:checked + label {
+            background-color: #44916f;
+            color: #ffffff;
+            border-color: #44916f;
+        }
+
+        /* Estilos de navegación mantenidos */
+        .form-navigation {
+            padding: 20px 40px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .datos-paciente-fila {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .dato-paciente-item {
+            flex: 1 1 30%;
+            margin-right: 20px;
+            font-size: 16px;
+            color: #555;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tabla de exploración de cuello */
+        .table-exploration {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .table-exploration th, .table-exploration td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 16px;
+            color: #333;
+        }
+        .table-exploration th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            color: #1a4a39;
+        }
+        .table-exploration td label {
+            font-weight: normal; /* Para que el label dentro de la tabla no sea tan negrita */
+            color: #555;
+        }
+        .table-exploration .input-linea-larga {
+            width: 98%; /* Ajusta el ancho para que el input ocupe el espacio */
+            padding: 5px;
+            border: 1px solid #ddd !important; /* Recuadro visible en la tabla */
+            background-color: white !important;
+            min-height: 40px; /* Altura mínima para inputs */
+            resize: vertical; /* Permite redimensionar */
+        }
+        
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="formulario-documento">
+    
+    <div class="marca-agua"></div>
+
+    <div class="documento-header">
+        <img src="{% static 'img/logo.png' %}" alt="Centro Integral Terapéutico CIT Logo">
+        <h1>HISTORIA CLÍNICA</h1>
+    </div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        
+        {{ wizard.management_form }}
+        <div class="form-body">
+            {% if form.errors %}
+            <div style="
+                background-color: #f8d7da; 
+                color: #721c24; 
+                border: 1px solid #f5c6cb; 
+                padding: 15px; 
+                margin-bottom: 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 2px 5px rgba(255, 0, 0, 0.1);
+            ">
+                ⚠️ ATENCIÓN, Para pasar al siguiente formulario, necesitas completar los campos obligatorios.
+            </div>
+            {% endif %}
+
+        <div class="form-body">
+            
+            <h3>INTERROGATORIO POR APARATOS Y SISTEMAS</h3>
+
+            
+            {# ======================== 1. APARATO DIGESTIVO ======================== #}
+            <div class="section-title-box">1. APARATO DIGESTIVO</div>
+            <div class="full-width-line">
+                {# Cambiamos a 'col-auto' para que fluya y ocupe el espacio sin saltos forzados #}
+                <div class="checkbox-card-group"> 
+                    {% for checkbox in form.digest_halitosis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Halitosis</label>{% endfor %}
+                    {% for checkbox in form.digest_boca_seca %}<label class="checkbox-paper-item">{{ checkbox.tag }} Boca Seca</label>{% endfor %}
+                    {% for checkbox in form.digest_masticacion %}<label class="checkbox-paper-item">{{ checkbox.tag }} Masticación</label>{% endfor %}
+                    {% for checkbox in form.digest_disfagia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Disfagia</label>{% endfor %}
+                    {% for checkbox in form.digest_pirosis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Pirosis</label>{% endfor %}
+                    {% for checkbox in form.digest_nausea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Náusea</label>{% endfor %}
+                    {% for checkbox in form.digest_vomito_hematemesis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Vómito/Hematemesis</label>{% endfor %}
+                    {% for checkbox in form.digest_colicos %}<label class="checkbox-paper-item">{{ checkbox.tag }} Cólicos</label>{% endfor %}
+                    {% for checkbox in form.digest_dolor_abdominal %}<label class="checkbox-paper-item">{{ checkbox.tag }} Dolor Abdominal</label>{% endfor %}
+                    {% for checkbox in form.digest_meteorismo %}<label class="checkbox-paper-item">{{ checkbox.tag }} Meteorismo</label>{% endfor %}
+                    {% for checkbox in form.digest_flatulencias %}<label class="checkbox-paper-item">{{ checkbox.tag }} Flatulencias</label>{% endfor %}
+                    {% for checkbox in form.digest_constipacion %}<label class="checkbox-paper-item">{{ checkbox.tag }} Constipación</label>{% endfor %}
+                    {% for checkbox in form.digest_diarrea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Diarrea</label>{% endfor %}
+                    {% for checkbox in form.digest_rectorragias %}><label class="checkbox-paper-item">{{ checkbox.tag }} Rectorragias</label>{% endfor %}
+                    {% for checkbox in form.digest_melenas %}<label class="checkbox-paper-item">{{ checkbox.tag }} Melenas</label>{% endfor %}
+                    {% for checkbox in form.digest_pujo %}<label class="checkbox-paper-item">{{ checkbox.tag }} Pujo</label>{% endfor %}
+                    {% for checkbox in form.digest_tenesmo %}<label class="checkbox-paper-item">{{ checkbox.tag }} Tenesmo</label>{% endfor %}
+                    {% for checkbox in form.digest_ictericia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Ictericia</label>{% endfor %}
+                    {% for checkbox in form.digest_coluria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Coluria</label>{% endfor %}
+                    {% for checkbox in form.digest_acolia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Acolia</label>{% endfor %}
+                    {% for checkbox in form.digest_prurito_cutaneo %}<label class="checkbox-paper-item">{{ checkbox.tag }} Prurito Cutáneo</label>{% endfor %}
+                    {% for checkbox in form.digest_hemorragias %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hemorragias</label>{% endfor %}
+                    {% for checkbox in form.digest_prurito_anal %}<label class="checkbox-paper-item">{{ checkbox.tag }} Prurito Anal</label>{% endfor %}
+                    {% for checkbox in form.digest_hemorroides %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hemorroides</label>{% endfor %}
+                </div>
+            </div>
+            
+            {# COMENTARIOS DIGESTIVO (Con recuadro) #}
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_digestivo.id_for_label }}">Comentarios Digestivos:</label>
+                    {% render_field form.Comentarios_digestivo class="input-linea-larga" %}
+                </div>
+            </div>
+
+            
+            {# ==================== 2. APARATO CARDIOVASCULAR y 3. RESPIRATORIO ==================== #}
+            <div class="section-title-box">2. APARATO CARDIOVASCULAR </div>
+            
+            <h4>Síntomas Cardiovasculares</h4>
+            <div class="full-width-line">
+                {# col-auto para mejor distribución #}
+                <div class="checkbox-card-group"> 
+                    {% for checkbox in form.cardio_tos_seca %}<label class="checkbox-paper-item">{{ checkbox.tag }} Tos Seca</label>{% endfor %}
+                    {% for checkbox in form.cardio_tos_espasmodica %}<label class="checkbox-paper-item">{{ checkbox.tag }} Tos Espasmódica</label>{% endfor %}
+                    {% for checkbox in form.cardio_hemoptisis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hemoptisis</label>{% endfor %}
+                    {% for checkbox in form.cardio_dolor_precordial %}<label class="checkbox-paper-item">{{ checkbox.tag }} Dolor Precordial</label>{% endfor %}
+                    {% for checkbox in form.cardio_palpitaciones %}<label class="checkbox-paper-item">{{ checkbox.tag }} Palpitaciones</label>{% endfor %}
+                    {% for checkbox in form.cardio_cianosis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Cianosis</label>{% endfor %}
+                    {% for checkbox in form.cardio_edema %}<label class="checkbox-paper-item">{{ checkbox.tag }} Edema</label>{% endfor %}
+                    {% for checkbox in form.cardio_acufenos %}<label class="checkbox-paper-item">{{ checkbox.tag }} Acúfenos</label>{% endfor %}
+                    {% for checkbox in form.cardio_fosfenos %}<label class="checkbox-paper-item">{{ checkbox.tag }} Fosfenos</label>{% endfor %}
+                    {% for checkbox in form.cardio_sincope %}<label class="checkbox-paper-item">{{ checkbox.tag }} Síncope</label>{% endfor %}
+                    {% for checkbox in form.cardio_lipotimia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Lipotimia</label>{% endfor %}
+                    {% for checkbox in form.cardio_cefaleas %}<label class="checkbox-paper-item">{{ checkbox.tag }} Cefaleas</label>{% endfor %}
+                </div>
+            </div>
+
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_cardio.id_for_label }}">Comentarios Cardiovasculares:</label>
+                    {% render_field form.Comentarios_cardio class="input-linea-larga" %}
+                </div>
+            </div>
+            <div class="section-title-box">2. APARATO RESPIRATORIO</div>    
+            <h4>Síntomas Respiratorios</h4>
+            <div class="full-width-line">
+                {# col-auto para mejor distribución #}
+                <div class="checkbox-card-group"> 
+                    {% for checkbox in form.resp_tos %}<label class="checkbox-paper-item">{{ checkbox.tag }} Tos</label>{% endfor %}
+                    {% for checkbox in form.resp_disnea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Disnea</label>{% endfor %}
+                    {% for checkbox in form.resp_dolor_toracico %}<label class="checkbox-paper-item">{{ checkbox.tag }} Dolor Torácico</label>{% endfor %}
+                    {% for checkbox in form.resp_hemoptisis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hemoptisis</label>{% endfor %}
+                    {% for checkbox in form.resp_cianosis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Cianosis</label>{% endfor %}
+                    {% for checkbox in form.resp_vomica %}<label class="checkbox-paper-item">{{ checkbox.tag }} Vómica</label>{% endfor %}
+                    {% for checkbox in form.resp_alteraciones_voz %}<label class="checkbox-paper-item">{{ checkbox.tag }} Alteraciones de la Voz</label>{% endfor %}
+                </div>
+            </div>
+            
+            {# COMENTARIOS CARDIO Y RESPIRATORIO (Con recuadro) #}
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_respiratorio.id_for_label }}">Comentarios Respiratorios:</label>
+                    {% render_field form.Comentarios_respiratorio class="input-linea-larga" %}
+                </div>
+            </div>
+            
+            <br>
+            {# ======================== 4. APARATO GENITAL ======================== #}
+            <div class="section-title-box">4. APARATO GENITAL</div>
+            <div class="seccion-ginecologica">
+                    <h4>Genital</h4>
+                    <div class="full-width-line">
+                        {# col-auto para mejor distribución #}
+                        <div class="checkbox-card-group">
+                            {% for checkbox in form.genital_criptorquidea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Criptorquídea</label>{% endfor %}
+                            {% for checkbox in form.genital_fimosis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Fimosis</label>{% endfor %}
+                            {% for checkbox in form.genital_funcion_sexual %}<label class="checkbox-paper-item">{{ checkbox.tag }} Función Sexual</label>{% endfor %}
+                            {% for checkbox in form.genital_sangrado_genital %}<label class="checkbox-paper-item">{{ checkbox.tag }} Sangrado Genital</label>{% endfor %}
+                            {% for checkbox in form.genital_flujo_leucorrea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Flujo/Leucorrea</label>{% endfor %}
+                            {% for checkbox in form.genital_dolor_ginecologico %}<label class="checkbox-paper-item">{{ checkbox.tag }} Dolor Ginecológico</label>{% endfor %}
+                            {% for checkbox in form.genital_prurito_vulvar %}<label class="checkbox-paper-item">{{ checkbox.tag }} Prurito Vulvar</label>{% endfor %}
+                        </div>
+                    </div>
+
+                
+                {# COMENTARIOS GENITALES (Con recuadro) #}
+                <div class="comments-box" style="margin-top: 20px;">
+                    <div class="form-group-field">
+                        <label for="{{ form.Comentarios_genital.id_for_label }}">Comentarios Genitales:</label>
+                        {% render_field form.Comentarios_genital class="input-linea-larga" %}
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            {# ======================== 5. APARATO URINARIO ======================== #}
+            <div class="section-title-box">5. APARATO URINARIO</div>
+            
+            <div class="form-group-field">
+                <label class="label-horiz ontal">Alteraciones en la Micción:</label>
+                <div class="full-width-line">
+                    {# col-auto para mejor distribución #}
+                    <div class="checkbox-card-group">
+                        {% for checkbox in form.Poliuria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Poliuria</label>{% endfor %}
+                        {% for checkbox in form.Anuria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Anuria</label>{% endfor %}
+                        {% for checkbox in form.Oliguria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Oliguria</label>{% endfor %}
+                        {% for checkbox in form.Nicturia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Nicturia</label>{% endfor %}
+                        {% for checkbox in form.Opsuria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Opsuria</label>{% endfor %}
+                        {% for checkbox in form.Disuria %}<label class="checkbox-paper-item">{{ checkbox.tag }} Disuria</label>{% endfor %}
+                        {% for checkbox in form.Tenesmo_vesical %}<label class="checkbox-paper-item">{{ checkbox.tag }} Tenesmo Vesical</label>{% endfor %}
+                        {% for checkbox in form.Urgencia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Urgencia</label>{% endfor %}
+                        {% for checkbox in form.Chorro %}<label class="checkbox-paper-item">{{ checkbox.tag }} Chorro</label>{% endfor %}
+                        {% for checkbox in form.Enuresis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Enuresis</label>{% endfor %}
+                        {% for checkbox in form.Incontinencia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Incontinencia</label>{% endfor %}
+                        {% for checkbox in form.Ninguna %}<label class="checkbox-paper-item">{{ checkbox.tag }} Ninguna</label>{% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group-field" style="margin-top: 15px;">
+                <label class="label-horizontal" style="font-size: 17px; margin-bottom: 10px;">Características de la Orina:</label>
+
+                {# PRIMERA FILA: Volumen, Color, Olor (usando dato-paciente-item para distribución horizontal) #}
+                <div class="datos-paciente-fila" style="margin-top: 5px;">
+                    <div class="dato-paciente-item" style="flex-basis: 30%;">
+                        <label class="label-horizontal">Volumen de Orina:</label>
+                        {% render_field form.urin_volumen_orina class="input-linea-corta" %}
+                    </div>
+                    <div class="dato-paciente-item" style="flex-basis: 30%;">
+                        <label class="label-horizontal">Color de Orina:</label>
+                        {% render_field form.urin_color_orina class="input-linea-corta" %}
+                    </div>
+                    <div class="dato-paciente-item" style="flex-basis: 30%;">
+                        <label class="label-horizontal">Olor de Orina:</label>
+                        {% render_field form.urin_olor_orina class="input-linea-corta" %}
+                    </div>
+                </div>
+                
+                {# SEGUNDA FILA: Aspecto de Orina (Ocupando todo el ancho y simulando línea de llenado largo) #}
+                <div class="form-group-field" style="margin-top: 15px;">
+                    <label for="{{ form.urin_aspecto_orina.id_for_label }}" class="label-horizontal">Aspecto de Orina:</label>
+                    {% render_field form.urin_aspecto_orina class="input-linea-larga" %}
+                </div>
+
+            </div>
+
+            <div class="form-group-field">
+                <label class="label-horizontal">Otros Síntomas Urinarios:</label>
+                <div class="full-width-line">
+                    {# col-auto para mejor distribución #}
+                    <div class="checkbox-card-group">
+                        {% for checkbox in form.urin_dolor_lumbar %}<label class="checkbox-paper-item">{{ checkbox.tag }} Dolor Lumbar</label>{% endfor %}
+                        {% for checkbox in form.urin_edema_palpebral_sup %}<label class="checkbox-paper-item">{{ checkbox.tag }} Edema Palpebral Sup.</label>{% endfor %}
+                        {% for checkbox in form.urin_edema_palpebral_inf %}<label class="checkbox-paper-item">{{ checkbox.tag }} Edema Palpebral Inf.</label>{% endfor %}
+                        {% for checkbox in form.urin_edema_renal %}<label class="checkbox-paper-item">{{ checkbox.tag }} Edema Renal</label>{% endfor %}
+                        {% for checkbox in form.urin_hipertension_arterial %}<label class="checkbox-paper-item">{{ checkbox.tag }} HTA</label>{% endfor %}
+                        {% for checkbox in form.urin_datos_clinicos_anemia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Datos Clínicos Anemia</label>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {# COMENTARIOS URINARIOS (Con recuadro) #}
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_urinario.id_for_label }}">Comentarios Urinarios:</label>
+                    {% render_field form.Comentarios_urinario class="input-linea-larga" %}
+                </div>
+            </div>
+            
+            <br>
+            {# ======================== 6. APARATO HEMATOLÓGICO ======================== #}
+            <div class="section-title-box">6. APARATO HEMATOLÓGICO</div>
+            <div class="full-width-line">
+                {# col-auto para mejor distribución #}
+                <div class="checkbox-card-group">
+                    {% for checkbox in form.Palidez %}><label class="checkbox-paper-item">{{ checkbox.tag }} Palidez</label>{% endfor %}
+                    {% for checkbox in form.Astenia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Astenia</label>{% endfor %}
+                    {% for checkbox in form.Adinamia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Adinamia</label>{% endfor %}
+                    {% for checkbox in form.hemato_hemorragias %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hemorragias</label>{% endfor %}
+                    {% for checkbox in form.hemato_adenopatias %}<label class="checkbox-paper-item">{{ checkbox.tag }} Adenopatías</label>{% endfor %}
+                    {% for checkbox in form.hemato_esplenomegalia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Esplenomegalia</label>{% endfor %}
+                </div>
+            </div>
+            
+            {# COMENTARIOS HEMATOLÓGICOS (Con recuadro) #}
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_anemia.id_for_label }}">Comentarios Hematológicos:</label>
+                    {% render_field form.Comentarios_anemia class="input-linea-larga" %}
+                </div>
+            </div>
+            
+            <br>
+            {# ======================== 7. APARATO ENDOCRINO ======================== #}
+            <div class="section-title-box">7. APARATO ENDOCRINO</div>
+            <div class="full-width-line">
+                {# col-auto para mejor distribución #}
+                <div class="checkbox-card-group">
+                    {% for checkbox in form.endocr_bocio %}<label class="checkbox-paper-item">{{ checkbox.tag }} Bocio</label>{% endfor %}
+                    {% for checkbox in form.endocr_letargia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Letargia</label>{% endfor %}
+                    {% for checkbox in form.endocr_bradipsiquia_idia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Bradipsiquia/IDIA</label>{% endfor %}
+                    {% for checkbox in form.endocr_intolerancia_calor_frio %}<label class="checkbox-paper-item">{{ checkbox.tag }} Intol. Calor/Frío</label>{% endfor %}
+                    {% for checkbox in form.endocr_nerviosismo %}<label class="checkbox-paper-item">{{ checkbox.tag }} Nerviosismo</label>{% endfor %}
+                    {% for checkbox in form.endocr_hiperquinesis %}<label class="checkbox-paper-item">{{ checkbox.tag }} Hiperquinesis</label>{% endfor %}
+                    {% for checkbox in form.endocr_caracteres_sexuales %}<label class="checkbox-paper-item">{{ checkbox.tag }} Caracteres Sexuales</label>{% endfor %}
+                    {% for checkbox in form.endocr_galactorrea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Galactorrea</label>{% endfor %}
+                    {% for checkbox in form.endocr_amenorrea %}<label class="checkbox-paper-item">{{ checkbox.tag }} Amenorrea</label>{% endfor %}
+                    {% for checkbox in form.endocr_ginecomastia %}<label class="checkbox-paper-item">{{ checkbox.tag }} Ginecomastia</label>{% endfor %}
+                    {% for checkbox in form.endocr_obesidad %}<label class="checkbox-paper-item">{{ checkbox.tag }} Obesidad</label>{% endfor %}
+                    {% for checkbox in form.endocr_ruborizacion %}<label class="checkbox-paper-item">{{ checkbox.tag }} Ruborización</label>{% endfor %}
+                </div>
+            </div>
+            
+            {# COMENTARIOS ENDOCRINOS (Con recuadro) #}
+            <div class="comments-box">
+                <div class="form-group-field">
+                    <label for="{{ form.Comentarios_endocrino.id_for_label }}">Comentarios Endocrinos:</label>
+                    {% render_field form.Comentarios_endocrino class="input-linea-larga" %}
+                </div>
+            </div>
+
+            <br>
+            {# ======================== 8. EXPLORACIÓN DE CUELLO ======================== #}
+            <div class="section-title-box">8. EXPLORACIÓN DE CUELLO</div>
+            <table class="table-exploration" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Área</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><label for="{{ form.cuello_tiroides.id_for_label }}">Tiroides:</label></td>
+                        <td>
+                            {% render_field form.cuello_tiroides class="input-linea-larga" %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="{{ form.cuello_musculos.id_for_label }}">Músculos:</label></td>
+                        <td>
+                            {% render_field form.cuello_musculos class="input-linea-larga" %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="{{ form.cuello_ganglios_linfaticos.id_for_label }}">Ganglios Linfáticos:</label></td>
+                        <td>
+                            {% render_field form.cuello_ganglios_linfaticos class="input-linea-larga" %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div> {# Fin de form-body #}
+
+        {# ======================== NAVEGACIÓN DEL WIZARD ======================== #}
+                <div class="form-navigation" style="
+    padding: 20px 40px; /* Padding interior */
+    border-top: 1px solid #e0e0e0; /* Línea de separación sutil */
+    display: flex; 
+    justify-content: space-between; /* Mantiene Anterior/Regresar a la izquierda y Siguiente/Guardar a la derecha */
+    align-items: center;
+">
+    
+    {# Contenedor para el botón izquierdo #}
+    <div class="navigation-group-left">
+        {# LÓGICA DEL BOTÓN IZQUIERDO: Anterior (Paso Intermedio) o Regresar (Primer Paso) #}
+        {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" 
+                    type="submit" 
+                    value="{{ wizard.steps.prev }}" 
+                    class="btn-wizard btn-anterior" 
+                    title="Volver al paso anterior"
+                    style="
+                        background-color: transparent; 
+                        color: #44916f; /* Texto verde de acento */
+                        padding: 8px 15px; 
+                        border: 1px solid #ddd; /* Borde sutil */
+                        font-size: 16px; 
+                        font-weight: bold;
+                        cursor: pointer;
+                        border-radius: 4px;
+                        transition: background-color 0.2s;
+                    ">
+                &#x2b9c; Anterior
+            </button>
+        {% else %}
+            {# Botón de Regresar al Historial (solo visible en el primer paso) #}
+            <a href="{% url 'historia_clinica_paciente' pk=paciente.pk %}" 
+               class="btn-wizard btn-anterior" 
+               title="Regresar al Historial"
+               style="
+                   background-color: transparent;
+                   color: #a00; /* Color de advertencia o formal */
+                   padding: 8px 15px; 
+                   border: 1px solid transparent; 
+                   font-size: 14px; 
+                   font-weight: bold;
+                   text-decoration: none;
+                   border-radius: 4px;
+                   transition: background-color 0.2s;
+               ">
+                <i class="bi bi-arrow-left"></i> Regresar al Historial
+            </a>
+        {% endif %}
+    </div>
+    
+    {# Contenedor para el botón derecho #}
+    <div class="navigation-group-right">
+        {# LÓGICA DEL BOTÓN DERECHO: Siguiente (Paso Intermedio) o Guardar (Paso Final) #}
+        <button type="submit" 
+                class="btn-wizard btn-siguiente"
+                style="
+                    background-color: #44916f; /* Verde de acento */
+                    color: #ffffff;
+                    padding: 12px 30px; 
+                    font-size: 18px; 
+                    font-weight: 600;
+                    border: none;
+                    cursor: pointer;
+                    border-radius: 6px;
+                    transition: background-color 0.3s;
+                ">
+            
+            {% if wizard.steps.next %}
+                Siguiente &#x2b9e;
+            {% else %}
+                Guardar Historial
+            {% endif %}
+        </button>
+    </div>
+</div>
+
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Detalle de Consentimiento Legal{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow p-4">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Consentimiento Legal Informado</h2>
+
+                    <h5 class="mt-4">Datos del Procedimiento</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-person"></i> Paciente:</strong> {{ consentimiento.paciente }}</p>
+                            <p><strong><i class="bi bi-calendar-event"></i> Fecha del Procedimiento:</strong> {{ consentimiento.fecha_procedimiento|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-person-check"></i> Médico que Autoriza:</strong> {{ consentimiento.nombre_medico_autorizado }}</p>
+                            <p><strong><i class="bi bi-box-arrow-in-right"></i> Registrado por:</strong> {{ consentimiento.medico_responsable.get_full_name|default:"N/A" }}</p>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4">Antecedentes del Paciente</h5>
+                    <hr>
+                    <p><strong><i class="bi bi-clock-history"></i> ¿Ha recibido tratamiento similar?:</strong> {% if consentimiento.tuvo_tratamiento_similar %}Sí{% else %}No{% endif %}</p>
+                    {% if consentimiento.tuvo_tratamiento_similar %}
+                        <p><strong>&nbsp;&nbsp;&nbsp;↳ ¿Cuál tratamiento?:</strong> {{ consentimiento.cual_tratamiento|default:"No especificado" }}</p>
+                        <p><strong>&nbsp;&nbsp;&nbsp;↳ ¿Hace cuánto tiempo?:</strong> {{ consentimiento.hace_cuanto_tiempo|default:"No especificado" }}</p>
+                        <p><strong>&nbsp;&nbsp;&nbsp;↳ Médico que atendió:</strong> {{ consentimiento.nombre_medico_atendio|default:"No especificado" }}</p>
+                        <p><strong>&nbsp;&nbsp;&nbsp;↳ Producto aplicado:</strong> {{ consentimiento.nombre_producto_aplico|default:"No especificado" }}</p>
+                        <p><strong>&nbsp;&nbsp;&nbsp;↳ Duración de la reacción:</strong> {{ consentimiento.reaccion_duro|default:"No especificado" }}</p>
+                    {% endif %}
+
+                    <h5 class="mt-4">Salud General</h5>
+                    <hr>
+                    <p><strong><i class="bi bi-bandaid"></i> Alérgico a medicamento:</strong> {{ consentimiento.alergia_medicamento|default:"Ninguna reportada" }}</p>
+                    <p><strong><i class="bi bi-clipboard2-pulse"></i> ¿Sufre de insuficiencia hepática?:</strong> {% if consentimiento.insuficiencia_hepatica %}Sí{% else %}No{% endif %}</p>
+                    <p><strong><i class="bi bi-clipboard2-pulse"></i> ¿Sufre de insuficiencia renal?:</strong> {% if consentimiento.insuficiencia_renal %}Sí{% else %}No{% endif %}</p>
+                    
+                    <h5 class="mt-4">Información Adicional</h5>
+                    <hr>
+                    <p><strong><i class="bi bi-telephone"></i> Contacto de emergencia:</strong> {{ consentimiento.emergencia_llamar_a }} (Tel: {{ consentimiento.emergencia_telefono }})</p>
+                    <p><strong><i class="bi bi-card-list"></i> Identificación Oficial:</strong> {{ consentimiento.identificacion_oficial }}</p>
+                    <p><strong><i class="bi bi-person-vcard"></i> Testigo:</strong> {{ consentimiento.nombre_testigo }}</p>
+                    <p><strong><i class="bi bi-house"></i> Domicilio:</strong> {{ consentimiento.domicilio }}</p>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'imprimir_consentimiento_real_pdf' pk=consentimiento.pk %}" class="btn btn-primary" target="_blank">
+                            <i class="bi bi-printer"></i> Imprimir PDF
+                        </a>
+                        <a href="{% url 'consentimiento_real_list' paciente_pk=consentimiento.paciente.pk %}" class="btn btn-secondary ms-2">
+                            <i class="bi bi-arrow-left-circle"></i> Volver a la lista
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

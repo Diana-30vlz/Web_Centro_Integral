@@ -1,0 +1,70 @@
+{% extends "BaseSinInicio.html" %}
+{% block title %}Corte de Caja Activo{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4"><i class="bi bi-activity"></i> Corte de Caja Activo</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            Resumen del Corte
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Usuario:</strong> {{ corte.usuario.username }}</p>
+                    <p><strong>Apertura:</strong> {{ corte.fecha_apertura|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="col-md-8">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Fondo Inicial
+                            <span class="badge bg-secondary rounded-pill">${{ corte.fondo_inicial|floatformat:2 }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total de Ventas Realizadas
+                            <span class="badge bg-success rounded-pill">+ ${{ total_ventas|floatformat:2 }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center active">
+                            <strong>Total Esperado en Caja</strong>
+                            <strong>${{ total_esperado|floatformat:2 }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-4">
+        <a href="{% url 'cerrar_corte' %}" class="btn btn-danger btn-lg">
+            <i class="bi bi-lock"></i> Cerrar Corte de Caja
+        </a>
+    </div>
+
+    <h4>Ventas de este Corte ({{ ventas.count }})</h4>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th># Venta</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.pk }}</td>
+                    <td>{{ venta.fecha_finalizacion|date:"d/m/Y H:i" }}</td>
+                    <td>${{ venta.total|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Aún no se han registrado ventas en este corte.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

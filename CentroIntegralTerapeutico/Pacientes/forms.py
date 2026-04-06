@@ -190,16 +190,25 @@ class PacienteForm(forms.ModelForm):
         model = Paciente
         fields = [
             'nombre',
-            'apellido_paterno',  # <-- Asegúrate de que estos sean los nombres correctos del modelo
-            'apellido_materno',  # <-- Asegúrate de que estos sean los nombres correctos del modelo
+            'apellido_paterno',
+            'apellido_materno',
             'fecha_nacimiento',
             'genero',
             'telefono',
             'email',
             'direccion',
+            # CAMPOS NUEVOS (DEBEN COINCIDIR EXACTAMENTE CON models.py):
+            'Ocupacion',
+            'Estado_Civil',
+            'Nacionalidad',
+            'Residencia_Anterior',
+            'Religion',
+            'Deporte_que_practica',
+            'Pasatiempo',
         ]
-        # Opcional: widgets para Bootstrap y placeholders
+
         widgets = {
+            # Widgets ORIGINALES:
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre(s) del paciente'}),
             'apellido_paterno': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido Paterno'}),
             'apellido_materno': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido Materno (Opcional)'}),
@@ -208,8 +217,19 @@ class PacienteForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 5512345678'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'correo@ejemplo.com'}),
             'direccion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Dirección completa'}),
+
+            # WIDGETS para CAMPOS NUEVOS (Select para choices, TextInput para el resto):
+            'Ocupacion': forms.TextInput(attrs={'class': 'form-control'}),
+            'Residencia_Anterior': forms.TextInput(attrs={'class': 'form-control'}), # Usando TextInput
+            'Religion': forms.TextInput(attrs={'class': 'form-control'}), # Usando TextInput
+            'Deporte_que_practica': forms.TextInput(attrs={'class': 'form-control'}), # Usando TextInput
+            'Pasatiempo': forms.TextInput(attrs={'class': 'form-control'}), # Usando TextInput
+            'Estado_Civil': forms.Select(attrs={'class': 'form-select'}), # Usando Select (tiene choices)
+            'Nacionalidad': forms.Select(attrs={'class': 'form-select'}), # Usando Select (tiene choices)
         }
+
         labels = {
+            # LABELS ORIGINALES:
             'nombre': 'Nombre(s)',
             'apellido_paterno': 'Apellido Paterno',
             'apellido_materno': 'Apellido Materno',
@@ -219,17 +239,44 @@ class PacienteForm(forms.ModelForm):
             'email': 'Email',
             'direccion': 'Dirección',
 
+            # LABELS NUEVOS:
+            'Ocupacion': 'Ocupación',
+            'Estado_Civil': 'Estado Civil',
+            'Nacionalidad': 'Nacionalidad',
+            'Residencia_Anterior': 'Residencia Anterior',
+            'Religion': 'Religión',
+            'Deporte_que_practica': 'Deporte que Practica',
+            'Pasatiempo': 'Pasatiempo',
         }
 
-# Nuevo formulario para Citas
+    # Aceptar formato del input tipo date
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fecha_nacimiento'].input_formats = ['%Y-%m-%d']
+
+
+
+
+
+
+
 class CitaForm(forms.ModelForm):
     class Meta:
         model = Cita
         fields = ['paciente', 'fecha', 'hora_inicio', 'hora_fin', 'motivo', 'notas', 'estado']
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'hora_inicio': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'hora_fin': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'fecha': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control'},
+                format='%Y-%m-%d'
+            ),
+            'hora_inicio': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
+            'hora_fin': forms.TimeInput(
+                attrs={'type': 'time', 'class': 'form-control'},
+                format='%H:%M'
+            ),
             'paciente': forms.Select(attrs={'class': 'form-select'}),
             'motivo': forms.Select(attrs={'class': 'form-select'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
@@ -245,6 +292,54 @@ class CitaForm(forms.ModelForm):
             'estado': 'Estado de la Cita',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Si estamos editando una cita existente, prellenar las fechas y horas correctamente
+        if self.instance and self.instance.pk:
+            if self.instance.fecha:
+                self.fields['fecha'].initial = self.instance.fecha.strftime('%Y-%m-%d')
+            if self.instance.hora_inicio:
+                self.fields['hora_inicio'].initial = self.instance.hora_inicio.strftime('%H:%M')
+            if self.instance.hora_fin:
+                self.fields['hora_fin'].initial = self.instance.hora_fin.strftime('%H:%M')
+
+
+
+
+
+
+
+class ConsentimientoInformadoRealForm(forms.ModelForm):
+    class Meta:
+        model = ConsentimientoInformadoReal
+        # Los campos a excluir (los que se llenan automáticamente) son correctos.
+        exclude = ['paciente', 'medico_responsable', 'fecha_creacion']
+
+        # Esta lista de widgets ahora coincide exactamente con los campos de tu modelo.
+        widgets = {
+            'tratamiento': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_procedimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'tuvo_tratamiento_similar': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'cual_tratamiento': forms.TextInput(attrs={'class': 'form-control'}),
+            'hace_cuanto_tiempo': forms.TextInput(attrs={'class': 'form-control'}),
+
+            # CORREGIDO: Usando el nombre correcto de tu modelo
+            'nombre_medico_atendio': forms.TextInput(attrs={'class': 'form-control'}),
+
+            # CORREGIDO: Usando el nombre correcto de tu modelo
+            'nombre_producto_aplico': forms.TextInput(attrs={'class': 'form-control'}),
+
+            'reaccion_duro': forms.TextInput(attrs={'class': 'form-control'}),
+            'alergia_medicamento': forms.TextInput(attrs={'class': 'form-control'}),
+            'insuficiencia_hepatica': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'insuficiencia_renal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'emergencia_llamar_a': forms.TextInput(attrs={'class': 'form-control'}),
+            'emergencia_telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'identificacion_oficial': forms.TextInput(attrs={'class': 'form-control'}),
+            'nombre_testigo': forms.TextInput(attrs={'class': 'form-control'}),
+            'domicilio': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 
@@ -255,12 +350,21 @@ class CitaForm(forms.ModelForm):
 #Formulario Consentimiento
 
 class ConsentimientoInformadoForm(forms.ModelForm):
+    # Campo para mostrar el nombre del paciente, de solo lectura
+    # Esto evitará que se renderice el campo de selección.
+    nombre_paciente = forms.CharField(
+        label='Nombre del Paciente',
+        required=False,
+        disabled=True
+    )
+
     class Meta:
         model = ConsentimientoInformado
-        fields = '__all__' # Incluye todos los campos del nuevo modelo
+        # Aquí defines los campos que el usuario debe llenar.
+        # Excluye 'paciente' para evitar que Django lo renderice como un Select.
+        fields = ['nombre_paciente', 'fecha', 'edad', 'temp', 'peso', 'talla', 'ta', 'rp']
 
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'my-input'}),
             'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'my-input my-date-input'}),
             'edad': forms.NumberInput(attrs={'class': 'my-input'}),
             'temp': forms.TextInput(attrs={'class': 'my-input'}),
@@ -270,93 +374,104 @@ class ConsentimientoInformadoForm(forms.ModelForm):
             'rp': forms.Textarea(attrs={'class': 'my-textarea', 'rows': 5}),
         }
 
+    def __init__(self, *args, **kwargs):
+        # La vista pasará la instancia del paciente usando la palabra clave `paciente_instance`
+        paciente_instance = kwargs.pop('paciente_instance', None)
+        super().__init__(*args, **kwargs)
 
+        if paciente_instance:
+            # Completa el campo de solo lectura con el nombre completo
+            nombre_completo = f'{paciente_instance.nombre} {paciente_instance.apellido_paterno}'
+            if paciente_instance.apellido_materno:
+                nombre_completo += f' {paciente_instance.apellido_materno}'
 
+            self.initial['nombre_paciente'] = nombre_completo
 
-# ----------------------------------------------------
-# Formulario 1: Comentarios y fecha de internación
-# ----------------------------------------------------
-class CuestionarioParte1Form(forms.ModelForm):
-    class Meta:
-        model = HistoriaClinica
-        fields = [
-            'motivo_consulta',
-            'comentarios',
-
-        ]
-
-# ----------------------------------------------------
-# Formulario 2: Datos generales y vivienda
-# ----------------------------------------------------
 
 class CheckboxCardSelectMultiple(CheckboxSelectMultiple):
     template_name = 'forms/widgets/checkbox_card_multiple.html'
-   # El código de SimpleArrayField que tenías arriba ya no es necesario
-# ----------------------------------------------------
-# Formulario 2: Datos generales y vivienda
-# ----------------------------------------------------
-class CuestionarioParte2Form(forms.ModelForm):
-    # Campos que usan ArrayField y necesitan una configuración especial
+# ----------------------------------------------------------------------------------
+# FORMULARIO UNIFICADO: HistoriaClinicaUnificadaForm
+# Combina los campos de Parte1, Parte2 y Ginecológico en un solo ModelForm.
+# ----------------------------------------------------------------------------------
+class HistoriaClinicaUnificadaForm(forms.ModelForm):
+
+
+
+    # Sustituye 'HistoriaClinica.SERVICIOS_VIVIENDA_CHOICES' con tus choices reales.
     servicio_vivienda = SimpleArrayField(
         forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.SERVICIOS_VIVIENDA_CHOICES),
+        # IMPORTANTE: Asegúrate de que HistoriaClinica esté disponible con sus CHOICES
+        widget=CheckboxCardSelectMultiple(choices=HistoriaClinica.SERVICIOS_VIVIENDA_CHOICES),
         label="Servicios con los que cuenta la vivienda"
     )
 
     Antecedentes_familiares = SimpleArrayField(
         forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.ANTECENDENTES_FAMILIARES_CHOICES),
+        widget=CheckboxCardSelectMultiple(choices=HistoriaClinica.ANTECENDENTES_FAMILIARES_CHOICES),
         label='Antecedentes Familiares'
     )
 
     habitos_toxicos = SimpleArrayField(
         forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.HABITOS_TOXICOS_CHOICES),
+        widget=CheckboxCardSelectMultiple(choices=HistoriaClinica.HABITOS_TOXICOS_CHOICES),
         label='Hábitos tóxicos'
     )
 
     Patologias = SimpleArrayField(
         forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.PATOLOGIAS_CHOICES),
+        widget=CheckboxCardSelectMultiple(choices=HistoriaClinica.PATOLOGIAS_CHOICES),
         label='Patologías'
     )
 
     Allimentación = SimpleArrayField(
         forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.ALIMENTACION_CHOICES),
+        widget=CheckboxCardSelectMultiple(choices=HistoriaClinica.ALIMENTACION_CHOICES),
         label='Alimentación'
     )
 
     class Meta:
         model = HistoriaClinica
+        # Se combinan TODOS los campos de Parte1, Parte2 y Ginecológico
         fields = [
+            # Secciones principales (Motivo de Consulta y Enfermedad Actual primero)
+            'motivo_consulta',
+            'enfermedad_actual',
+
+
+            # Parte 2 - Información General
             'GradoInstruccion',
             'inmunizaciones_o_vacunas',
-            'baño_diario',
-            'aseo_dental',
-            'lavado_manos_antes_comer',
-            'lavado_manos_despues',
-            'tamanio_vivienda',
-            'tipo_vivienda',
-            'servicio_vivienda',
-            'enfermedad_actual',
+
+            # Parte 2 - Higiene
+            'baño_diario', 'aseo_dental', 'lavado_manos_antes_comer', 'lavado_manos_despues',
+
+            # Parte 2 - Vivienda
+            'tamanio_vivienda', 'tipo_vivienda', 'servicio_vivienda',
+
+            # Parte 2 - Antecedentes y Fisiológicos
             'Antecedentes_familiares',
+          #  'Residencia_Anterior',
             'habitos_toxicos',
             'Allimentación',
-            'Ingesta_Agua',
-            'Cantidad_veces_Orina',
-            'Catarsis',
-            'Somnia',
-            'Infancia',
-            'Adulto',
-            'Patologias',
-            'ha_sido_operado',
-            'fecha_operacion',
-            'traumatismo_o_fractura',
-            'Otro'
+            'Ingesta_Agua', 'Cantidad_veces_Orina', 'Catarsis', 'Somnia',
+
+            # Parte 2 - Patológicos
+            'Infancia', 'Adulto', 'Patologias',
+            'ha_sido_operado', 'fecha_operacion', 'traumatismo_o_fractura', 'Otro',
+
+            # Parte 3 - Gineco-Obstétricos
+            'fum', 'fpp', 'edad_gestacional', 'menarquia', 'rm_rit_menstr', 'irs',
+            'no_de_parejas', 'flujo_genital', 'gestas', 'partos', 'cesareas', 'abortos',
+            'anticonceptivos', 'anticonceptivos_tipo', 'anticonceptivos_tiempo',
+            'anticonceptivos_ultima_toma', 'cirugia_ginecologica', 'otros_ginecologicos',
+            #'Ingesta_Agua',
+            # Parte 1 - Comentarios finales
+            'comentarios',
         ]
 
         widgets = {
+            # Widgets RadioSelect (Parte 2)
             'baño_diario': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
             'aseo_dental': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
             'lavado_manos_antes_comer': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
@@ -364,68 +479,107 @@ class CuestionarioParte2Form(forms.ModelForm):
             'tamanio_vivienda': forms.RadioSelect,
             'tipo_vivienda': forms.RadioSelect,
             'fecha_operacion': forms.DateInput(attrs={'type': 'date'}),
-            # Aquí es donde vas a usar tu widget personalizado para los ArrayFields
-            'servicio_vivienda': CheckboxCardSelectMultiple(choices=HistoriaClinica.SERVICIOS_VIVIENDA_CHOICES),
-            'Antecedentes_familiares': CheckboxCardSelectMultiple(choices=HistoriaClinica.ANTECENDENTES_FAMILIARES_CHOICES),
-            'habitos_toxicos': CheckboxCardSelectMultiple(choices=HistoriaClinica.HABITOS_TOXICOS_CHOICES),
-            'Patologias': CheckboxCardSelectMultiple(choices=HistoriaClinica.PATOLOGIAS_CHOICES),
-            'Allimentación': CheckboxCardSelectMultiple(choices=HistoriaClinica.ALIMENTACION_CHOICES),
-
-        }
-
-# ----------------------------------------------------
-# Formulario 3: Datos ginecológicos (condicional)
-# ----------------------------------------------------
-class CuestionarioGinecologicoForm(forms.ModelForm):
-    class Meta:
-        model = HistoriaClinica
-        fields = [
-            'fum',
-            'fpp',
-            'edad_gestacional',
-            'menarquia',
-            'rm_rit_menstr',
-            'irs',
-            'no_de_parejas',
-            'flujo_genital',
-            'gestas',
-            'partos',
-            'cesareas',
-            'abortos',
-            'anticonceptivos',
-            'anticonceptivos_tipo',
-            'anticonceptivos_tiempo',
-            'anticonceptivos_ultima_toma',
-            'cirugia_ginecologica',
-            'otros_ginecologicos',
-        ]
-
-        widgets = {
+            #
+            'Ingesta_Agua': forms.NumberInput(attrs={'class': 'form-control'}),
+            'Cantidad_veces_Orina': forms.NumberInput(attrs={'class': 'form-control'}),
+            'Catarsis': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Somnia': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            #boolean
+            'ha_sido_operado': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+    # ...
+            # Widgets DateInput (Ginecológico)
             'fum': forms.DateInput(attrs={'type': 'date'}),
             'fpp': forms.DateInput(attrs={'type': 'date'}),
             'anticonceptivos_ultima_toma': forms.DateInput(attrs={'type': 'date'}),
+            'menarquia': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'rm_rit_menstr': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'irs': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+
+    # Y asegúrate de que estos otros también estén correctos:
+            'no_de_parejas': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'flujo_genital': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+
+            # Campos de texto con estilo de línea (clases CSS)
+            'motivo_consulta': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'enfermedad_actual': forms.Textarea(attrs={'rows': 3, 'class': 'input-linea-larga'}),
+            'comentarios': forms.Textarea(attrs={'rows': 3, 'class': 'input-linea-larga'}),
+            'GradoInstruccion': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'GradoInstruccion': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'inmunizaciones_o_vacunas': forms.TextInput(attrs={'class': 'input-linea-corta', 'value': ''}),
+            'Infancia': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'Adulto': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'traumatismo_o_fractura': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Otro': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'anticonceptivos_tipo': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'anticonceptivos_tiempo': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'cirugia_ginecologica': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'otros_ginecologicos': forms.TextInput(attrs={'class': 'input-linea-corta'}),
         }
+
 #######################################################################################################
 ################SEGUNDA HOJA ##########################################################################
 
+# Formulario Único: Cuestionario Completo por Sistemas
+# ====================================================
+class HistoriaClinicaSegundaHoja(forms.ModelForm):
 
-# ----------------------------------------------------
-# Formulario 1: Sistema Digestivo
-# ----------------------------------------------------
-class CuestionarioDigestivoForm(forms.ModelForm):
     class Meta:
         model = HistoriaClinica
+
+        # 📚 CONSOLIDACIÓN DE TODOS LOS FIELDS 📚
         fields = [
+            # 1. Sistema Digestivo
             'digest_halitosis', 'digest_boca_seca', 'digest_masticacion', 'digest_disfagia',
             'digest_pirosis', 'digest_nausea', 'digest_vomito_hematemesis', 'digest_colicos',
             'digest_dolor_abdominal', 'digest_meteorismo', 'digest_flatulencias',
             'digest_constipacion', 'digest_diarrea', 'digest_rectorragias', 'digest_melenas',
             'digest_pujo', 'digest_tenesmo', 'digest_ictericia', 'digest_coluria',
             'digest_acolia', 'digest_prurito_cutaneo', 'digest_hemorragias',
-            'digest_prurito_anal', 'digest_hemorroides', 'Comentarios_digestivo'
+            'digest_prurito_anal', 'digest_hemorroides', 'Comentarios_digestivo',
+
+            # 2. Aparato Cardiovascular y Respiratorio
+            'cardio_tos_seca', 'cardio_tos_espasmodica', 'cardio_hemoptisis',
+            'cardio_dolor_precordial', 'cardio_palpitaciones', 'cardio_cianosis',
+            'cardio_edema', 'cardio_acufenos', 'cardio_fosfenos', 'cardio_sincope',
+            'cardio_lipotimia', 'cardio_cefaleas', 'pulso_carotideo', 'pulso_humeral',
+            'pulso_radial', 'pulso_femoral', 'pulso_popliteo', 'pulso_tibial_posterior',
+            'pulso_pedio', 'pulso_carotideo_izq', 'pulso_humeral_izq',
+            'pulso_radial_izq', 'pulso_femoral_izq', 'pulso_popliteo_izq',
+            'pulso_tibial_posterior_izq', 'pulso_pedio_izq','resp_tos',
+            'resp_disnea', 'resp_dolor_toracico', 'resp_hemoptisis',
+            'resp_cianosis', 'resp_vomica', 'resp_alteraciones_voz',
+            'Comentarios_cardio', 'Comentarios_respiratorio',
+
+            # 3. Aparato Genital y Urinario
+            'genital_criptorquidea', 'genital_fimosis', 'genital_funcion_sexual',
+            'genital_sangrado_genital', 'genital_flujo_leucorrea',
+            'genital_dolor_ginecologico', 'genital_prurito_vulvar',
+            'Comentarios_genital',
+
+            'Poliuria', 'Anuria', 'Oliguria', 'Nicturia', 'Opsuria',
+            'Disuria', 'Tenesmo_vesical', 'Urgencia', 'Chorro',
+            'Enuresis', 'Incontinencia', 'Ninguna',
+            'urin_volumen_orina', 'urin_color_orina', 'urin_olor_orina',
+            'urin_aspecto_orina', 'urin_dolor_lumbar', 'urin_edema_palpebral_sup',
+            'urin_edema_palpebral_inf', 'urin_edema_renal',
+            'urin_hipertension_arterial', 'urin_datos_clinicos_anemia',
+            'Comentarios_urinario',
+
+            # 4. Hematológico, Endocrino y Exploración de Cuello
+            'Palidez', 'Astenia', 'Adinamia', 'Otros',
+            'hemato_hemorragias', 'hemato_adenopatias', 'hemato_esplenomegalia',
+            'Comentarios_anemia',
+            'endocr_bocio', 'endocr_letargia', 'endocr_bradipsiquia_idia',
+            'endocr_intolerancia_calor_frio', 'endocr_nerviosismo', 'endocr_hiperquinesis',
+            'endocr_caracteres_sexuales', 'endocr_galactorrea', 'endocr_amenorrea',
+            'endocr_ginecomastia', 'endocr_obesidad', 'endocr_ruborizacion',
+            'Comentarios_endocrino',
+            'cuello_tiroides', 'cuello_musculos', 'cuello_ganglios_linfaticos',
         ]
+
+        # ⚙️ CONSOLIDACIÓN DE TODOS LOS WIDGETS ⚙️
         widgets = {
-            # Se usa CheckboxSelectMultiple para los BooleanFields
+            # 1. Sistema Digestivo
             'digest_halitosis': forms.CheckboxInput(),
             'digest_boca_seca': forms.CheckboxInput(),
             'digest_masticacion': forms.CheckboxInput(),
@@ -450,26 +604,8 @@ class CuestionarioDigestivoForm(forms.ModelForm):
             'digest_hemorragias': forms.CheckboxInput(),
             'digest_prurito_anal': forms.CheckboxInput(),
             'digest_hemorroides': forms.CheckboxInput(),
-        }
 
-# ----------------------------------------------------
-# Formulario 2: Aparato Cardiovascular y Respiratorio
-# ----------------------------------------------------
-class CuestionarioCardioRespiratorioForm(forms.ModelForm):
-    class Meta:
-        model = HistoriaClinica
-        fields = [
-            'cardio_tos_seca', 'cardio_tos_espasmodica', 'cardio_hemoptisis',
-            'cardio_dolor_precordial', 'cardio_palpitaciones', 'cardio_cianosis',
-            'cardio_edema', 'cardio_acufenos', 'cardio_fosfenos', 'cardio_sincope',
-            'cardio_lipotimia', 'cardio_cefaleas', 'pulso_carotideo', 'pulso_humeral',
-            'pulso_radial', 'pulso_femoral', 'pulso_popliteo', 'pulso_tibial_posterior',
-            'pulso_pedio', 'pulso_carotideo_izq', 'pulso_humeral_izq',
-            'pulso_radial_izq', 'pulso_femoral_izq', 'pulso_popliteo_izq', 'pulso_tibial_posterior_izq',
-            'pulso_pedio_izq','resp_tos', 'resp_disnea', 'resp_dolor_toracico',
-            'resp_hemoptisis', 'resp_cianosis', 'resp_vomica', 'resp_alteraciones_voz','Comentarios_cardio', 'Comentarios_respiratorio'
-        ]
-        widgets = {
+            # 2. Aparato Cardiovascular y Respiratorio (Solo los campos que tenían widget explícito)
             'cardio_tos_seca': forms.CheckboxInput(),
             'cardio_tos_espasmodica': forms.CheckboxInput(),
             'cardio_hemoptisis': forms.CheckboxInput(),
@@ -489,39 +625,8 @@ class CuestionarioCardioRespiratorioForm(forms.ModelForm):
             'resp_cianosis': forms.CheckboxInput(),
             'resp_vomica': forms.CheckboxInput(),
             'resp_alteraciones_voz': forms.CheckboxInput(),
-        }
 
-# ----------------------------------------------------
-# Formulario 3: Aparato Genital y Urinario
-# ----------------------------------------------------
-# Asegúrate de importar esto en la parte superior de tu archivo
-# from django.forms import forms, ModelForm, CheckboxInput
-# from .models import HistoriaClinica # O el nombre de tu modelo
-
-class CuestionarioGenitalUrinarioForm(forms.ModelForm):
-
-    class Meta:
-        model = HistoriaClinica
-        fields = [
-            'genital_criptorquidea', 'genital_fimosis', 'genital_funcion_sexual',
-            'genital_sangrado_genital', 'genital_flujo_leucorrea', 'genital_dolor_ginecologico',
-            'genital_prurito_vulvar','Comentarios_genital',
-
-            # Nuevos campos de Alteraciones en la Micción
-            'Poliuria', 'Anuria', 'Oliguria', 'Nicturia', 'Opsuria',
-            'Disuria', 'Tenesmo_vesical', 'Urgencia', 'Chorro',
-            'Enuresis', 'Incontinencia', 'Ninguna',
-
-            'urin_volumen_orina',
-            'urin_color_orina', 'urin_olor_orina', 'urin_aspecto_orina',
-            'urin_dolor_lumbar', 'urin_edema_palpebral_sup', 'urin_edema_palpebral_inf',
-            'urin_edema_renal', 'urin_hipertension_arterial', 'urin_datos_clinicos_anemia',
-
-            # Nuevo campo de comentarios
-            'Comentarios_urinario',
-        ]
-
-        widgets = {
+            # 3. Aparato Genital y Urinario
             'genital_criptorquidea': forms.CheckboxInput(),
             'genital_fimosis': forms.CheckboxInput(),
             'genital_funcion_sexual': forms.CheckboxInput(),
@@ -529,8 +634,6 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
             'genital_flujo_leucorrea': forms.CheckboxInput(),
             'genital_dolor_ginecologico': forms.CheckboxInput(),
             'genital_prurito_vulvar': forms.CheckboxInput(),
-
-            # Widgets para los nuevos campos de Alteraciones en la Micción
             'Poliuria': forms.CheckboxInput(),
             'Anuria': forms.CheckboxInput(),
             'Oliguria': forms.CheckboxInput(),
@@ -543,49 +646,24 @@ class CuestionarioGenitalUrinarioForm(forms.ModelForm):
             'Enuresis': forms.CheckboxInput(),
             'Incontinencia': forms.CheckboxInput(),
             'Ninguna': forms.CheckboxInput(),
-
+            'urin_volumen_orina': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'urin_color_orina': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'urin_olor_orina': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'urin_aspecto_orina': forms.TextInput(attrs={'class': 'input-linea-corta'}),
             'urin_dolor_lumbar': forms.CheckboxInput(),
             'urin_edema_palpebral_sup': forms.CheckboxInput(),
             'urin_edema_palpebral_inf': forms.CheckboxInput(),
             'urin_edema_renal': forms.CheckboxInput(),
             'urin_hipertension_arterial': forms.CheckboxInput(),
             'urin_datos_clinicos_anemia': forms.CheckboxInput(),
-        }
 
-# ----------------------------------------------------
-# Formulario 4: Hematológico, Endocrino y Exploración de Cuello
-# ----------------------------------------------------
-class CuestionarioEndocrinoCuelloForm(forms.ModelForm):
-
-    class Meta:
-        model = HistoriaClinica
-        fields = [
-            # Nuevos campos de Aparato Hematológico
-            'Palidez', 'Astenia', 'Adinamia', 'Otros',
-            'hemato_hemorragias', 'hemato_adenopatias', 'hemato_esplenomegalia',
-            'Comentarios_anemia',
-
-            # Campos de Aparato Endocrino
-            'endocr_bocio', 'endocr_letargia', 'endocr_bradipsiquia_idia',
-            'endocr_intolerancia_calor_frio', 'endocr_nerviosismo', 'endocr_hiperquinesis',
-            'endocr_caracteres_sexuales', 'endocr_galactorrea', 'endocr_amenorrea',
-            'endocr_ginecomastia', 'endocr_obesidad', 'endocr_ruborizacion',
-            'Comentarios_endocrino',
-
-            # Campos de Exploración de Cuello
-            'cuello_tiroides', 'cuello_musculos', 'cuello_ganglios_linfaticos',
-        ]
-
-        widgets = {
-            # Widgets de Aparato Hematológico
+            # 4. Hematológico, Endocrino y Exploración de Cuello
             'Palidez': forms.CheckboxInput(),
             'Astenia': forms.CheckboxInput(),
             'Adinamia': forms.CheckboxInput(),
             'hemato_hemorragias': forms.CheckboxInput(),
             'hemato_adenopatias': forms.CheckboxInput(),
             'hemato_esplenomegalia': forms.CheckboxInput(),
-
-            # Widgets de Aparato Endocrino
             'endocr_bocio': forms.CheckboxInput(),
             'endocr_letargia': forms.CheckboxInput(),
             'endocr_bradipsiquia_idia': forms.CheckboxInput(),
@@ -598,7 +676,10 @@ class CuestionarioEndocrinoCuelloForm(forms.ModelForm):
             'endocr_ginecomastia': forms.CheckboxInput(),
             'endocr_obesidad': forms.CheckboxInput(),
             'endocr_ruborizacion': forms.CheckboxInput(),
-        }#######################################################################################################
+        }
+
+
+#######################################################################################################
 ################TERCER HOJA ##########################################################################
 # ----------------------------------------------------
 # Formulario 1: Exploración de Columna Vertebral y MMSS
@@ -661,29 +742,112 @@ class CuestionarioExploracion1Form(forms.ModelForm):
             'art_pulgar_ab', 'art_pulgar_ad', 'art_pulgar_e', 'art_pulgar_f',
             'art_dedos_f', 'art_dedos_e', 'art_dedos_ifp',
         ]
+        widgets = {}
 
 # ----------------------------------------------------
 # Formulario 2: Exploración de MMII y Nasal
 # ----------------------------------------------------
-class CuestionarioExploracion2Form(forms.ModelForm):
+class ExploracionCompletaForm(forms.ModelForm):
+
+    # 1. Campos de Exploración de Columna Vertebral (ECV) - Definidos explícitamente como CharField
+    ecv_cervical_asc = forms.CharField(label='Ascendente', required=False)
+    ecv_cervical_desc = forms.CharField(label='Descendente', required=False)
+    ecv_cervical_obs = forms.CharField(label='Observaciones', required=False)
+
+    ecv_dorsal_asc = forms.CharField(label='Ascendente', required=False)
+    ecv_dorsal_desc = forms.CharField(label='Descendente', required=False)
+    ecv_dorsal_obs = forms.CharField(label='Observaciones', required=False)
+
+    ecv_lumbosacra_asc = forms.CharField(label='Ascendente', required=False)
+    ecv_lumbosacra_desc = forms.CharField(label='Descendente', required=False)
+    ecv_lumbosacra_obs = forms.CharField(label='Observaciones', required=False)
+
+    # 2. Campos de Exploración de Miembros Superiores (MMSS) - Hombros
+    mmss_hombros_cs_ad = forms.CharField(label='Adducción', required=False)
+    mmss_hombros_cs_ab = forms.CharField(label='Abducción', required=False)
+    mmss_hombros_cs_f = forms.CharField(label='Flexión', required=False)
+    mmss_hombros_cs_e = forms.CharField(label='Extensión', required=False)
+    mmss_hombros_cv_ad = forms.CharField(label='Adducción', required=False)
+    mmss_hombros_cv_ab = forms.CharField(label='Abducción', required=False)
+    mmss_hombros_cv_f = forms.CharField(label='Flexión', required=False)
+    mmss_hombros_cv_e = forms.CharField(label='Extensión', required=False)
+
+    # 3. Campos para la Evaluación articular de MMSS Codo y Muñeca
+    art_codo_e = forms.CharField(label='E', required=False)
+    art_codo_f = forms.CharField(label='F', required=False)
+    art_muneca_e = forms.CharField(label='E', required=False)
+    art_muneca_f = forms.CharField(label='F', required=False)
+    art_muneca_p = forms.CharField(label='P', required=False)
+    art_muneca_s = forms.CharField(label='S', required=False)
+
+    # 4. Campos para la Evaluación articular de MMSS del Pulgar y Dedos
+    art_pulgar_ab = forms.CharField(label='AB', required=False)
+    art_pulgar_ad = forms.CharField(label='AD', required=False)
+    art_pulgar_e = forms.CharField(label='E', required=False)
+    art_pulgar_f = forms.CharField(label='F', required=False)
+    art_dedos_f = forms.CharField(label='F', required=False)
+    art_dedos_e = forms.CharField(label='E', required=False)
+    art_dedos_ifp = forms.CharField(label='IFP', required=False)
+
     class Meta:
         model = HistoriaClinica
+
+        # 📚 CONSOLIDACIÓN DE TODOS LOS FIELDS 📚
         fields = [
+            # ECV
+            'ecv_cervical_asc', 'ecv_cervical_desc', 'ecv_cervical_obs',
+            'ecv_dorsal_asc', 'ecv_dorsal_desc', 'ecv_dorsal_obs',
+            'ecv_lumbosacra_asc', 'ecv_lumbosacra_desc', 'ecv_lumbosacra_obs',
+
+            # MMSS - Hombros
+            'mmss_hombros_cs_ad', 'mmss_hombros_cs_ab', 'mmss_hombros_cs_f',
+            'mmss_hombros_cs_e', 'mmss_hombros_cv_ad', 'mmss_hombros_cv_ab',
+            'mmss_hombros_cv_f', 'mmss_hombros_cv_e',
+
+            # MMSS - Codo y Muñeca
+            'art_codo_e', 'art_codo_f',
+            'art_muneca_e', 'art_muneca_f', 'art_muneca_p', 'art_muneca_s',
+
+            # MMSS - Pulgar y Dedos
+            'art_pulgar_ab', 'art_pulgar_ad', 'art_pulgar_e', 'art_pulgar_f',
+            'art_dedos_f', 'art_dedos_e', 'art_dedos_ifp',
+
+            # MMII - Cadera, Tobillo, Subastragalina (Del Formulario 2)
             'art_cadera_ab', 'art_cadera_ad', 'art_cadera_f', 'art_cadera_e',
             'art_tobillo_f', 'art_tobillo_e',
             'art_subastragalina_f', 'art_subastragalina_ev',
 
+            # Exploración Nasal (Del Formulario 2)
             'nasal_mucosa', 'nasal_cochas', 'nasal_vascularizacion',
         ]
+
+        # Como no se especificaron widgets, se usarán los widgets por defecto (TextInput)
+        # para todos los CharField. Los campos definidos explícitamente arriba aseguran
+        # que se usen CharField aunque el modelo defina otros tipos (si ese fuera el caso).
+        widgets = {}
+
 #######################################################################################################
 ################CUARTA HOJA ##########################################################################
 # ----------------------------------------------------
 # Formulario 1: Pulsos y Estado de Conciencia
 # ----------------------------------------------------
-class CuestionarioPulsosConcienciaForm(forms.ModelForm):
+class CuestionarioExploracionGlasgow(forms.ModelForm):
+
+    # Campo ArrayField del Formulario 2 (debe definirse explícitamente)
+    # Nota: Tu CHOICES (HistoriaClinica.CAMPOS_VISUALES_CHOICES) debe ser accesible aquí.
+    campos_visuales_opciones = SimpleArrayField(
+        forms.CharField(),
+        # Asumo que HistoriaClinica.CAMPOS_VISUALES_CHOICES está definido en tu modelo.
+        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.CAMPOS_VISUALES_CHOICES),
+        label='Campos Visuales Opciones'
+    )
+
     class Meta:
         model = HistoriaClinica
+
+        # 📚 CONSOLIDACIÓN DE TODOS LOS FIELDS 📚
         fields = [
+            # Campos del Formulario 1: Pulsos y Conciencia
             'me_pulso_carotideo_derecho', 'me_pulso_carotideo_izquierdo',
             'me_pulso_humeral_derecho', 'me_pulso_humeral_izquierdo',
             'me_pulso_radial_derecho', 'me_pulso_radial_izquierdo',
@@ -692,24 +856,8 @@ class CuestionarioPulsosConcienciaForm(forms.ModelForm):
             'me_pulso_tibial_posterior_derecho', 'me_pulso_tibial_posterior_izquierdo',
             'me_pulso_pedio_derecho', 'me_pulso_pedio_izquierdo',
             'ascitis', 'Estado_Conciencia',
-        ]
-        widgets = {
-            'ascitis': forms.CheckboxInput(),
-        }
 
-# ----------------------------------------------------
-# Formulario 2: Escala de Glasgow y Exploración Visual
-# ----------------------------------------------------
-class CuestionarioGlasgowVisualForm(forms.ModelForm):
-    campos_visuales_opciones = SimpleArrayField(
-        forms.CharField(),
-        widget=forms.CheckboxSelectMultiple(choices=HistoriaClinica.CAMPOS_VISUALES_CHOICES),
-        label='Campos Visuales Opciones'
-    )
-
-    class Meta:
-        model = HistoriaClinica
-        fields = [
+            # Campos del Formulario 2: Glasgow y Visual
             'glasgow_apertura_ojos_respuesta', 'glasgow_apertura_ojos_puntuacion',
             'glasgow_respuesta_verbal_respuesta', 'glasgow_respuesta_verbal_puntuacion',
             'glasgow_respuesta_motora_respuesta', 'glasgow_respuesta_motora_puntuacion',
@@ -717,9 +865,19 @@ class CuestionarioGlasgowVisualForm(forms.ModelForm):
             'reflejo_fotomotor_respuestas_luz', 'par_craneal_iii_oculomotor',
             'par_craneal_iv_patetico', 'par_craneal_vi_motor_ocular_externo',
             'retina_relacion_arterio_venosa',
-            'retina_macula', 'campos_visuales_opciones', 'par_craneal_iii_oculomotor_cv',
-            'par_craneal_iv_patetico_cv', 'par_craneal_vi_motor_ocular_externo_cv'
+            'retina_macula', 'campos_visuales_opciones', # Este campo está definido explícitamente arriba
+            'par_craneal_iii_oculomotor_cv', 'par_craneal_iv_patetico_cv',
+            'par_craneal_vi_motor_ocular_externo_cv'
         ]
+
+        # ⚙️ CONSOLIDACIÓN DE TODOS LOS WIDGETS ⚙️
+        widgets = {
+            # Widget del Formulario 1
+            'ascitis': forms.CheckboxInput(),
+            'Estado_Conciencia':forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+
+            # Los demás campos usan widgets por defecto o se definen explícitamente arriba (SimpleArrayField)
+        }
 
 #######################################################################################################
 ################QUINTA HOJA ##########################################################################
@@ -959,10 +1117,7 @@ class RecetaForm(forms.ModelForm):
         model = Receta
         exclude = ['paciente', 'medico', 'fecha']
         widgets = {
-            'medicamento': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nombre del medicamento'}),
-            'dosis': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Ej. 500mg, 1 pastilla c/8h'}),
             'diagnostico': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Ej. HTA, Gripe'}),
-            'indicaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Indicaciones adicionales'}),
         }
 
 
@@ -979,25 +1134,14 @@ class RecetaForm(forms.ModelForm):
 #######################################################################################################
 ###########FORMS DE HISTORIA CLINICA MUSCULO ESQUELETICA##############################################
 
+from django import forms
+from django.contrib.postgres.forms import SimpleArrayField
+# Asegúrate de importar tu modelo HistoriaClinicaMusculoEsqueletico (y tus CHOICES)
 
-# ----------------------------------------------------
-# Formulario 1: Comentarios y fecha de internación
-# ----------------------------------------------------
-class CuestionarioParte1FormME(forms.ModelForm):
-    class Meta:
-        model = HistoriaClinicaMusculoEsqueletico
-        fields = [
-            'motivo_consulta',
-            'comentarios',
-
-        ]
-
-
-# ----------------------------------------------------
-# Formulario 2: Datos generales y vivienda
-# ----------------------------------------------------
-class CuestionarioParte2FormME(forms.ModelForm):
-    # Campos que usan ArrayField y necesitan una configuración especial
+class HistoriaClinicaMusculoEsqueleticoCompletoForm(forms.ModelForm):
+    # ----------------------------------------------------
+    # CAMPOS ARRAYFIELD (USANDO CheckboxSelectMultiple)
+    # ----------------------------------------------------
     servicio_vivienda = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.SERVICIOS_VIVIENDA_CHOICES),
@@ -1028,46 +1172,6 @@ class CuestionarioParte2FormME(forms.ModelForm):
         label='Alimentación'
     )
 
-    class Meta:
-        model = HistoriaClinicaMusculoEsqueletico
-        fields = [
-            'GradoInstruccion',
-            'inmunizaciones_o_vacunas',
-            'baño_diario',
-            'aseo_dental',
-            'lavado_manos_antes_comer',
-            'lavado_manos_despues',
-            'tamanio_vivienda',
-            'tipo_vivienda',
-            'servicio_vivienda',
-            'enfermedad_actual',
-            'Antecedentes_familiares',
-            'habitos_toxicos',
-            'Allimentación',
-            'Ingesta_Agua',
-            'Cantidad_veces_Orina',
-            'Catarsis',
-            'Somnia',
-            'Infancia',
-            'Adulto',
-            'Patologias',
-            'ha_sido_operado',
-            'fecha_operacion',
-            'traumatismo_o_fractura',
-            'Otro'
-        ]
-
-        widgets = {
-            'baño_diario': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
-            'aseo_dental': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
-            'lavado_manos_antes_comer': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
-            'lavado_manos_despues': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
-            'tamanio_vivienda': forms.RadioSelect,
-            'tipo_vivienda': forms.RadioSelect,
-            'fecha_operacion': forms.DateInput(attrs={'type': 'date'}),
-        }
-class ExamenFisicoForm(forms.ModelForm):
-    # Campo que usa ArrayField
     Tejido_celular = SimpleArrayField(
         forms.CharField(),
         widget=forms.CheckboxSelectMultiple(choices=HistoriaClinicaMusculoEsqueletico.PROBLEMAS_PIEL),
@@ -1078,26 +1182,77 @@ class ExamenFisicoForm(forms.ModelForm):
     class Meta:
         model = HistoriaClinicaMusculoEsqueletico
         fields = [
-            # Inspección general
-            'Constitucional',
-            'Marcha',
-            'Actitud',
-            'Ubicacion',
-            'Impresion_general',
-            # Signos Vitales
-            'FC',
-            'TA',
-            'FR',
-            'T_Auxiliar',
-            'T_rectal',
-            'Peso_Habitual',
-            'Peso_Actual',
-            'Talla',
-            'IMC',
-            # Piel, Faneras y Tejido celular subcutáneo
-            'Aspecto',
-            'Distribuición_pilosa',
-            'Lesiones',
-            'Faneras',
-            'Tejido_celular_subcutaneo',
+            # ... todos tus fields ...
+            'motivo_consulta', 'comentarios', 'GradoInstruccion', 'inmunizaciones_o_vacunas',
+            'baño_diario', 'aseo_dental', 'lavado_manos_antes_comer', 'lavado_manos_despues',
+            'tamanio_vivienda', 'tipo_vivienda', 'servicio_vivienda', 'enfermedad_actual',
+            'Antecedentes_familiares', 'habitos_toxicos', 'Allimentación', 'Ingesta_Agua',
+            'Cantidad_veces_Orina', 'Catarsis', 'Somnia', 'Infancia', 'Adulto',
+            'Patologias', 'ha_sido_operado', 'fecha_operacion', 'traumatismo_o_fractura', 'Otro',
+            'Constitucional', 'Marcha', 'Actitud', 'Ubicacion', 'Impresion_general',
+            'FC', 'TA', 'FR', 'T_Auxiliar', 'T_rectal', 'Peso_Habitual', 'Peso_Actual',
+            'Talla', 'IMC', 'Aspecto', 'Distribuición_pilosa', 'Lesiones', 'Faneras',
+            'Tejido_celular_subcutaneo', 'Tejido_celular',
         ]
+
+        widgets = {
+            # ----------------------------------------------------
+            # WIDGETS DE OPCIÓN MÚLTIPLE (RadioSelect)
+            # ----------------------------------------------------
+            'baño_diario': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+            'aseo_dental': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+            'lavado_manos_antes_comer': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+            'lavado_manos_despues': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+            'tamanio_vivienda': forms.RadioSelect, # Asume choices definidos en el modelo
+            'tipo_vivienda': forms.RadioSelect,     # Asume choices definidos en el modelo
+
+            'ha_sido_operado': forms.RadioSelect(choices=[('Sí', 'Sí'), ('No', 'No')]),
+
+            # ----------------------------------------------------
+            # WIDGETS DE ENTRADA CON ESTILO DE LÍNEA Y FORMATO
+            # ----------------------------------------------------
+            # TextAreas (Línea larga)
+            'motivo_consulta': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'enfermedad_actual': forms.Textarea(attrs={'rows': 3, 'class': 'input-linea-larga'}),
+            'comentarios': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'Infancia': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+            'Adulto': forms.Textarea(attrs={'rows': 2, 'class': 'input-linea-larga'}),
+
+            # TextInputs (Línea corta/normal)
+            'GradoInstruccion': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'inmunizaciones_o_vacunas': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'traumatismo_o_fractura': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Otro': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+
+            # Examen Físico - Inspección General (Línea corta)
+            'Constitucional': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Marcha': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Actitud': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Ubicacion': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Impresion_general': forms.TextInput(attrs={'class': 'input-linea-larga'}),
+
+            # Examen Físico - Piel (Línea corta)
+            'Aspecto': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Distribuición_pilosa': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Lesiones': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Faneras': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Tejido_celular_subcutaneo': forms.TextInput(attrs={'class': 'input-linea-larga'}),
+
+            # Signos Vitales y Antropometría (Números y Fechas)
+            'Ingesta_Agua': forms.NumberInput(attrs={'class': 'input-linea-corta'}),
+            'Cantidad_veces_Orina': forms.NumberInput(attrs={'class': 'input-linea-corta'}),
+            'Catarsis': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+            'Somnia': forms.TextInput(attrs={'class': 'input-linea-corta'}),
+
+            'FC': forms.NumberInput(attrs={'class': 'input-linea-corta'}),
+            'TA': forms.TextInput(attrs={'class': 'input-linea-corta'}), # TA suele ser string (ej: 120/80)
+            'FR': forms.NumberInput(attrs={'class': 'input-linea-corta'}),
+            'T_Auxiliar': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+            'T_rectal': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+            'Peso_Habitual': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+            'Peso_Actual': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+            'Talla': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+            'IMC': forms.NumberInput(attrs={'class': 'input-linea-corta', 'step': '0.1'}),
+
+            'fecha_operacion': forms.DateInput(attrs={'type': 'date'}),
+        }

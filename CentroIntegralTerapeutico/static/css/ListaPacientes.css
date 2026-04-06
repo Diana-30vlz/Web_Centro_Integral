@@ -175,3 +175,26 @@ h1 {
     color: #0d6efd; /* Texto azul de Bootstrap */
     border-color: #b9e0f2;
 }
+
+
+/* Estilo personalizado para el botón de Carnet */
+.btn-carnet {
+    background-color: #16a085; /* Verde azulado médico */
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-carnet:hover {
+    background-color: #1abc9c; /* Color más claro al pasar el mouse */
+    color: white;
+    transform: translateY(-2px); /* Efecto de levante */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-carnet i {
+    font-size: 1.1rem;
+}

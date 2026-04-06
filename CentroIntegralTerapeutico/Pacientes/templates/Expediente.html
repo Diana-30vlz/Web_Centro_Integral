@@ -24,13 +24,15 @@
             <li><strong>Teléfono:</strong> {{ paciente.telefono|default:"N/A" }}</li>
             <li><strong>Email:</strong> {{ paciente.email|default:"N/A" }}</li>
             <li><strong>Dirección:</strong> {{ paciente.direccion|default:"N/A" }}</li>
+            <li><strong>Dirección anterior:</strong> {{ paciente.Residencia_Anterior|default:"N/A" }}</li>
             <li><strong>Fecha de Registro:</strong> {{ paciente.fecha_registro|date:"d M Y H:i" }}</li>
-            <li><strong>Ocupación:</strong> {{ paciente.ocupacion|default:"N/A" }}</li>
-            <li><strong>Estado Civil:</strong> {{ paciente.estado_civil|default:"N/A" }}</li>
-            <li><strong>Nacionalidad:</strong> {{ paciente.nacionalidad|default:"N/A" }}</li>
-            <li><strong>Religión:</strong> {{ paciente.religion|default:"N/A" }}</li>
-            <li><strong>Pasatiempo:</strong> {{ paciente.pasatiempo|default:"N/A" }}</li>
-            <li><strong>Deporte que Practica:</strong> {{ paciente.deporte_que_practica|default:"N/A" }}</li>
+            <li><strong>Ocupación:</strong> {{ paciente.Ocupacion|default:"N/A" }}</li>
+            <li><strong>Estado Civil:</strong> {{ paciente.Estado_Civil|default:"N/A" }}</li>
+            <li><strong>Nacionalidad:</strong> {{ paciente.Nacionalidad|default:"N/A" }}</li>
+            <li><strong>Religión:</strong> {{ paciente.Religion|default:"N/A" }}</li>
+            <li><strong>Pasatiempo:</strong> {{ paciente.Pasatiempo|default:"N/A" }}</li>
+            <li><strong>Deporte que Practica:</strong> {{ paciente.Deporte_que_practica|default:"N/A" }}</li>
+
         </ul>
     </div>
 

@@ -1,0 +1,198 @@
+{# InventarioInsumos/templates/inventario_insumos/insumo_form.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block extra_head %}
+    <style>
+        /* Define la paleta de colores personalizada */
+        :root {
+            --insumos-primary: #343a40; 
+            --insumos-secondary: #6c757d; 
+            --insumos-accent: #28a745; 
+            --card-bg-dark: #2c2f33; 
+            --text-light: #f8f9fa; 
+        }
+
+        body {
+            background-color: #f0f2f5; 
+        }
+        
+        /* Efecto de entrada para el contenedor principal */
+        .insumo-form-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .insumo-form-container.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Estilo para el título */
+        h2 {
+            color: black; 
+            opacity: 0; 
+            transform: translateY(-20px); 
+            animation: title-fade-in 1s ease-out forwards; 
+            animation-delay: 0.3s; 
+        }
+        
+        /* Keyframes para la animación del título */
+        @keyframes title-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilo para la tarjeta del formulario */
+        .card.insumos-card {
+            background-color: var(--card-bg-dark);
+            border-radius: 15px;
+            border: 1px solid var(--insumos-secondary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.insumos-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilo para los labels */
+        .form-label {
+            color: var(--text-light);
+        }
+        
+        /* Estilo para los campos de entrada */
+        .form-control, .form-check-input {
+            background-color: #40444b;
+            border-color: #55585b;
+            color: var(--text-light);
+        }
+        
+        .form-control::placeholder {
+            color: #b0b4b8;
+        }
+        
+        .form-control:focus {
+            background-color: #40444b;
+            border-color: var(--insumos-accent); 
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); 
+            color: var(--text-light);
+        }
+
+        /* Animación para los campos al hacer clic */
+        .form-control.active-field {
+            animation: pulse-border 0.8s ease-in-out forwards;
+        }
+        
+        @keyframes pulse-border {
+            0% { border-color: #55585b; }
+            50% { border-color: var(--insumos-accent); } 
+            100% { border-color: #55585b; }
+        }
+
+        /* Estilo para los botones */
+        .btn-insumos-primary {
+            background-color: var(--insumos-primary);
+            border-color: var(--insumos-primary);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .btn-insumos-primary:hover {
+            background-color: var(--insumos-accent); 
+            border-color: var(--insumos-accent);
+            transform: scale(1.05);
+            color: white; 
+        }
+
+        .btn-insumos-secondary {
+            background-color: var(--insumos-secondary);
+            border-color: var(--insumos-secondary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-insumos-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5 insumo-form-container">
+    <h2 class="mb-4 text-center">{{ titulo }}</h2>
+    <a href="#" onclick="history.back()" class="btn btn-insumos-secondary mt-3">
+        Regresar a la página anterior
+    </a>
+    
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="card insumos-card p-4 mx-auto" style="max-width: 600px;">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text text-light small">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-insumos-primary btn-lg">Guardar Insumo</button>
+                <a href="{% url 'lista_insumos' %}" class="btn btn-insumos-secondary btn-lg">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formContainer = document.querySelector('.insumo-form-container');
+        formContainer.classList.add('fade-in');
+
+        const formFields = document.querySelectorAll('.form-control');
+        formFields.forEach(field => {
+            field.addEventListener('focus', function() {
+                formFields.forEach(f => f.classList.remove('active-field'));
+                this.classList.add('active-field');
+            });
+            
+            field.addEventListener('blur', function() {
+                this.classList.remove('active-field');
+            });
+        });
+    });
+</script>
+{% endblock %}

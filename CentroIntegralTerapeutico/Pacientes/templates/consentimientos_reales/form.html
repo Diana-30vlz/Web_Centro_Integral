@@ -1,0 +1,16 @@
+{% extends "BaseSinInicio.html" %}
+{% block title %}Crear Consentimiento Legal{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card p-4">
+        <h2 class="text-center">Crear Consentimiento Legal para {{ paciente.nombre }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success mt-3">Guardar Consentimiento</button>
+            <a href="{% url 'consentimiento_real_list' paciente.pk %}" class="btn btn-secondary mt-3">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

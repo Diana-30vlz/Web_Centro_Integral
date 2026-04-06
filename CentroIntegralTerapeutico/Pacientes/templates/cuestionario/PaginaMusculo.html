@@ -1,0 +1,750 @@
+{% extends "BaseSinInicio.html" %}
+
+{% block title %}Historial MusculoEsqueletico - Formulario Unificado{% endblock %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/form_base.css' %}">
+
+<style>
+    /* ----------------------------------------------------------------- */
+    /* CSS PARA SIMULAR EL DISEÑO DE PAPEL Y CAJITAS (FORMAL - FINAL) */
+    /* AJUSTES PARA ALINEACIÓN VERTICAL Y RADIO BUTTONS CIRCULARES */
+    /* ----------------------------------------------------------------- */
+    
+    /* Titulo de la página (fuera del contenedor principal) */
+    .header-presentacion {
+        font-size: 26px;
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #44916f; 
+        text-align: center;
+        padding: 20px;
+        margin: -30px auto;
+        border-bottom: 2px solid #25443f;
+        margin-top: 0px;
+    }
+    
+/*
+ * Contenedor Principal: Es donde aplicamos el estilo "papel" y el tamaño de fuente.
+ */
+.paper-form-container {
+    max-width: 800px;
+    margin: 25px auto 40px auto; 
+    padding: 40px 30px; 
+    
+    background-color: #fcfcfc; 
+    
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15); 
+    font-family: 'Times New Roman', Times, serif;
+    
+    /* CAMBIO CLAVE: Tamaño de fuente base para todo el contenido */
+    font-size: 9px; 
+    
+    color: #333;
+    position: relative; 
+    z-index: 1; 
+}
+
+/* Marca de agua (manteniendo tus estilos) */
+.paper-form-container::before {
+    content: ""; /* Obligatorio */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    background-image: url("{% static 'img/logo.png' %}");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50%;
+    
+    opacity: 0.15; 
+    z-index: -1; 
+    pointer-events: none; 
+}
+
+    /* Título y Encabezado */
+    .header-logo-title {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        align-items: center;
+        margin-bottom: 30px; 
+    }
+    .logo-cit {
+        font-size: 20px; 
+        font-weight: bold;
+        color: #0044aa;
+        line-height: 1;
+    }
+    .title-hc {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: right;
+        border-bottom: 3px solid #000;
+        padding: 5px 0; 
+        border: 10px;
+        margin-top: 55px;
+    }
+
+    /* Contenedores de Campo (Field Groups) */
+    .form-field-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px; 
+        margin-bottom: 10px; /* Reducido para espacio compacto */
+    }
+    
+    /* Estilo para un campo individual (Label + Input/Textarea) */
+    .field-line-item {
+        display: flex;
+        align-items: flex-end; 
+        flex-grow: 1;
+        min-width: 150px; 
+        font-weight: bold; 
+        margin-bottom: 1px; /* Reducido para espacio compacto */
+        margin-right: 30px;
+    }
+    .field-line-item label {
+        margin-right: 5px;
+        white-space: nowrap;
+        font-weight: bold; 
+    }
+    .field-line-item .field-label-sub {
+        font-weight: normal; 
+        margin-left: 10px;
+    }
+
+    /* La línea de llenado (CLAVE: Input, Select, Textarea) */
+    .field-line {
+        flex-grow: 1;
+        border: none;
+        border-bottom: 1px solid #000;
+        padding: 0 5px 1px 5px; 
+        background: transparent;
+        
+        /* Ajuste de tamaño de fuente para inputs para que coincida con el texto base */
+        font-size: 13px !important; 
+        height: 1.4em; 
+        min-width: 50px;
+    }
+    
+    /* Línea que ocupa todo el ancho */
+    .full-width-line {
+        width: 100%;
+        margin-bottom: 10px; /* Reducido para espacio compacto */
+    }
+    .full-width-line .field-line {
+        width: 100%;
+    }
+
+    /* Títulos de Sección (las cajas grises del PDF) */
+    .section-title-box {
+        background-color: #5dd6caff; 
+        padding: 6px 12px; 
+        margin-top: 20px; 
+        margin-bottom: 8px;
+        font-weight: bold;
+        border: 1px solid #50c8bc;
+        font-size: 12.5px; 
+        color: #1a1a1a;
+    }
+
+    /* --- Estilo para Checkboxes y Radio Buttons (BASE) --- */
+    
+    /* Estilo para Radio Buttons de Sí/No (Habitos) */
+    .radio-line-group {
+        display: flex;
+        gap: 15px; 
+        align-items: center; 
+    }
+    
+    /* Etiqueta de la pregunta (Baño diario:, Aseo dental:, etc.) */
+    .radio-line-group .field-label-sub {
+        font-size: 11.5px; 
+        font-weight: bold; 
+        margin-right: 5px;
+        align-self: center;
+        text-align: right; 
+        display: block;
+    }
+    
+    /* Estilo para las grillas de Checkboxes (Separación clara) */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); 
+        gap: 8px 15px; 
+        padding: 5px 0; 
+        width: 100%;
+    }
+    .checkbox-grid.col-3 { grid-template-columns: repeat(3, 1fr); }
+    .checkbox-grid.col-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .checkbox-paper-item {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        padding: 1px 2px; 
+        transition: background-color 0.1s;
+        cursor: pointer;
+        font-size: 9px; 
+    }
+    .checkbox-paper-item:hover {
+        background-color: #f7f7f7; 
+    }
+    
+    /* El INPUT en sí (la casilla sin marcar) - Aplica a Checkbox y Radio */
+    .checkbox-paper-item input[type="checkbox"],
+    .checkbox-paper-item input[type="radio"] {
+        appearance: none;
+        width: 10px; 
+        height: 10px; 
+        border: 1px solid #555; 
+        background-color: #fff;
+        margin-right: 1px; 
+        flex-shrink: 0;
+        position: relative;
+        top: 1px;
+        cursor: pointer;
+        text-align: left;
+    }
+    
+    /* Checkboxes (FORZAMOS CÍRCULOS A TODOS LOS CHECKBOXES) */
+    .checkbox-paper-item input[type="checkbox"] {
+        border-radius: 50%; 
+    }
+    
+    /* Radio Buttons (ya eran circulares) */
+    .checkbox-paper-item input[type="radio"] {
+        border-radius: 50%; 
+    }
+
+    /* El INPUT marcado (la casilla rellena) - Aplica a Checkbox y Radio */
+    .checkbox-paper-item input[type="checkbox"]:checked,
+    .checkbox-paper-item input[type="radio"]:checked {
+        border: 1px solid #1a1a1a; 
+        background-color: #1a1a1a; 
+        box-shadow: none; 
+    }
+
+    /* Estilos adicionales para los campos dentro del div.form-body */
+    .form-body p {
+        margin-bottom: 8px; 
+    }
+    .form-body h3 {
+        font-size: 11px; 
+        margin-top: 15px; 
+        margin-bottom: 5px; 
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 3px; 
+        font-weight: bold;
+    }
+    .form-body label#campo {
+        font-weight: bold;
+        margin-right: 5px;
+        white-space: nowrap;
+        display: inline-block; 
+    }
+    .form-body input[type="text"], .form-body textarea, .form-body select {
+        width: 98%; 
+        box-sizing: border-box;
+    }
+    .form-body textarea {
+        height: 40px; 
+    }
+    .form-group-horizontal {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 8px; 
+    }
+    .form-group-horizontal label#campo {
+        flex-shrink: 0;
+    }
+    .radio-button-group {
+        display: flex;
+        gap: 10px; 
+    }
+    /* Estilos para RadioSelect/CheckboxSelectMultiple en formato de "papel" */
+    .checkbox-card-group, .radio-card-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px; 
+        border: 1px solid #ddd;
+        padding: 5px 8px; 
+        background-color: #f9f9f9;
+        margin-top: 3px;
+    }
+    .checkbox-card-group label, .radio-card-group label {
+        display: flex;
+        align-items: center;
+        font-size: 9px; 
+        font-weight: normal;
+        cursor: pointer;
+    }
+    .checkbox-card-group input[type="checkbox"], .radio-card-group input[type="radio"] {
+        appearance: none;
+        width: 10px; 
+        height: 10px; 
+        border: 1px solid #555; 
+        background-color: #fff;
+        margin-right: 2px; 
+        flex-shrink: 0;
+        position: relative;
+        top: 1px;
+        cursor: pointer;
+    }
+    .checkbox-card-group input[type="checkbox"] {
+        border-radius: 50%; 
+    }
+    .checkbox-card-group input[type="checkbox"]:checked, .radio-card-group input[type="radio"]:checked {
+        border: 1px solid #1a1a1a; 
+        background-color: #1a1a1a; 
+    }
+
+    /* Sobrescribir estilos genéricos para que usen el estilo de línea delgada */
+    textarea, input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="date"]):not([type="number"]):not([type="button"]):not([type="reset"]), select {
+        border: none !important;
+        border-bottom: 1px solid #000 !important;
+        padding: 0 5px 1px 5px !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        
+        font-size: 9px !important; 
+        height: 1.4em;
+    }
+    /* Estilos específicos para campos de fecha y número */
+    .field-line[type="date"], .field-line[type="number"] {
+        width: 100px; 
+        flex-grow: 0;
+        margin-right: 15px;
+        border: none !important;
+        border-bottom: 1px solid #000 !important;
+        height: 1.4em;
+    }
+    
+    /* --- Estilos para Botones de Navegación (NUEVOS/AJUSTADOS) --- */
+    .form-navigation {
+        margin-top: 30px;
+        text-align: right; /* Alineamos a la derecha para formularios de historia clínica */
+        /* display: flex;
+        justify-content: flex-end; */ /* Alternativa si se necesita más control de espaciado */
+    }
+    .btn-wizard {
+        padding: 8px 20px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-left: 10px; /* Espacio entre botones */
+    }
+    /* Estilo para el botón principal (Guardar/Siguiente) */
+    .btn-siguiente {
+        background-color: #44916f;
+        color: white;
+    }
+    .btn-siguiente:hover {
+        background-color: #38765a;
+    }
+    /* Estilo para el botón Anterior */
+    .btn-anterior {
+        background-color: #e0e0e0;
+        color: #333;
+    }
+    .btn-anterior:hover {
+        background-color: #cccccc;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contenedor formulario-wizard">
+    <div class="header-presentacion">
+        <h2 class="titulo-paso">{{ step_title|default:"HISTORIAL MUSCULOESQUELÉTICO COMPLETO" }}</h2> 
+    </div>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        
+        <div class="paper-form-container">
+            
+            <div class="header-logo-title">
+                <div class="logo-cit">
+                    <img src="{% static 'img/logo.png' %}" alt="Logo" style="max-width: 100%; height: auto;">
+                </div>
+                <div class="title-hc">HISTORIA CLÍNICA MÚSCULO-ESQUELÉTICO</div>
+            </div>
+
+            <div class="section-title-box">DATOS DE IDENTIFICACIÓN</div>
+            <div class="form-field-group">
+                <div class="field-line-item" style="flex-grow: 2;">
+                    <label>Nombre:</label>
+                    <span class="field-line">{{ paciente.nombre }} {{ paciente.apellido_paterno }}</span>
+                </div>
+                <div class="field-line-item">
+                    <label>Nacimiento:</label>
+                    <span class="field-line">{{ paciente.fecha_nacimiento }}</span>
+                </div>
+                <div class="field-line-item" style="min-width: 100px;">
+                    <label>Sexo:</label>
+                    <span class="field-line">{{ paciente.genero }}</span>
+                </div>
+            </div>
+            
+            <div class="form-field-group">
+                <div class="field-line-item">
+                    <label>No. de historia clínica:</label>
+                    <span class="field-line">{{ historia_clinica.no_historia_clinica|default:"(Automático)" }}</span> 
+                </div>
+                <div class="field-line-item">
+                <label>Fecha de Registro:</label>
+                <span class="field-line">{% now "Y-m-d" %}</span>
+                </div>
+
+
+            </div>
+            <div class="form-body">
+                
+                <div class="section-title-box" style="margin-top: 30px;">MOTIVO DE LA CONSULTA</div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label for="{{ form.motivo_consulta.id_for_label }}">Motivo de Consulta:</label>
+                        {% render_field form.motivo_consulta class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item" >
+                        <label for="{{ form.comentarios.id_for_label }}">Comentarios:</label>
+                        {% render_field form.comentarios class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+
+                <div class="section-title-box" style="margin-top: 30px;">INFORMACIÓN GENERAL Y HÁBITOS</div>
+
+                <div class="form-field-group">
+                    <div class="field-line-item" style="min-width: 250px;">
+                        <label for="{{ form.GradoInstruccion.id_for_label }}">Grado de Instrucción:</label>
+                        {% render_field form.GradoInstruccion class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="flex-grow: 2;">
+                        <label for="{{ form.inmunizaciones_o_vacunas.id_for_label }}">Inmunizaciones o Vacunas:</label>
+                        {% render_field form.inmunizaciones_o_vacunas class="field-line" %}
+                    </div>
+                </div>
+                
+
+
+                <div class="form-field-group" style="flex-direction: column;">
+                    <div class="field-line-item">
+                        <label>Hábitos higiénicos:</label>
+                    </div> 
+
+                    <div class="checkbox-grid col-2" style="grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        
+                        <div class="radio-line-group">
+                            <label class="field-label-sub">Baño diario:</label>
+                            {% for radio in form.baño_diario %}
+                                <label class="checkbox-paper-item" style="font-size: 12.5px;font-style: italic; ">{{ radio.tag }} {{ radio.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="radio-line-group">
+                            <label class="field-label-sub">Aseo dental:</label>
+                            {% for radio in form.aseo_dental %}
+                                <label class="checkbox-paper-item" style="font-size: 12.5px;font-style: italic;">{{ radio.tag }} {{ radio.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="radio-line-group">
+                            <label class="field-label-sub">Lavado de manos antes de comer:</label>
+                            {% for radio in form.lavado_manos_antes_comer %}
+                                <label class="checkbox-paper-item" style="font-size: 12.5px;font-style: italic;">{{ radio.tag }} {{ radio.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="radio-line-group">
+                            <label class="field-label-sub">Lavado de manos después de ir al baño:</label>
+                            {% for radio in form.lavado_manos_despues %}
+                                <label class="checkbox-paper-item" style="font-size: 12.5px;font-style: italic;">{{ radio.tag }} {{ radio.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="form-field-group" style="flex-direction: column; flex-grow: 1;">
+                    <div class="field-line-item">
+                        <label>Tamaño de vivienda:</label>
+                    </div> 
+                    
+                    <div class="checkbox-grid col-2" style="grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div class="radio-line-group" style="flex-direction: column; align-items: flex-start; margin-right: 20px;">
+                            <div style="display: flex; gap: 10px;">
+                                {% for radio in form.tamanio_vivienda %}
+                                    <label class="checkbox-paper-item" style="font-size: 12.5px;font-style: italic; text-align: center;">{{ radio.tag }} {{ radio.choice_label }}</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="field-line-item" style="min-width: 250px;">
+                        <label>Tipo de Vivienda:</label>
+                        <div class="radio-card-group">
+                            {% for choice in form.tipo_vivienda %}
+                                <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id = 'campo' >Servicios con los que cuenta la vivienda:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.servicio_vivienda %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h3>Antecedentes Familiares</h3>
+                <div class="form-group">
+                    <label id = 'campo'>Antecedentes Familiares:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.Antecedentes_familiares %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <h3>Antecedentes Personales y Patologías</h3>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label for="{{ form.enfermedad_actual.id_for_label }}">Enfermedad Actual:</label>
+                        {% render_field form.enfermedad_actual class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hábitos Tóxicos:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.habitos_toxicos %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <h3>Antecedentes Fisiológicos</h3>
+
+                <div class="form-group">
+                    <label id ='campo'>Alimentación:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.Alimentacion %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div class="field-line-item" style="min-width: 200px;">
+                        <label for="{{ form.Ingesta_Agua.id_for_label }}">Ingesta de Agua (litros):</label>
+                        {% render_field form.Ingesta_Agua class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 250px;">
+                        <label for="{{ form.Cantidad_veces_Orina.id_for_label }}">Cantidad de veces que Orina:</label>
+                        {% render_field form.Cantidad_veces_Orina class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 200px;">
+                        <label for="{{ form.Catarsis.id_for_label }}">Catarsis:</label>
+                        {% render_field form.Catarsis class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 200px;">
+                        <label for="{{ form.Somnia.id_for_label }}">Somnia:</label>
+                        {% render_field form.Somnia class="field-line" %}
+                    </div>
+                </div>
+
+                <h3>Antecedentes Patológicos</h3>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label for="{{ form.Infancia.id_for_label }}">Infancia:</label>
+                        {% render_field form.Infancia class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label for="{{ form.Adulto.id_for_label }}">Adulto:</label>
+                        {% render_field form.Adulto class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Patologías:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.Patologias %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-field-group">
+                    <div class="form-group-horizontal">
+                        <label id = 'campo'>¿Ha sido operado?</label>
+                        <div class="radio-button-group">
+                            {% for choice in form.ha_sido_operado %}
+                                <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="field-line-item">
+                        <label id = 'campo' for="{{ form.fecha_operacion.id_for_label }}">Fecha de Operación:</label>
+                        {% render_field form.fecha_operacion class="field-line" type="date" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label id = 'campo' for="{{ form.traumatismo_o_fractura.id_for_label }}">Traumatismo o Fractura:</label>
+                        {% render_field form.traumatismo_o_fractura class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label for="{{ form.Otro.id_for_label }}">Otro (Especificar):</label>
+                        {% render_field form.Otro class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+                
+                <div class="section-title-box" style="margin-top: 30px;">EXAMEN FÍSICO</div>
+                
+                <h3>Inspección General</h3>
+                <div class="form-field-group">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Constitucional.id_for_label }}">Constitucional:</label>
+                        {% render_field form.Constitucional class="field-line" %}
+                    </div>
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Marcha.id_for_label }}">Marcha:</label>
+                        {% render_field form.Marcha class="field-line" %}
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Actitud.id_for_label }}">Actitud:</label>
+                        {% render_field form.Actitud class="field-line" %}
+                    </div>
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Ubicacion.id_for_label }}">Ubicación:</label>
+                        {% render_field form.Ubicacion class="field-line" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Impresion_general.id_for_label }}">Impresión General:</label>
+                        {% render_field form.Impresion_general class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+
+                <h3>Signos Vitales y Antropometría</h3>
+                <div class="form-field-group">
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.FC.id_for_label }}">F. Cardiaca (FC):</label>
+                        {% render_field form.FC class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.TA.id_for_label }}">T. Arterial (TA):</label>
+                        {% render_field form.TA class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.FR.id_for_label }}">F. Resp. (FR):</label>
+                        {% render_field form.FR class="field-line" %}
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.T_Auxiliar.id_for_label }}">T. Auxiliar:</label>
+                        {% render_field form.T_Auxiliar class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.T_rectal.id_for_label }}">T. Rectal:</label>
+                        {% render_field form.T_rectal class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.Peso_Habitual.id_for_label }}">P. Habitual:</label>
+                        {% render_field form.Peso_Habitual class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.Peso_Actual.id_for_label }}">P. Actual:</label>
+                        {% render_field form.Peso_Actual class="field-line" %}
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.Talla.id_for_label }}">Talla:</label>
+                        {% render_field form.Talla class="field-line" %}
+                    </div>
+                    <div class="field-line-item" style="min-width: 120px;">
+                        <label id='campo' for="{{ form.IMC.id_for_label }}">I.M.C.:</label>
+                        {% render_field form.IMC class="field-line" %}
+                    </div>
+                </div>
+
+                <h3>Piel, Faneras y Tejido Celular Subcutáneo</h3>
+                <div class="form-field-group">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Aspecto.id_for_label }}">Aspecto:</label>
+                        {% render_field form.Aspecto class="field-line" %}
+                    </div>
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Distribuición_pilosa.id_for_label }}">Distribución pilosa:</label>
+                        {% render_field form.Distribuición_pilosa class="field-line" %}
+                    </div>
+                </div>
+                <div class="form-field-group">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Lesiones.id_for_label }}">Lesiones:</label>
+                        {% render_field form.Lesiones class="field-line" %}
+                    </div>
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Faneras.id_for_label }}">Faneras:</label>
+                        {% render_field form.Faneras class="field-line" %}
+                    </div>
+                </div>
+                <div class="full-width-line">
+                    <div class="field-line-item">
+                        <label id='campo' for="{{ form.Tejido_celular_subcutaneo.id_for_label }}">Tejido celular subcutáneo:</label>
+                        {% render_field form.Tejido_celular_subcutaneo class="field-line" style="height: 30px;" %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id='campo'>Tejido celular:</label>
+                    <div class="checkbox-card-group">
+                        {% for choice in form.Tejido_celular %}
+                            <label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+            
+            </div>
+            
+            <div class="form-navigation">
+                <a href="{% url 'historia_clinica_paciente_me' pk=paciente.pk %}" class="btn-wizard btn-anterior" title="Regresar">
+                        &#x2b9c;
+                    </a>
+                
+                <button type="submit" class="btn-wizard btn-siguiente">
+                    {% if wizard.steps.last %}
+                        Guardar Historial
+                    {% else %}
+                        Siguiente &#x2b9e;
+                    {% endif %}
+                </button>
+            </div>
+        </div> 
+    </form>
+</div>
+{% endblock %}

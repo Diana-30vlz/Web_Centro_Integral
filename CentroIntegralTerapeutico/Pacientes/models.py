@@ -7,7 +7,17 @@ from django.contrib.auth.models import User, AbstractUser # Importamos el modelo
 from django.core.validators import RegexValidator
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings # ¡Paso 1: Importar settings!
+# ... (Tus importaciones)
 
+# Define la función de valor por defecto para ArrayField (debe devolver una lista)
+def get_default_servicios():
+    return []
+
+# Si quieres que Hábitos Tóxicos inicie con 'No aplica', usa esta:
+def get_default_habitos_toxicos():
+    return ['No aplica']
+
+# ... (Continúa con la definición de tus modelos)
 
 # Create your models here.
 
@@ -119,7 +129,28 @@ class Paciente(models.Model):
     email = models.EmailField(blank=True, null=True) # Uso null=True para la BD
     direccion = models.TextField(blank=True, null=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
+    edad = models.PositiveIntegerField(blank=True, null = True, verbose_name='')
+    #Nuevos campos
+    Estados_civiles = (
+        ('Soltero/a', 'Soltero/a'),
+        ('Casado/a', 'Casado'),
+        ('Divorciado/a', 'Divorciado/a'),
+        ('Viudo/a', 'Viudo/a'),
+        ('Separado/a', 'Separado/a'),
+        ('Unión_libre', 'Unión libre')
+         )
+    Nacionalidad = (
+        ('Mexicana', 'Mexicana'),
+        ('Extranjero', 'Extranjero')
+    )
 
+    Ocupacion = models.CharField(blank=True, null=True, max_length=25)
+    Estado_Civil = models.CharField(blank=True, null=True, max_length=25, choices=Estados_civiles)
+    Nacionalidad = models.CharField(blank=True, null=True, max_length=25, choices=Nacionalidad)
+    Residencia_Anterior = models.CharField(blank=True, null=True, help_text='En caso de aplicar', max_length=50)
+    Religion = models.CharField(blank=True, null=True, max_length=25)
+    Pasatiempo = models.CharField(blank=True, null=True, max_length=25)
+    Deporte_que_practica = models.CharField(blank=True, null=True, max_length=25)
     numero_expediente = models.CharField(max_length=50, unique=True, blank=True, null=True)
     doctor_responsable = models.ForeignKey(
         Doctor,
@@ -140,6 +171,25 @@ class Paciente(models.Model):
     class Meta:
         verbose_name = "Paciente"
         verbose_name_plural = "Pacientes"
+#####
+    def calcular_edad(self):
+        """Calcula edad a partir de fecha_nacimiento (int) o devuelve None)."""
+        if not self.fecha_nacimiento:
+            return None
+        today = date.today()
+        born = self.fecha_nacimiento
+        return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+    @property
+    def edad_calculada(self):
+        """Edad calculada al vuelo (propiedad de solo lectura)."""
+        return self.calcular_edad()
+
+    def save(self, *args, **kwargs):
+        """Actualiza el campo 'edad' en la BD antes de guardar (si hay fecha)."""
+        # Asigna al campo del modelo 'edad' — NO debe existir una @property llamada 'edad'
+        self.edad = self.calcular_edad() if self.fecha_nacimiento else None
+        super().save(*args, **kwargs)
 
 
 
@@ -199,13 +249,26 @@ class Cita(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
+    # CAMPO AÑADIDO PARA LA ASISTENCIA
+    ASISTENCIA_CHOICES = [
+        ('S', 'Sí asistió'),
+        ('N', 'No asistió'),
+        ('P', 'Pendiente'),
+    ]
+    asistencia = models.CharField(
+        max_length=1,
+        choices=ASISTENCIA_CHOICES,
+        default='P',
+        verbose_name="Asistencia a Cita"
+    )
+
     class Meta:
         verbose_name = "Cita"
         verbose_name_plural = "Citas"
         ordering = ['fecha', 'hora_inicio'] # Ordena las citas por fecha y luego por hora
         unique_together = ('doctor', 'fecha', 'hora_inicio') # Un doctor no puede tener dos citas a la misma hora en la misma fecha
 
-    def _str_(self):
+    def __str__(self):
         doctor_str = self.doctor.username if self.doctor else "Sin Doctor"
         return f"Cita de {self.paciente.nombre} con {doctor_str} el {self.fecha} a las {self.hora_inicio}"
 
@@ -216,6 +279,9 @@ class Cita(models.Model):
             from django.core.exceptions import ValidationError
             raise ValidationError('La hora de inicio debe ser anterior a la hora de fin.')
         # Aquí podrías añadir validación para no superponer citas, etc.
+
+
+
 
 
 
@@ -234,6 +300,43 @@ class ConsentimientoInformado(models.Model):
     def __str__(self):
         return f"Consentimiento simplificado de {self.nombre} ({self.fecha})"
 
+class ConsentimientoInformadoReal(models.Model):
+    # Todas las siguientes líneas deben tener la misma indentación (4 espacios)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='consentimientos_reales')
+    medico_responsable = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    # Campos del formulario del PDF
+    tratamiento = models.CharField(max_length=255, null=True, blank=True)
+    fecha_procedimiento = models.DateField(verbose_name="Fecha del Procedimiento")
+
+    tuvo_tratamiento_similar = models.BooleanField(default=False, verbose_name="¿Tuvo tratamiento similar?")
+    cual_tratamiento = models.CharField(max_length=255, blank=True, null=True, verbose_name="¿Cuál tratamiento?")
+    hace_cuanto_tiempo = models.CharField(max_length=100, blank=True, null=True, verbose_name="¿Hace cuánto tiempo?")
+    nombre_medico_autorizado = models.CharField(
+        max_length=255,
+        verbose_name="Médico que autoriza",
+        default='Jaqueline Vázquez Gómez'
+    )
+    nombre_producto_aplico = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nombre del producto aplicado")
+    reaccion_duro = models.CharField(max_length=100, blank=True, null=True, verbose_name="Duración de la reacción")
+
+    alergia_medicamento = models.CharField(max_length=255, blank=True, null=True, verbose_name="Alérgico a qué medicamento")
+    insuficiencia_hepatica = models.BooleanField(default=False, verbose_name="Sufre de insuficiencia hepática")
+    insuficiencia_renal = models.BooleanField(default=False, verbose_name="Sufre de insuficiencia renal")
+
+    emergencia_llamar_a = models.CharField(max_length=255, verbose_name="Contacto de emergencia")
+    emergencia_telefono = models.CharField(max_length=20, verbose_name="Teléfono de emergencia")
+
+    identificacion_oficial = models.CharField(max_length=100, verbose_name="Identificación Oficial")
+    nombre_testigo = models.CharField(max_length=255, verbose_name="Nombre del Testigo")
+
+    # Se eliminaron los comentarios extra y se aseguró la indentación
+    domicilio = models.CharField(max_length=255, verbose_name="Domicilio", blank=True, default='')
+
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"Consentimiento Real de {self.paciente} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
 
 
 
@@ -241,8 +344,6 @@ class ConsentimientoInformado(models.Model):
 
 
 
-def get_default_servicios():
-    return ['-----']
 
 
 
@@ -386,10 +487,10 @@ class HistoriaClinica(models.Model):
     fum = models.DateField(blank=True, null=True)
     fpp = models.DateField(blank=True, null=True)
     edad_gestacional = models.IntegerField(blank=True, null=True)
-    menarquia = models.IntegerField(blank=True, null=True)
+    menarquia = models.CharField(blank=True, null=True)
     rm_rit_menstr = models.CharField(max_length=50, blank=True, null=True)
     irs = models.CharField(max_length=50, blank=True, null=True)
-    no_de_parejas = models.IntegerField(blank=True, null=True)
+    no_de_parejas = models.CharField(blank=True, null=True)
     flujo_genital = models.CharField(max_length=100, blank=True, null=True)
     gestas = models.IntegerField(blank=True, null=True)
     partos = models.IntegerField(blank=True, null=True)
@@ -726,14 +827,12 @@ class HistoriaClinica(models.Model):
 
 
 
-
 class Receta(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     medico = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     fecha = models.DateField(auto_now_add=True)
     diagnostico = models.TextField()
-    medicamento = models.TextField()
-    indicaciones = models.TextField()
+
 
     # Campos existentes para la receta
     edad = models.IntegerField(null=True, blank=True)
@@ -757,7 +856,8 @@ class Receta(models.Model):
 
 class HistoriaClinicaMusculoEsqueletico(models.Model):
     id = models.AutoField(primary_key=True)
-    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='PacienteHistoriaClinicaME')
+    no_historia_clinica = models.CharField(max_length=50, blank=True, null=True, verbose_name="Número de Historia Clínica")
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales_musculoesqueleticos')
     fecha_registro = models.DateField(auto_now_add=True, verbose_name="Fecha de Registro")
     comentarios = models.TextField(blank=True, null=True, verbose_name="ComentariosAdicionales")
     GradoInstruccion = models.CharField(max_length=255, blank=True, null=True)
@@ -919,3 +1019,20 @@ class HistoriaClinicaMusculoEsqueletico(models.Model):
         ('No aplica', 'No aplica'),
     ]
     Tejido_celular = ArrayField(models.CharField(max_length=100, blank=True, null=True, choices=PROBLEMAS_PIEL, verbose_name='Tejido celular', default =get_default_servicios ))
+
+    def save(self, *args, **kwargs):
+        # Solo calculamos el número de historia si es un registro nuevo
+        # Y si el campo no_historia_clinica está vacío
+        if not self.pk and not self.no_historia_clinica:
+
+            # 1. Contar cuántos historiales existen para este paciente
+            # Usamos filter(paciente=self.paciente) para obtener solo los del paciente actual
+            # Usamos .count() para saber el número total (N)
+            siguiente_numero = self.paciente.historiales_musculoesqueleticos.count() + 1
+
+            # 2. Formatear el número como una cadena (p. ej., "ME-1", "ME-2")
+            # Esto es opcional, pero ayuda a identificar que es un historial Musculoesquelético
+            self.no_historia_clinica = f"ME-{siguiente_numero}"
+
+        # Guardar el objeto
+        super().save(*args, **kwargs)

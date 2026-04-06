@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator
 # Inventario/models.py
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.conf import settings
 
 
 User = get_user_model() 
@@ -71,8 +72,50 @@ class Medicamento(models.Model):
         
 # --- NUEVOS MODELOS PARA EL PUNTO DE VENTA ---
 
+
+
+
+
+
+
+
+class CorteDeCaja(models.Model):
+    # --- AÑADE ESTAS LÍNEAS ---
+    ROL_CHOICES = (
+        ('doctora', 'Doctora'),
+        ('farmacia', 'Farmacia'),
+    )
+    rol = models.CharField(max_length=10, choices=ROL_CHOICES, verbose_name="Rol del Corte")
+    # --- FIN DE LAS LÍNEAS A AÑADIR ---
+
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Usuario")
+    fecha_apertura = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Apertura")
+    fecha_cierre = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Cierre")
+    
+    fondo_inicial = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Fondo Inicial en Caja")
+    monto_final_contado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Monto Final Contado")
+    
+    total_ventas_calculado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Total de Ventas (Calculado)")
+    diferencia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Diferencia")
+    
+    is_open = models.BooleanField(null=True, blank=True,verbose_name="¿Está abierto?")
+
+    def __str__(self):
+        return f"Corte de {self.get_rol_display()} ({self.usuario.username}) - {self.fecha_apertura.strftime('%d/%m/%Y')}"
+
+
+
+
+
+
+
+
+
+
 class Venta(models.Model):
     """Representa una transacción de venta."""
+    corte = models.ForeignKey(CorteDeCaja, on_delete=models.SET_NULL, null=True, blank=True, related_name='ventas')
+
     farmaceuta = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ventas')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_finalizacion = models.DateTimeField(null=True, blank=True)
@@ -100,3 +143,13 @@ class ItemVenta(models.Model):
 
     def __str__(self):
         return f"{self.cantidad} x {self.medicamento.nombre} en Venta #{self.venta.pk}"        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

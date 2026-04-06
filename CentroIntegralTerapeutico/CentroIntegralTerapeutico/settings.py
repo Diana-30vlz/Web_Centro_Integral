@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s&7s(!9)mle=gz1y&!npcobj%z8dhr5^2va%^v^j$cz8x-3)_#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'CentroIntegral.pythonanywhere.com' ]
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Pacientes',
     'Inventario',
     'InventarioInsumos',
+    'widget_tweaks'
 
 ]
 
@@ -60,7 +61,8 @@ ROOT_URLCONF = 'CentroIntegralTerapeutico.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # ¡Esta línea es la más importante!
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,6 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Pacientes.context_processors.user_roles_processor',
+
             ],
         },
     },
@@ -82,11 +86,11 @@ WSGI_APPLICATION = 'CentroIntegralTerapeutico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myappdb',
-        'USER': 'myappuser',
-        'PASSWORD': 'gansito',
+        'NAME': 'myappdb',  # O el nombre de tu base de datos si es diferente
+        'USER': 'myappuser',  # O tu nombre de usuario si es diferente
+        'PASSWORD': '1234',
         'HOST': 'CentroIntegral-4779.postgres.pythonanywhere-services.com',
-        'PORT': 14779,
+        'PORT': '14779',
     }
 }
 
@@ -156,7 +160,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SESSION_COOKIE_AGE = 40 * 60
+SESSION_COOKIE_AGE = 8 * 60 * 60  # 28800 segundos
+
 # 4. Forzar el uso de HTTPS y HSTS
 # Django redirigirá todo el tráfico de HTTP a HTTPS.
 SECURE_SSL_REDIRECT = True

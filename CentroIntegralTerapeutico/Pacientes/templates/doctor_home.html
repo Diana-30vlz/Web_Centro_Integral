@@ -4,8 +4,53 @@
 {% block title %}Panel de Control - Dr.{% endblock %}
 
 {% block extra_head %}
+    <!-- Estilos principales -->
     <link rel="stylesheet" href="{% static 'css/doctor_home.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Bootstrap Icons primero -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- Font Awesome después (mantiene tus íconos anteriores intactos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        .dashboard-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: .25rem;
+        }
+
+        .dashboard-card-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .card-icon-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        background-color: rgba(0, 0, 0, 0.05);
+        margin-bottom: 10px;
+        }
+
+        .card-icon-container i {
+        font-size: 2rem;
+        color: inherit;
+        }
+
+        .card-icon-container[data-color="primary"] { color: #0d6efd; background-color: rgba(13,110,253,0.1); }
+        .card-icon-container[data-color="success"] { color: #198754; background-color: rgba(25,135,84,0.1); }
+        .card-icon-container[data-color="info"]    { color: #0dcaf0; background-color: rgba(13,202,240,0.1); }
+        .card-icon-container[data-color="warning"] { color: #ffc107; background-color: rgba(255,193,7,0.1); }
+        .card-icon-container[data-color="danger"]  { color: #dc3545; background-color: rgba(220,53,69,0.1); }
+        .card-icon-container[data-color="secondary"] { color: #6c757d; background-color: rgba(108,117,125,0.1); }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +59,8 @@
     <p class="lead text-muted">Un vistazo rápido a sus actividades y herramientas principales.</p>
 
     <div class="row mt-5 g-4">
-        {# Tarjeta de Citas Próximas #}
+
+        <!-- Citas Próximas -->
         <div class="col-md-6 col-lg-3">
             <a href="{% url 'agenda' %}" class="dashboard-card-link">
                 <div class="card h-100 dashboard-card">
@@ -23,13 +69,13 @@
                             <i class="bi bi-calendar-check-fill"></i>
                         </div>
                         <h5 class="card-title mt-3">Citas Próximas</h5>
-                        <p class="card-text text-muted">Tienes *{{ total_citas_hoy_pendientes }}* citas programadas para hoy.</p>
+                        <p class="card-text text-muted">Tienes {{ total_citas_hoy_pendientes }} citas para hoy.</p>
                     </div>
                 </div>
             </a>
         </div>
 
-        {# Tarjeta de Pacientes #}
+        <!-- Pacientes -->
         <div class="col-md-6 col-lg-3">
             <a href="{% url 'lista_pacientes' %}" class="dashboard-card-link">
                 <div class="card h-100 dashboard-card">
@@ -44,7 +90,7 @@
             </a>
         </div>
 
-        {# Tarjeta de Inventario de Medicamentos #}
+        <!-- Inventario Medicamentos -->
         <div class="col-md-6 col-lg-3">
             <a href="{% url 'lista_medicamentos' %}" class="dashboard-card-link">
                 <div class="card h-100 dashboard-card">
@@ -52,40 +98,42 @@
                         <div class="card-icon-container" data-color="info">
                             <i class="bi bi-box-seam"></i>
                         </div>
-                        <h5 class="card-title mt-3">Inventario de Medicamentos</h5>
-                        <p class="card-text text-muted">Revisa y administra tus medicamentos.</p>
+                        <h5 class="card-title mt-3">Inventario Medicamentos</h5>
+                        <p class="card-text text-muted">Administra tus medicamentos.</p>
                     </div>
                 </div>
             </a>
         </div>
 
-{# Tarjeta de Inventario de Insumos #}
+        <!-- Inventario Insumos -->
         <div class="col-md-6 col-lg-3">
             <a href="{% url 'lista_insumos' %}" class="dashboard-card-link">
                 <div class="card h-100 dashboard-card">
                     <div class="card-body text-center">
                         <div class="card-icon-container" data-color="secondary">
-                            <i class="bi bi-tools"></i> {# Ícono de herramientas para insumos #}
+                            <i class="bi bi-tools"></i>
                         </div>
-                        <h5 class="card-title mt-3">Inventario de Insumos</h5>
-                        <p class="card-text text-muted">Revisa y administra tus insumos.</p>
+                        <h5 class="card-title mt-3">Inventario Insumos</h5>
+                        <p class="card-text text-muted">Administra tus insumos.</p>
                     </div>
                 </div>
             </a>
         </div>
 
-        {# Tarjeta de Punto de Venta (esta tiene un ícono diferente, asegúrate de tener Font Awesome si usas 'fa') #}
+        <!-- Punto de Venta (mantiene Font Awesome) -->
         <div class="col-md-6 col-lg-3">
-            <a href="{% url 'punto_venta' %}" class="card dashboard-card h-100 shadow-sm border-0 text-decoration-none text-dark">
-                <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                    <i class="fa fa-credit-card fa-4x text-info mb-3 icon-card"></i>
-                    <h5 class="card-title fw-bold">Punto de Venta</h5>
-                    <p class="card-text text-muted mb-0">Gestionar transacciones de venta.</p>
+            <a href="{% url 'punto_venta' %}" class="dashboard-card-link">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa fa-credit-card fa-4x text-info mb-3"></i>
+                        <h5 class="card-title fw-bold">Punto de Venta</h5>
+                        <p class="card-text text-muted mb-0">Gestionar transacciones de venta.</p>
+                    </div>
                 </div>
             </a>
         </div>
 
-        {# Tarjeta de Historial de Ventas #}
+        <!-- Historial de Ventas -->
         <div class="col-md-6 col-lg-3">
             <a href="{% url 'historial_ventas' %}" class="dashboard-card-link">
                 <div class="card h-100 dashboard-card">
@@ -94,14 +142,33 @@
                             <i class="bi bi-cash-stack"></i>
                         </div>
                         <h5 class="card-title mt-3">Historial de Ventas</h5>
-                        <p class="card-text text-muted">Consulta el reporte de ventas finalizadas.</p>
+                        <p class="card-text text-muted">Consulta el reporte de ventas.</p>
                     </div>
                 </div>
             </a>
         </div>
+
+        <!-- Corte de Caja -->
+        <div class="col-md-6 col-lg-3">
+            <a href="{% if corte_activo %}{% url 'corte_activo' %}{% else %}{% url 'iniciar_corte' %}{% endif %}" class="dashboard-card-link">
+                <div class="card h-100 dashboard-card">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="card-icon-container" data-color="danger">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <h5 class="card-title mt-3">Corte de Caja</h5>
+                        {% if corte_activo %}
+                            <p class="card-text text-muted">Corte iniciado a las {{ corte_activo.fecha_apertura|date:"H:i" }}</p>
+                            <span class="badge bg-success mt-auto">Ver Corte Activo</span>
+                        {% else %}
+                            <p class="card-text text-muted">Inicia tu turno para registrar ventas.</p>
+                            <span class="badge bg-primary mt-auto">Iniciar Corte</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
 {% endblock %}

@@ -32,7 +32,7 @@
                 <tr>
                     <th>ID de Venta</th>
                     <th>Fecha y Hora</th>
-                    <th>Encargado</th>
+                    <th style="width: 30%;">Medicamentos Vendidos</th> <th>Encargado</th>
                     <th class="text-end">Total</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -42,7 +42,26 @@
                 <tr>
                     <td>{{ venta.pk }}</td>
                     <td>{{ venta.fecha_finalizacion|date:"d M Y, H:i" }}</td>
-                    <td>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</td>
+                    
+                    {# COLUMNA DE MEDICAMENTOS VENDIDOS #}
+                    <td>
+                        <ul class="list-unstyled mb-0">
+                            {% for item in venta.items.all %}
+                                <li>
+                                    <span class="badge bg-dark rounded-pill">{{ item.cantidad }}x</span> 
+                                    **{{ item.medicamento.nombre }}** (${{ item.precio_unitario_venta|floatformat:2 }} c/u)
+                                </li>
+                            {% empty %}
+                                <li><small class="text-muted">Sin artículos.</small></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+
+                    {# COLUMNA DE ENCARGADO #}
+                    <td>
+                        <strong>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</strong>
+                    </td>
+                    
                     <td class="text-end">${{ venta.total|floatformat:2 }}</td>
                     <td class="text-center">
                         <a href="{% url 'imprimir_recibo' venta.pk %}" target="_blank" class="btn btn-info btn-sm" title="Ver Recibo">
@@ -52,7 +71,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center text-muted">No se encontraron ventas finalizadas.</td>
+                    <td colspan="6" class="text-center text-muted">No se encontraron ventas finalizadas.</td>
                 </tr>
                 {% endfor %}
             </tbody>

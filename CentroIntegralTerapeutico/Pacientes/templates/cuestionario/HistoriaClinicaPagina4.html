@@ -1,0 +1,519 @@
+{% extends "BaseSinInicio.html" %}
+
+{% load static %}
+{% load widget_tweaks %} {# Necesario para usar {% render_field %} #}
+
+{% block title %}Historia Clínica - Exploración Cardiovascular y Neurológica{% endblock %}
+
+{% block extra_head %}
+    {# Asegúrate de que este archivo CSS existe y está correctamente enlazado #}
+    <link rel="stylesheet" href="{% static 'css/historial_clinico_estilo.css' %}">
+    <style>
+        /*
+         * ESTILOS GENERALES (Mantenidos)
+         */
+        body {
+            font-family: 'Cambria', 'Times New Roman', serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .formulario-documento {
+            max-width: 900px;
+            margin: 30px auto;
+            color: #333;
+            background-color: #ffffff;
+            border: 1px solid #c0c0c0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            padding: 0;
+        }
+
+        .marca-agua {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 80%;
+            background-image: url('{% static "img/logo.png" %}');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 50%;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .documento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 4px solid #44916f;
+            background-color: #fcfcfc;
+            position: relative;
+            z-index: 1;
+        }
+
+        .documento-header img {
+            height: 70px;
+            opacity: 0.95;
+        }
+
+        .documento-header h1 {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1a4a39;
+            margin: 0;
+            letter-spacing: 1.5px;
+        }
+
+        .form-body {
+            padding: 30px 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* TÍTULOS DE SECCIÓN (Recuadro sutil) */
+        .section-title-box {
+            background-color: #e3efdd; 
+            color: #1a4a39; 
+            font-size: 19px;
+            font-weight: 700;
+            padding: 8px 15px;
+            margin-top: 25px;
+            margin-bottom: 5px;
+            border-left: 5px solid #44916f;
+            text-transform: uppercase;
+        }
+        
+        .form-body h3 {
+            font-size: 18px; 
+            font-weight: 700;
+            color: #275d45; 
+            border-bottom: none;
+            padding-bottom: 0;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+        }
+        
+        /* Estilos para el campo de Ascitis (Checkbox Switch) */
+        .form-group-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px dotted #eee;
+        }
+        .form-switch {
+            /* Aquí iría el CSS para el toggle switch si lo tienes */
+            display: inline-block;
+            margin-left: 15px;
+        }
+        
+        /* Estilos de Tabla */
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .table-bordered {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #c0c0c0;
+            table-layout: fixed;
+        }
+        .table-bordered th, .table-bordered td {
+            border: 1px solid #c0c0c0;
+            padding: 5px 8px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 14px;
+            color: #333;
+            height: 35px; 
+        }
+        
+        .table-bordered thead tr {
+            background-color: #f0f0f0; 
+            font-weight: bold;
+            color: #1a4a39;
+        }
+
+        /* Estilo para inputs de tabla */
+        .table-bordered input[type="text"], 
+        .table-bordered .form-control {
+            border: none !important; 
+            padding: 2px !important;
+            width: 95% !important; 
+            height: 25px !important; 
+            background-color: transparent !important;
+            box-shadow: none !important;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        /* Estilo para las etiquetas de fila */
+        .table-bordered tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            background-color: #fcfcfc;
+            width: 35%; /* Ancho fijo para la columna de nombres de pulso */
+        }
+        
+        /* Estilo para la etiqueta de Estado de Conciencia que no está en tabla */
+        .form-body p label {
+             font-weight: bold;
+             color: #1a4a39;
+             margin-right: 10px;
+        }
+        .form-body .field-line {
+             border: none !important; 
+             border-bottom: 1px solid #777 !important; 
+             padding: 5px 0 !important; 
+             width: 70%;
+             display: inline-block;
+             font-size: 16px;
+             font-family: 'Cambria', 'Times New Roman', serif;
+        }
+        
+        /* Estilo Checkbox Card Group (Campos Visuales) */
+        .checkbox-card-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .checkbox-card-group label {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fcfaf6; 
+            font-weight: normal;
+            font-size: 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="formulario-documento">
+    
+    <div class="marca-agua"></div>
+
+    <div class="documento-header">
+        <img src="{% static 'img/logo.png' %}" alt="Centro Integral Terapéutico CIT Logo">
+        <h1>HISTORIA CLÍNICA</h1>
+    </div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        
+        {{ wizard.management_form }}
+        <div class="form-body">
+            {% if form.errors %}
+            <div style="
+                background-color: #f8d7da; 
+                color: #721c24; 
+                border: 1px solid #f5c6cb; 
+                padding: 15px; 
+                margin-bottom: 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 2px 5px rgba(255, 0, 0, 0.1);
+            ">
+                ⚠️ ATENCIÓN, Para pasar al siguiente formulario, necesitas completar los campos obligatorios.
+            </div>
+            {% endif %}
+
+        <div class="form-body">
+            
+            <h3>EXPLORACIÓN CARDIOVASCULAR Y NEUROLÓGICA</h3>
+            
+            {# ========================================================== #}
+            {# Bloque 1: Exploración Cardiovascular (Pulsos) #}
+            {# ========================================================== #}
+            <div class="section-title-box">1. EXPLORACIÓN CARDIOVASCULAR</div>
+            
+            <h3>Pulsos Arteriales</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Pulso</th>
+                            <th style="width: 32.5%;">Derecho</th>
+                            <th style="width: 32.5%;">Izquierdo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pulso Carotídeo</td>
+                            <td>{% render_field form.me_pulso_carotideo_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_carotideo_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Humeral</td>
+                            <td>{% render_field form.me_pulso_humeral_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_humeral_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Radial</td>
+                            <td>{% render_field form.me_pulso_radial_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_radial_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Femoral</td>
+                            <td>{% render_field form.me_pulso_femoral_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_femoral_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Poplíteo</td>
+                            <td>{% render_field form.me_pulso_popliteo_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_popliteo_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Tibial Posterior</td>
+                            <td>{% render_field form.me_pulso_tibial_posterior_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_tibial_posterior_izquierdo class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Pulso Pedio</td>
+                            <td>{% render_field form.me_pulso_pedio_derecho class="form-control" %}</td>
+                            <td>{% render_field form.me_pulso_pedio_izquierdo class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {# Ascitis (Checkbox Switch) - Manteniendo la estructura de tu boceto original #}
+            <div class="form-group-horizontal">
+                <label id='campo' style="font-weight: bold; color: #1a4a39;">Ascitis:</label>
+                <div class="form-switch">
+                    {# Usamos el widget CheckboxInput directamente #}
+                    {% render_field form.ascitis %}
+                    <label for="{{ form.ascitis.id_for_label }}">
+                        <span class="switch-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            {# ========================================================== #}
+            {# Bloque 2: Sistema Nervioso (Conciencia) #}
+            {# ========================================================== #}
+            <div class="section-title-box">2. SISTEMA NERVIOSO</div>
+            
+
+            <p style="margin-top: 15px;">
+                <label for="{{ form.Estado_Conciencia.id_for_label }}">Estado de Conciencia:</label>
+                {# Usamos field-line para simular la línea de llenado largo #}
+                {% render_field form.Estado_Conciencia class="field-line" %}
+            </p>
+
+            {# ========================================================== #}
+            {# Bloque 3: Escala de Glasgow #}
+            {# ========================================================== #}
+            <h3>Escala de Glasgow</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Prueba</th>
+                            <th>Respuesta</th>
+                            <th style="width: 20%;">Puntuación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Apertura de Ojos</td>
+                            <td>{% render_field form.glasgow_apertura_ojos_respuesta class="form-control" %}</td>
+                            <td>{% render_field form.glasgow_apertura_ojos_puntuacion class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Respuesta Verbal</td>
+                            <td>{% render_field form.glasgow_respuesta_verbal_respuesta class="form-control" %}</td>
+                            <td>{% render_field form.glasgow_respuesta_verbal_puntuacion class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Respuesta Motora</td>
+                            <td>{% render_field form.glasgow_respuesta_motora_respuesta class="form-control" %}</td>
+                            <td>{% render_field form.glasgow_respuesta_motora_puntuacion class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {# ========================================================== #}
+            {# Bloque 4: Exploración Visual #}
+            {# ========================================================== #}
+            <div class="section-title-box">3. EXPLORACIÓN VISUAL</div>
+
+            <h3>Reflejo Fotomotor: (Reactividad Pupilar)</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tbody>
+                        <tr>
+                            <td style="width: 35%;">Según el tamaño</td>
+                            <td>{% render_field form.reflejo_fotomotor_tamano class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Según relación entre ellas</td>
+                            <td>{% render_field form.reflejo_fotomotor_relaciones class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Según respuesta a la luz</td>
+                            <td>{% render_field form.reflejo_fotomotor_respuestas_luz class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Exploración de Pares Craneales (Movimientos Oculares)</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tbody>
+                        <tr>
+                            <td style="width: 35%;">Par craneal III Oculomotor (M.O. V)</td>
+                            <td>{% render_field form.par_craneal_iii_oculomotor class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal IV Patético o Troclear (M.O. V)</td>
+                            <td>{% render_field form.par_craneal_iv_patetico class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal VI Motor Ocular Externo (M.O. V)</td>
+                            <td>{% render_field form.par_craneal_vi_motor_ocular_externo class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>Pares Craneales (Campos Visuales)</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tbody>
+                        <tr>
+                            <td style="width: 35%;">Par craneal III Oculomotor (CV)</td>
+                            <td>{% render_field form.par_craneal_iii_oculomotor_cv class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal IV Patético o Troclear (CV)</td>
+                            <td>{% render_field form.par_craneal_iv_patetico_cv class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Par craneal VI Motor Ocular Externo (CV)</td>
+                            <td>{% render_field form.par_craneal_vi_motor_ocular_externo_cv class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Exploración de Retina</h3>
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tbody>
+                        <tr>
+                            <td style="width: 35%;">Relación Arterio-Venosa</td>
+                            <td>{% render_field form.retina_relacion_arterio_venosa class="form-control" %}</td>
+                        </tr>
+                        <tr>
+                            <td>Mácula</td>
+                            <td>{% render_field form.retina_macula class="form-control" %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Campos Visuales </h3>
+            {# Aquí el campo usa el widget CheckboxSelectMultiple que se ve fuera de tabla #}
+            <div class="form-group" style="margin-top: 10px;">
+                <div class="checkbox-card-group">
+                    {% for choice in form.campos_visuales_opciones %}
+                        {# Usamos un contenedor span para aplicar el estilo de tarjeta #}
+                        <span class="checkbox-paper-item">
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}" style="font-weight: normal; margin-bottom: 0; display: inline;">{{ choice.choice_label }}</label>
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div> {# Fin de form-body #}
+        
+        {# ======================== NAVEGACIÓN DEL WIZARD (Con estilos inline para consistencia) ======================== #}
+        <div class="form-navigation" style="
+            padding: 20px 40px; /* Padding interior */
+            border-top: 1px solid #e0e0e0; /* Línea de separación sutil */
+            display: flex; 
+            justify-content: space-between; /* Mantiene Anterior/Regresar a la izquierda y Siguiente/Guardar a la derecha */
+            align-items: center;
+        ">
+            
+            <div class="navigation-group-left">
+                {% if wizard.steps.prev %}
+                    <button name="wizard_goto_step" 
+                            type="submit" 
+                            value="{{ wizard.steps.prev }}" 
+                            class="btn-wizard btn-anterior" 
+                            title="Volver al paso anterior"
+                            style="
+                                background-color: transparent; 
+                                color: #44916f; 
+                                padding: 8px 15px; 
+                                border: 1px solid #ddd; 
+                                font-size: 16px; 
+                                font-weight: bold;
+                                cursor: pointer;
+                                border-radius: 4px;
+                                transition: background-color 0.2s;
+                                text-decoration: none;
+                            ">
+                        &#x2b9c; Anterior
+                    </button>
+                {% else %}
+                    <a href="{% url 'historia_clinica_paciente' pk=paciente.pk %}" 
+                       class="btn-wizard btn-anterior" 
+                       title="Regresar al Historial"
+                       style="
+                           background-color: transparent;
+                           color: #a00;
+                           padding: 8px 15px; 
+                           border: 1px solid transparent; 
+                           font-size: 14px; 
+                           font-weight: bold;
+                           text-decoration: none;
+                           border-radius: 4px;
+                           transition: background-color 0.2s;
+                       ">
+                        <i class="bi bi-arrow-left"></i> Regresar al Historial
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class="navigation-group-right">
+                <button type="submit" 
+                        class="btn-wizard btn-siguiente"
+                        style="
+                            background-color: #44916f; 
+                            color: #ffffff;
+                            padding: 12px 30px; 
+                            font-size: 18px; 
+                            font-weight: 600;
+                            border: none;
+                            cursor: pointer;
+                            border-radius: 6px;
+                            transition: background-color 0.3s;
+                        ">
+                    
+                    {% if wizard.steps.next %}
+                        Siguiente &#x2b9e;
+                    {% else %}
+                        Guardar Historial
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

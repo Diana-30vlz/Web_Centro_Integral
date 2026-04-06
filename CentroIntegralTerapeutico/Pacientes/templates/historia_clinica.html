@@ -34,16 +34,16 @@
                 <tr>
                     <td class="numero-registro">{{ historia.id }}</td>
                     <td>{{ historia.fecha_registro }}</td>
-                    <td>{{ historia.motivo_consulta }}</td>
-                    <td>{{ historia.comentarios }}</td>
+                    <td>{{ historia.motivo_consulta|truncatechars:20 }}</td>
+                    <td>{{ historia.comentarios|truncatechars:20 }}</td>
                     <td>
                         <div class="acciones-tabla">
                             <a href="{% url 'Resultados_Historial_Clinico' pk=paciente.pk historia_pk=historia.pk %}" class="btn-accion btn-ver" title="Ver Historia Clínica Completa">
                                 <i class="bi bi-journal-text"></i>
                             </a>
-                            
-                            <a href="{% url 'HistorialClinicoPDF' pk=historia.paciente.pk historia_pk=historia.pk %}" 
-                            class="btn-accion btn-imprimir" 
+
+                            <a href="{% url 'HistorialClinicoPDF' pk=historia.paciente.pk historia_pk=historia.pk %}"
+                            class="btn-accion btn-imprimir"
                             title="Imprimir Historia Clínica"
                             target="_blank">
                                 <i class="bi bi-printer"></i>
@@ -67,7 +67,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <a href="{% url 'expediente_paciente' paciente.pk  %}" class="btn btn-secondary mt-3">
             <i class="bi bi-arrow-left"></i>
         </a>
