@@ -67,10 +67,16 @@
 
 {% block content %}
 <div class="container my-5">
+    <!-- GENERAMOS EL CSRF TOKEN AQUÍ PARA QUE JAVASCRIPT PUEDA LEERLO -->
+    <div style="display: none;">
+        {% csrf_token %}
+    </div>
+
     <h1 class="text-center">Agenda Mensual</h1>
     <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
         Regresar a la página anterior
     </a>
+    
     {% if messages %}
         <ul class="messages list-unstyled">
             {% for message in messages %}
@@ -154,35 +160,21 @@
                                                 <p class="mb-1">{{ cita.motivo }}</p>
                                             </div>
                                             <div class="d-flex">
-                                                {# BOTONES DE ASISTENCIA: Cada botón es un formulario POST #}
-                                                <div class="btn-group-attendance me-3" role="group">
+                                                
+                                                {# NUEVOS BOTONES DE ASISTENCIA (Sin formularios) #}
+                                                <div class="btn-group-attendance me-3" role="group" data-url="{% url 'actualizar_asistencia_simple' pk=cita.pk %}">
                                                     
-                                                    {# FORMULARIO PALOMITA (Asistió = 'S') #}
-                                                    <form action="{% url 'actualizar_asistencia_simple' pk=cita.pk %}" method="post" class="d-inline">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="S">
-                                                        <button type="submit" 
-                                                                class="btn check-btn 
-                                                                       {% if cita.asistencia == 'S' %}active-check{% endif %}" 
-                                                                title="Marcar como Asistió">
-                                                            <i class="bi bi-check-lg"></i>
-                                                        </button>
-                                                    </form>
-
-                                                    {# FORMULARIO EQUIS (No Asistió = 'N') #}
-                                                    <form action="{% url 'actualizar_asistencia_simple' pk=cita.pk %}" method="post" class="d-inline">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="N">
-                                                        <button type="submit" 
-                                                                class="btn cross-btn 
-                                                                       {% if cita.asistencia == 'N' %}active-cross{% endif %}" 
-                                                                title="Marcar como No Asistió">
-                                                            <i class="bi bi-x-lg"></i>
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="btn check-btn {% if cita.asistencia == 'S' %}active-check{% endif %}" title="Marcar como Asistió">
+                                                        <i class="bi bi-check-lg"></i>
+                                                    </button>
+                                                    
+                                                    <button type="button" class="btn cross-btn {% if cita.asistencia == 'N' %}active-cross{% endif %}" title="Marcar como No Asistió">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
+                                                    
                                                 </div>
                                                 
-                                                {# BOTONES DE ACCIÓN #}
+                                                {# BOTONES DE ACCIÓN (Editar/Eliminar se mantienen igual) #}
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <a href="{% url 'editar_cita' cita.pk %}" class="btn btn-outline-info" title="Editar Cita">
                                                         <i class="bi bi-pencil-square"></i>
@@ -201,6 +193,13 @@
                                     </div>
                                 {% else %}
                                     <p class="text-center">No hay citas generales para este día.</p>
+                                {% endif %}
+                            </div>
+                            <!-- FOOTER DEL MODAL PARA BOTÓN GUARDAR -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                {% if day_data.citas_del_dia_generales %}
+                                <button type="button" class="btn btn-primary btn-guardar-asistencia">Guardar Cambios</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -226,35 +225,18 @@
                                                 <p class="mb-1">{{ cita.motivo }}</p>
                                             </div>
                                             <div class="d-flex">
-                                                {# BOTONES DE ASISTENCIA: Cada botón es un formulario POST #}
-                                                <div class="btn-group-attendance me-3" role="group">
-                                                    
-                                                    {# FORMULARIO PALOMITA (Asistió = 'S') #}
-                                                    <form action="{% url 'actualizar_asistencia_simple' pk=cita.pk %}" method="post" class="d-inline">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="S">
-                                                        <button type="submit" 
-                                                                class="btn check-btn 
-                                                                       {% if cita.asistencia == 'S' %}active-check{% endif %}" 
-                                                                title="Marcar como Asistió">
-                                                            <i class="bi bi-check-lg"></i>
-                                                        </button>
-                                                    </form>
-
-                                                    {# FORMULARIO EQUIS (No Asistió = 'N') #}
-                                                    <form action="{% url 'actualizar_asistencia_simple' pk=cita.pk %}" method="post" class="d-inline">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="N">
-                                                        <button type="submit" 
-                                                                class="btn cross-btn 
-                                                                       {% if cita.asistencia == 'N' %}active-cross{% endif %}" 
-                                                                title="Marcar como No Asistió">
-                                                            <i class="bi bi-x-lg"></i>
-                                                        </button>
-                                                    </form>
+                                                
+                                                {# NUEVOS BOTONES DE ASISTENCIA (Sin formularios) #}
+                                                <div class="btn-group-attendance me-3" role="group" data-url="{% url 'actualizar_asistencia_simple' pk=cita.pk %}">
+                                                    <button type="button" class="btn check-btn {% if cita.asistencia == 'S' %}active-check{% endif %}" title="Marcar como Asistió">
+                                                        <i class="bi bi-check-lg"></i>
+                                                    </button>
+                                                    <button type="button" class="btn cross-btn {% if cita.asistencia == 'N' %}active-cross{% endif %}" title="Marcar como No Asistió">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
                                                 </div>
                                                 
-                                                {# BOTONES DE ACCIÓN #}
+                                                {# BOTONES DE ACCIÓN (Editar/Eliminar se mantienen igual) #}
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <a href="{% url 'editar_cita' cita.pk %}" class="btn btn-outline-info" title="Editar Cita">
                                                         <i class="bi bi-pencil-square"></i>
@@ -275,6 +257,13 @@
                                     <p class="text-center">No hay citas de suero para este día.</p>
                                 {% endif %}
                             </div>
+                            <!-- FOOTER DEL MODAL PARA BOTÓN GUARDAR -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                {% if day_data.citas_del_dia_suero %}
+                                <button type="button" class="btn btn-primary btn-guardar-asistencia">Guardar Cambios</button>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -282,4 +271,90 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- SCRIPT PARA MANEJAR LA LÓGICA DE ASISTENCIA Y GUARDADO -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Manejo visual de botones de asistencia (Check / Cross)
+    const btnGroups = document.querySelectorAll('.btn-group-attendance');
+    
+    btnGroups.forEach(group => {
+        const checkBtn = group.querySelector('.check-btn');
+        const crossBtn = group.querySelector('.cross-btn');
+        
+        checkBtn.addEventListener('click', () => {
+            checkBtn.classList.add('active-check'); // Activar visualmente palomita
+            crossBtn.classList.remove('active-cross'); // Desactivar visualmente cruz
+            group.dataset.selectedStatus = 'S'; // Guardar estado en memoria temporal (Atributo de HTML)
+        });
+        
+        crossBtn.addEventListener('click', () => {
+            crossBtn.classList.add('active-cross'); // Activar visualmente cruz
+            checkBtn.classList.remove('active-check'); // Desactivar visualmente palomita
+            group.dataset.selectedStatus = 'N'; // Guardar estado en memoria temporal (Atributo de HTML)
+        });
+    });
+
+    // 2. Lógica del botón "Guardar Cambios"
+    const btnGuardarList = document.querySelectorAll('.btn-guardar-asistencia');
+    
+    btnGuardarList.forEach(btnGuardar => {
+        btnGuardar.addEventListener('click', async function() {
+            // Obtenemos el modal específico en el que se hizo click
+            const modal = this.closest('.modal');
+            const listItems = modal.querySelectorAll('.list-group-item');
+            
+            // Extraemos el token CSRF global que creamos arriba en el HTML
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            let pendingRequests = []; // Array para almacenar peticiones asíncronas
+
+            // Bloquear botón para evitar múltiples clicks
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+            this.disabled = true;
+
+            // Recorremos todas las citas del modal actual
+            listItems.forEach(item => {
+                const estadoInicial = item.dataset.asistenciaInicial;
+                const group = item.querySelector('.btn-group-attendance');
+                const estadoSeleccionado = group.dataset.selectedStatus;
+                const url = group.dataset.url;
+                
+                // Solo si el usuario seleccionó un estado y es diferente al que vino de la base de datos
+                if (estadoSeleccionado && estadoSeleccionado !== estadoInicial) {
+                    const formData = new FormData();
+                    formData.append('status', estadoSeleccionado);
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+
+                    // Preparamos y disparamos la petición POST sin recargar la página (AJAX)
+                    const request = fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    pendingRequests.push(request);
+                }
+            });
+
+            // Si hay peticiones pendientes, esperamos a que todas terminen
+            if (pendingRequests.length > 0) {
+                try {
+                    await Promise.all(pendingRequests);
+                    window.location.reload(); // Recargar página para reflejar el éxito
+                } catch (error) {
+                    console.error('Error al guardar asistencia:', error);
+                    alert('Ocurrió un error de red al intentar guardar. Revisa tu conexión.');
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }
+            } else {
+                // Si hizo click pero no modificó ninguna cita, solo cerramos el modal
+                const bootstrapModal = bootstrap.Modal.getInstance(modal);
+                if (bootstrapModal) bootstrapModal.hide();
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

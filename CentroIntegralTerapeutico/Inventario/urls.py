@@ -46,6 +46,8 @@ urlpatterns = [
 
     # URL para el historial de ventas
     path('reporte/ventas/', views.historial_ventas, name='historial_ventas'),
+    
+    path('cortes/eliminar-antiguos/', views.eliminar_cortes_antiguos, name='eliminar_cortes_antiguos'),
 
     path('accounts/', include('django.contrib.auth.urls')), # <-- ¡Verifica que esta línea exista!
 

@@ -95,6 +95,17 @@ class CorteDeCaja(models.Model):
     fondo_inicial = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Fondo Inicial en Caja")
     monto_final_contado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Monto Final Contado")
     
+    # --- NUEVOS CAMPOS ---
+    monto_final_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Monto Final Tarjeta")
+    monto_final_transferencia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Monto Final Transferencia")
+    
+    diferencia_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Diferencia Tarjeta")
+    diferencia_transferencia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Diferencia Transferencia")
+    # ---------------------
+    
+    total_ventas_calculado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Total de Ventas (Calculado)")
+    diferencia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Diferencia")
+    
     total_ventas_calculado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Total de Ventas (Calculado)")
     diferencia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Diferencia")
     
@@ -128,6 +139,36 @@ class Venta(models.Model):
 
     def __str__(self):
         return f"Venta #{self.pk} - {self.get_estado_display()}"
+    
+    
+    METODO_PAGO_CHOICES = (
+        ('Efectivo', 'Efectivo'),
+        ('Tarjeta', 'Tarjeta de Crédito/Débito'),
+        ('Transferencia', 'Transferencia Bancaria'),
+    )
+    
+    metodo_pago = models.CharField(
+        max_length=20,
+        choices=METODO_PAGO_CHOICES,
+        default='Efectivo',
+        verbose_name="Método de Pago"
+    )
+    
+    # Estos campos son muy útiles para el ticket y el corte, te sugiero agregarlos
+    monto_pagado_por_cliente = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00,
+        help_text="Cuánto dinero entregó el cliente"
+    )
+    cambio_devuelto = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00,
+        help_text="Cuánto se le devolvió"
+    )
+
+    def __str__(self):
+        return f"Venta #{self.pk} - {self.get_estado_display()} - {self.metodo_pago}"
+    
+    
+    
 
 class ItemVenta(models.Model):
     """Representa un producto dentro de una venta."""

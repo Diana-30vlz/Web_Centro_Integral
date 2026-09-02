@@ -34,7 +34,7 @@ from .models import (
 
 from .forms import *
 
-
+from InventarioInsumos.models import Insumo # ¡Importante!
 
 
 #VIEWS REPORTLAB
@@ -673,11 +673,12 @@ def registros_paciente_view(request, pk):
     # --- FIN DE LA LÓGICA DE RESTRICCIÓN ---
 
     paciente = get_object_or_404(Paciente, pk=pk)
-
+    consultas = paciente.registros_consultas.all().order_by('-fecha')
     context = {
         'paciente': paciente,
         'is_farmacia': is_farmacia, # <-- AGREGADO
         'is_doctora': is_doctora, # <-- AGREGADO
+        'consultas': consultas,  # <-- ¡Y AQUÍ SE LAS ENVIAMOS AL HTML!
     }
     return render(request, 'Expediente.html', context)
 
@@ -3622,3 +3623,149 @@ def imprimir_consentimiento_real_pdf(request, pk):
     doc.build(story)
 
     return response
+
+
+
+# Pacientes/views.py
+import json
+from django.http import JsonResponse
+from django.db import transaction
+from InventarioInsumos.models import Insumo # ¡Importante!
+
+# Importa los modelos nuevos aquí arriba:
+from .models import Paciente, HistoriaClinica, Receta, RegistroConsulta, InsumoUsado 
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+# Agrega esta pequeña función antes de tus vistas:
+def es_doctora(user):
+    return user.groups.filter(name='Doctora').exists()
+
+@login_required
+@user_passes_test(es_doctora, login_url='/')
+def nueva_consulta_paciente(request, pk):
+    paciente = get_object_or_404(Paciente, pk=pk)
+    insumos_disponibles = Insumo.objects.filter(cantidad_disponible__gt=0).order_by('nombre')
+
+    if request.method == 'POST':
+        descripcion = request.POST.get('descripcion_procedimiento')
+        medicamentos_rec = request.POST.get('medicamentos_recetados')
+        insumos_usados_json = request.POST.get('insumos_usados') # Vendrá desde JS
+
+        if not descripcion:
+            messages.error(request, "La descripción del procedimiento es obligatoria.")
+            return redirect('nueva_consulta_paciente', pk=pk)
+
+        try:
+            # Usar atomic para que si falla algo, no se descuente nada
+            with transaction.atomic():
+                # 1. Crear el registro de la consulta
+                consulta = RegistroConsulta.objects.create(
+                    paciente=paciente,
+                    doctor=request.user,
+                    descripcion_procedimiento=descripcion,
+                    medicamentos_recetados=medicamentos_rec
+                )
+
+                # 2. Procesar los insumos usados
+                if insumos_usados_json:
+                    items = json.loads(insumos_usados_json)
+                    for item in items:
+                        insumo_id = item.get('id')
+                        cantidad_usada = int(item.get('cantidad', 1))
+
+                        insumo_db = Insumo.objects.select_for_update().get(pk=insumo_id)
+
+                        if insumo_db.cantidad_disponible >= cantidad_usada:
+                            # Restar del inventario
+                            insumo_db.cantidad_disponible -= cantidad_usada
+                            insumo_db.save()
+
+                            # Guardar en el historial de la consulta
+                            InsumoUsado.objects.create(
+                                consulta=consulta,
+                                medicamento=insumo_db,
+                                cantidad=cantidad_usada
+                            )
+                        else:
+                            # Si de pronto ya no hay stock, cancela toda la transacción
+                            raise Exception(f"No hay suficiente stock de {insumo_db.nombre}.")
+
+            messages.success(request, "Consulta registrada e insumos descontados correctamente.")
+            return redirect('expediente_paciente', pk=paciente.pk)
+
+        except Exception as e:
+            messages.error(request, f"Error al guardar la consulta: {str(e)}")
+            return redirect('nueva_consulta_paciente', pk=pk)
+
+    context = {
+        'paciente': paciente,
+        'insumos': insumos_disponibles,
+    }
+    return render(request, 'nueva_consulta.html', context)
+
+
+@login_required
+def ver_consulta(request, consulta_pk):
+    consulta = get_object_or_404(RegistroConsulta, pk=consulta_pk)
+    # Verificamos que solo puedan ver las consultas si son del staff médico
+    if not (request.user.groups.filter(name='Doctora').exists() or request.user.groups.filter(name='Farmacia').exists()):
+        messages.error(request, "No tienes permiso para ver esto.")
+        return redirect('/')
+
+    return render(request, 'ver_consulta.html', {'consulta': consulta})
+
+
+@login_required
+@user_passes_test(es_doctora, login_url='/')
+def eliminar_consulta(request, consulta_pk):
+    consulta = get_object_or_404(RegistroConsulta, pk=consulta_pk)
+    paciente_pk = consulta.paciente.pk
+
+    try:
+        with transaction.atomic():
+            # Devolver insumos al inventario antes de borrar la consulta
+            for insumo_usado in consulta.insumos_usados.all():
+                if insumo_usado.medicamento: # Por si el insumo ya fue borrado del sistema
+                    insumo_db = insumo_usado.medicamento
+                    insumo_db.cantidad_disponible += insumo_usado.cantidad
+                    insumo_db.save()
+            
+            consulta.delete()
+        messages.success(request, "Consulta eliminada y stock restaurado correctamente.")
+    except Exception as e:
+        messages.error(request, f"Error al eliminar: {str(e)}")
+
+    return redirect('expediente_paciente', pk=paciente_pk)
+
+
+@login_required
+@user_passes_test(es_doctora, login_url='/')
+@require_POST
+def eliminar_consultas_lote(request):
+    """Borra múltiples consultas usando las casillas de selección"""
+    paciente_id = request.POST.get('paciente_id')
+    consultas_ids = request.POST.getlist('consultas_ids')
+
+    if not consultas_ids:
+        messages.warning(request, "No seleccionaste ninguna consulta para borrar.")
+        return redirect('expediente_paciente', pk=paciente_id)
+
+    try:
+        with transaction.atomic():
+            consultas_a_borrar = RegistroConsulta.objects.filter(pk__in=consultas_ids)
+            for consulta in consultas_a_borrar:
+                # Restaurar inventario
+                for insumo_usado in consulta.insumos_usados.all():
+                    if insumo_usado.medicamento:
+                        insumo_db = insumo_usado.medicamento
+                        insumo_db.cantidad_disponible += insumo_usado.cantidad
+                        insumo_db.save()
+            # Una vez restaurado todo el inventario, se borran en lote
+            consultas_a_borrar.delete()
+            
+        messages.success(request, "Las consultas seleccionadas han sido borradas.")
+    except Exception as e:
+        messages.error(request, f"Error: {str(e)}")
+
+    return redirect('expediente_paciente', pk=paciente_id)

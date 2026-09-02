@@ -81,8 +81,21 @@ urlpatterns = [
     path('recetas/<int:pk>/detalle/', views.detalle_receta_view, name='detalle_receta'),
     path('recetas/<int:pk>/pdf/', views.imprimir_receta_pdf, name='imprimir_receta_pdf'),
     path('receta/<int:pk>/eliminar/', views.eliminar_receta, name='eliminar_receta'),
+    
+    
+    
+    
 
     # --- FIN DE LAS NUEVAS RUTAS ---
+
+
+
+# Rutas para el Historial de Consultas (Bitácora Clínica)
+    path('paciente/<int:pk>/nueva-consulta/', views.nueva_consulta_paciente, name='nueva_consulta_paciente'),
+    path('consulta/<int:consulta_pk>/ver/', views.ver_consulta, name='ver_consulta'),
+    path('consulta/<int:consulta_pk>/eliminar/', views.eliminar_consulta, name='eliminar_consulta'),
+    path('consulta/eliminar-lote/', views.eliminar_consultas_lote, name='eliminar_consultas_lote'),
+
 
     # URLs para el FormWizard (Historia Clínica General)
     # Esta es la URL que inicia el formulario de varios pasos historia_clinica_paciente

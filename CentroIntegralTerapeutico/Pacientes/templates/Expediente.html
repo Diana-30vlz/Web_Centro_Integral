@@ -1,17 +1,18 @@
 {# CentroIntegralTerapeutico/Pacientes/templates/Expediente.html #}
 {% extends "BaseSinInicio.html" %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/expediente.css' %}">
+
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/expediente.css' %}">
 {% endblock %}
 
-
 {% block title %}Registros de {{ paciente.nombre }}{% endblock %}
-    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-        Regresar a la página anterior
-    </a>
+
 {% block content %}
+<a href="#" onclick="history.back()" class="btn btn-secondary mt-3 ms-3">
+    Regresar a la página anterior
+</a>
+
 <div class="expediente-container">
     <h1 class="expediente-titulo">Registros de Paciente: {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
 
@@ -32,26 +33,129 @@
             <li><strong>Religión:</strong> {{ paciente.Religion|default:"N/A" }}</li>
             <li><strong>Pasatiempo:</strong> {{ paciente.Pasatiempo|default:"N/A" }}</li>
             <li><strong>Deporte que Practica:</strong> {{ paciente.Deporte_que_practica|default:"N/A" }}</li>
-
         </ul>
     </div>
 
-    <div class="botones-container">
-        <a href="{% url 'historia_clinica_paciente' paciente.pk %}" class="btn btn-primario">
-            <i class="bi bi-file-earmark-text me-1"></i> Historia Clínica General
-        </a>
-        <a href="{% url 'historia_clinica_paciente_me' paciente.pk %}" class="btn btn-info">
-            <i class="bi bi-person-bounding-box me-1"></i> Historia Clínica Musculo Esquelética
-        </a>
-        <a href="{% url 'consentimiento_list_by_paciente' paciente.pk %}" class="btn btn-advertencia">
-            <i class="bi bi-file-earmark-check me-1"></i> Lista Consentimientos
-        </a>
+    <!-- BOTONES PRINCIPALES DEL EXPEDIENTE -->
+    <div class="botones-container mb-4">
+        
+        <!-- BOTÓN QUE ABRE LA VENTANA FLOTANTE DEL HISTORIAL DE BITÁCORAS -->
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalHistorialBitacoras" style="width: 100%; margin-bottom: 10px;">
+            <i class="bi bi-clock-history me-1"></i> Ver Historial de Bitácoras (Consultas)
+        </button>
 
-    </div>
+        <a href="{% url 'historia_clinica_paciente' paciente.pk %}" class="btn btn-primario">
+            <i class="bi bi-file-earmark-text me-1"></i> Historia Clínica General
+        </a>
+        <a href="{% url 'historia_clinica_paciente_me' paciente.pk %}" class="btn btn-info">
+            <i class="bi bi-person-bounding-box me-1"></i> Historia Clínica Musculo Esquelética
+        </a>
+        <a href="{% url 'consentimiento_list_by_paciente' paciente.pk %}" class="btn btn-advertencia">
+            <i class="bi bi-file-earmark-check me-1"></i> Lista Consentimientos
+        </a>
+    </div>
 
     <div class="pie-pagina-botones">
         <a href="{% url 'lista_pacientes' %}" class="btn btn-secundario">Volver a la Lista</a>
         <a href="{% url 'editar_paciente' paciente.pk %}" class="btn btn-primario">Editar Paciente</a>
     </div>
 </div>
+
+<!-- ========================================== -->
+<!-- VENTANA FLOTANTE (MODAL) DEL HISTORIAL   -->
+<!-- ========================================== -->
+<div class="modal fade" id="modalHistorialBitacoras" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalHistorialLabel">
+                    <i class="bi bi-clock-history"></i> Historial Clínico (Bitácora) - {{ paciente.nombre }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body bg-light">
+                <form method="post" action="{% url 'eliminar_consultas_lote' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="paciente_id" value="{{ paciente.pk }}">
+                    
+                    <div class="table-responsive bg-white shadow-sm rounded">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" style="width: 40px; text-align: center;">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </th>
+                                    <th scope="col" style="width: 120px;">Fecha</th>
+                                    <th scope="col">Procedimiento / Evolución</th>
+                                    <th scope="col" class="text-center" style="width: 150px;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in consultas %}
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        <input class="form-check-input consulta-checkbox" type="checkbox" name="consultas_ids" value="{{ consulta.pk }}">
+                                    </td>
+                                    <td class="align-middle">
+                                        <strong>{{ consulta.fecha|date:"d/m/Y" }}</strong><br>
+                                        <small class="text-muted">{{ consulta.fecha|date:"H:i" }}</small>
+                                    </td>
+                                    <td class="align-middle">
+                                        {{ consulta.descripcion_procedimiento|truncatechars:100 }}
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <!-- Botón Revisar -->
+                                        <a href="{% url 'ver_consulta' consulta.pk %}" class="btn btn-sm btn-info text-white mb-1 w-100" title="Revisar detalle">
+                                            <i class="bi bi-eye"></i> Revisar
+                                        </a>
+                                        <!-- Botón Borrar Individual -->
+                                        <a href="{% url 'eliminar_consulta' consulta.pk %}" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('¿Seguro que deseas borrar este registro? Los insumos usados se devolverán al inventario.');" title="Borrar registro">
+                                            <i class="bi bi-trash"></i> Borrar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="bi bi-journal-x fs-1 d-block mb-2"></i>
+                                        Aún no hay registros en la bitácora de este paciente.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Botón Borrar Lote (Solo aparece si hay consultas) -->
+                    {% if consultas %}
+                    <div class="mt-3 text-start">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de borrar TODAS las consultas marcadas?');">
+                            <i class="bi bi-trash3-fill"></i> Borrar Registros Seleccionados
+                        </button>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JS para seleccionar todas las casillas del modal -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.consulta-checkbox');
+    
+    if(selectAll){
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        });
+    }
+});
+</script>
 {% endblock %}

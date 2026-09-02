@@ -67,6 +67,18 @@ class CerrarCorteForm(forms.Form):
     monto_final_contado = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        label="Ingresa el monto total contado en caja ($)",
-        widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Ej: 2550.50'})
+        label="Ingresa el monto total contado en caja FÍSICA (Efectivo $)",
+        widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg border-danger', 'placeholder': 'Ej: 600.00'})
+    )
+    monto_final_tarjeta = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        label="Ingresa el monto total contado en Tarjeta (Vouchers $)",
+        widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg border-primary', 'placeholder': 'Ej: 400.00'})
+    )
+    monto_final_transferencia = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        label="Ingresa el monto total contado en Transferencias ($)",
+        widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg border-info', 'placeholder': 'Ej: 0.00'})
     )

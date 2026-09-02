@@ -1036,3 +1036,29 @@ class HistoriaClinicaMusculoEsqueletico(models.Model):
 
         # Guardar el objeto
         super().save(*args, **kwargs)
+        
+        
+        
+# Asegúrate de no borrar nada de lo que ya tienes arriba, solo pega esto al final:
+
+class RegistroConsulta(models.Model):
+    """Guarda los datos clínicos del día y agrupa los insumos usados"""
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='registros_consultas')
+    doctor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Consulta")
+    descripcion_procedimiento = models.TextField(verbose_name="Procedimiento realizado y evolución")
+    medicamentos_recetados = models.TextField(verbose_name="Medicamentos recetados", blank=True, null=True)
+
+    def __str__(self):
+        return f"Consulta de {self.paciente.nombre} - {self.fecha.strftime('%d/%m/%Y')}"
+
+class InsumoUsado(models.Model):
+    """Guarda qué se gastó en esa consulta específica"""
+    consulta = models.ForeignKey(RegistroConsulta, on_delete=models.CASCADE, related_name='insumos_usados')
+    # Nos conectamos al modelo Insumo de la aplicación InventarioInsumos
+    medicamento = models.ForeignKey('InventarioInsumos.Insumo', on_delete=models.SET_NULL, null=True, blank=True)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.cantidad}x Insumo usado en {self.consulta}"

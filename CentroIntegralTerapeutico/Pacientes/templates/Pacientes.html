@@ -70,8 +70,8 @@
                             <a href="{% url 'editar_paciente' paciente.pk %}" class="btn btn-sm btn-info text-white" title="Editar Paciente">
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
-                            <a href="{% url 'lista_recetas' paciente.pk %}" class="btn btn-sm btn-success" style="padding: 0.1rem 0.3rem; font-size: 0.90rem;" title="Ver Recetas">
-                                <i class="bi bi-file-earmark-medical-fill"></i>
+                            <a href="{% url 'nueva_consulta_paciente' paciente.pk %}" class="btn btn-sm btn-success" style="padding: 0.1rem 0.3rem; font-size: 0.90rem;" title="Nueva Bitácora/Consulta">
+                                <i class="bi bi-journal-medical"></i>
                             </a>
                             <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-sm btn-secondary" title="Ver Registros">
                                 <i class="bi bi-journal-text"></i>

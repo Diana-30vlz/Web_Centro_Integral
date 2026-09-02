@@ -7,6 +7,7 @@ from .models import *
 from .forms import MedicamentoForm, Tag
 import io
 from django.http import HttpResponse
+from datetime import datetime, timedelta
 from .models import CorteDeCaja
 # Importaciones para ReportLab
 from reportlab.pdfgen import canvas
@@ -573,18 +574,43 @@ def ajax_finalizar_venta(request):
         venta_actual_id = request.session.get('venta_actual_id')
         venta = get_object_or_404(Venta, pk=venta_actual_id, estado='pendiente', farmaceuta=request.user)
 
-
-        # --- INICIO DE LA MODIFICACIÓN ---
         # 1. Buscar el corte activo
         try:
             corte_activo = CorteDeCaja.objects.get(usuario=request.user, is_open=True)
         except CorteDeCaja.DoesNotExist:
-            # Este es un caso de error extremo, pero es bueno manejarlo
             return JsonResponse({'error': 'No se encontró un corte de caja activo. No se puede finalizar la venta.'}, status=400)
 
-        # 2. Asociar la venta al corte activo antes de finalizarla
+        # 2. Asociar la venta al corte activo
         venta.corte = corte_activo
-        # --- FIN DE LA MODIFICACIÓN ---
+
+        # --- INICIO DE LA NUEVA LÓGICA DE PAGO ---
+        # Recibir los datos enviados por AJAX
+        metodo_pago = request.POST.get('metodo_pago', 'Efectivo')
+        monto_pagado_str = request.POST.get('monto_pagado_por_cliente')
+        
+        venta.metodo_pago = metodo_pago
+        
+        if monto_pagado_str:
+            try:
+                # Convertimos el string a Decimal de forma segura
+                monto_pagado = Decimal(monto_pagado_str)
+                if monto_pagado < venta.total:
+                    return JsonResponse({'error': 'El monto pagado es menor al total de la venta.'}, status=400)
+                
+                venta.monto_pagado_por_cliente = monto_pagado
+                
+                # Calculamos el cambio solo si pagan en Efectivo
+                if metodo_pago == 'Efectivo':
+                    venta.cambio_devuelto = monto_pagado - venta.total
+                else:
+                    venta.cambio_devuelto = Decimal('0.00')
+            except ValueError:
+                return JsonResponse({'error': 'Monto pagado inválido.'}, status=400)
+        else:
+            # Si no envían monto, asumimos el pago exacto
+            venta.monto_pagado_por_cliente = venta.total
+            venta.cambio_devuelto = Decimal('0.00')
+        # --- FIN DE LA NUEVA LÓGICA DE PAGO ---
 
         venta.estado = 'finalizada'
         venta.fecha_finalizacion = timezone.now()
@@ -592,11 +618,10 @@ def ajax_finalizar_venta(request):
 
         request.session.pop('venta_actual_id', None)
 
-        messages.success(request, f"Venta #{venta.pk} finalizada exitosamente.")
+        messages.success(request, f"Venta #{venta.pk} finalizada exitosamente por {metodo_pago}.")
         return JsonResponse({'success': True, 'message': 'Venta finalizada.', 'venta_id': venta.pk})
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
-
 
 # ----------------- Nueva vista para el Recibo -----------------
 
@@ -707,6 +732,8 @@ def iniciar_corte_view(request):
     return render(request, 'Cortes/iniciar_corte.html', {'form': form})
 
 
+# Reemplaza estas dos vistas en tu Inventario/views.py
+
 @login_required
 def corte_activo_view(request):
     try:
@@ -716,14 +743,34 @@ def corte_activo_view(request):
         return redirect('iniciar_corte')
 
     ventas_del_corte = Venta.objects.filter(corte=corte_activo)
-    total_ventas = sum(venta.total for venta in ventas_del_corte if venta.total is not None)
-    total_esperado = corte_activo.fondo_inicial + total_ventas
+    
+    # Cálculos por método de pago
+    total_ventas = Decimal('0.00')
+    total_efectivo = Decimal('0.00')
+    total_tarjeta = Decimal('0.00')
+    total_transferencia = Decimal('0.00')
+
+    for venta in ventas_del_corte:
+        if venta.total:
+            total_ventas += venta.total
+            if venta.metodo_pago == 'Efectivo':
+                total_efectivo += venta.total
+            elif venta.metodo_pago == 'Tarjeta':
+                total_tarjeta += venta.total
+            elif venta.metodo_pago == 'Transferencia':
+                total_transferencia += venta.total
+
+    # El total esperado en FÍSICO (lo que debe haber en el cajón)
+    total_esperado_efectivo = corte_activo.fondo_inicial + total_efectivo
 
     context = {
         'corte': corte_activo,
         'ventas': ventas_del_corte,
         'total_ventas': total_ventas,
-        'total_esperado': total_esperado,
+        'total_efectivo': total_efectivo,
+        'total_tarjeta': total_tarjeta,
+        'total_transferencia': total_transferencia,
+        'total_esperado_efectivo': total_esperado_efectivo,
     }
     return render(request, 'Cortes/corte_activo.html', context)
 
@@ -732,17 +779,47 @@ def corte_activo_view(request):
 def cerrar_corte_view(request):
     corte_activo = get_object_or_404(CorteDeCaja, usuario=request.user, is_open=True)
     ventas_del_corte = Venta.objects.filter(corte=corte_activo)
-    total_ventas = sum(venta.total for venta in ventas_del_corte if venta.total is not None)
-    total_esperado = float(corte_activo.fondo_inicial) + float(total_ventas)
+    
+    # Cálculos por método de pago
+    total_ventas = Decimal('0.00')
+    total_efectivo = Decimal('0.00')
+    total_tarjeta = Decimal('0.00')
+    total_transferencia = Decimal('0.00')
+
+    for venta in ventas_del_corte:
+        if venta.total:
+            total_ventas += venta.total
+            if venta.metodo_pago == 'Efectivo':
+                total_efectivo += venta.total
+            elif venta.metodo_pago == 'Tarjeta':
+                total_tarjeta += venta.total
+            elif venta.metodo_pago == 'Transferencia':
+                total_transferencia += venta.total
+
+    # El total esperado en FÍSICO es Fondo Inicial + Ventas en Efectivo
+    total_esperado_efectivo = corte_activo.fondo_inicial + total_efectivo
 
     if request.method == 'POST':
         form = CerrarCorteForm(request.POST)
         if form.is_valid():
+            # Extraemos los 3 valores que ingresó el usuario
             monto_final_contado = form.cleaned_data['monto_final_contado']
+            monto_final_tarjeta = form.cleaned_data['monto_final_tarjeta']
+            monto_final_transferencia = form.cleaned_data['monto_final_transferencia']
 
+            # Guardamos los montos que ingresó
             corte_activo.monto_final_contado = monto_final_contado
+            corte_activo.monto_final_tarjeta = monto_final_tarjeta
+            corte_activo.monto_final_transferencia = monto_final_transferencia
+
             corte_activo.total_ventas_calculado = total_ventas
-            corte_activo.diferencia = float(monto_final_contado) - total_esperado
+            
+            # Calculamos las 3 diferencias por separado
+            corte_activo.diferencia = monto_final_contado - total_esperado_efectivo
+            corte_activo.diferencia_tarjeta = monto_final_tarjeta - total_tarjeta
+            corte_activo.diferencia_transferencia = monto_final_transferencia - total_transferencia
+            
+            # Cerramos el corte
             corte_activo.is_open = False
             corte_activo.fecha_cierre = timezone.now()
             corte_activo.save()
@@ -758,7 +835,10 @@ def cerrar_corte_view(request):
     context = {
         'corte': corte_activo,
         'total_ventas': total_ventas,
-        'total_esperado': total_esperado,
+        'total_efectivo': total_efectivo,
+        'total_tarjeta': total_tarjeta,
+        'total_transferencia': total_transferencia,
+        'total_esperado_efectivo': total_esperado_efectivo,
         'form': form,
     }
     return render(request, 'Cortes/cerrar_corte.html', context)
@@ -822,3 +902,36 @@ def user_roles_processor(request):
 
 
 
+
+
+
+@login_required
+@user_passes_test(es_doctora, login_url='/')
+@require_POST
+def eliminar_cortes_antiguos(request):
+    """
+    Elimina los registros de CorteDeCaja antiguos.
+    Las ventas asociadas no se borran gracias al on_delete=models.SET_NULL
+    """
+    periodo = request.POST.get('periodo')
+    now = timezone.now()
+    
+    if periodo == '1_mes':
+        fecha_limite = now - timedelta(days=30)
+    elif periodo == '3_meses':
+        fecha_limite = now - timedelta(days=90)
+    else:
+        messages.error(request, "Período no válido.")
+        return redirect('historial_cortes')
+        
+    # Buscamos cortes cerrados (is_open=False) anteriores a la fecha límite
+    cortes_a_borrar = CorteDeCaja.objects.filter(is_open=False, fecha_cierre__lt=fecha_limite)
+    cantidad = cortes_a_borrar.count()
+    
+    if cantidad > 0:
+        cortes_a_borrar.delete()
+        messages.success(request, f"¡Limpieza exitosa! Se han eliminado {cantidad} cortes antiguos de la base de datos.")
+    else:
+        messages.info(request, "No se encontraron cortes tan antiguos para borrar.")
+        
+    return redirect('historial_cortes')

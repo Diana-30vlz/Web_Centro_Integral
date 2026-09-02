@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\edgar\onedrive\escritorio\centro\centro\Aplication-web-Centro-Integral\CentroIntegralTerapeutico\env"
+VIRTUAL_ENV="C:\Users\edgar\Documents\Proyecto\Web_Centro_Integral\CentroIntegralTerapeutico\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

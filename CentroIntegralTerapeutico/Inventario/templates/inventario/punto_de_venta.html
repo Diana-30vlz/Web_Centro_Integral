@@ -93,10 +93,46 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer text-end fw-bold">
-                    <h5>Total: <span id="total-venta">${{ venta_actual.total }}</span></h5>
+                
+                <!-- SECCIÓN FOOTER MODIFICADA CON MÉTODOS DE PAGO -->
+                <div class="card-footer fw-bold">
+                    <div class="mb-3 text-start border-bottom pb-2">
+                        <label class="form-label d-block mb-2">Método de Pago:</label>
+                        
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoEfectivo" value="Efectivo" checked>
+                            <label class="form-check-label" for="pagoEfectivo">
+                                <i class="bi bi-cash text-success"></i> Efectivo
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTarjeta" value="Tarjeta">
+                            <label class="form-check-label" for="pagoTarjeta">
+                                <i class="bi bi-credit-card text-primary"></i> Tarjeta
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTransferencia" value="Transferencia">
+                            <label class="form-check-label" for="pagoTransferencia">
+                                <i class="bi bi-phone text-info"></i> Transfer.
+                            </label>
+                        </div>
+
+                        <!-- Opcional: Campo para calcular cambio si es efectivo -->
+                        <div id="calculo-cambio-div" class="mt-2" style="display: none;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Recibido $</span>
+                                <input type="number" class="form-control form-control-sm" id="monto-recibido" placeholder="0.00" step="0.01" min="0">
+                            </div>
+                            <small class="text-muted d-block mt-1">Cambio: <span id="cambio-mostrar" class="text-danger">$0.00</span></small>
+                        </div>
+                    </div>
+
+                    <h5 class="text-end">Total: <span id="total-venta">${{ venta_actual.total }}</span></h5>
                     <button class="btn btn-success w-100 mt-2" id="finalizar-btn" {% if not items_venta %}disabled{% endif %}>Finalizar Venta</button>
                 </div>
+                <!-- FIN SECCIÓN FOOTER MODIFICADA -->
+                
             </div>
         </div>
     </div>
@@ -215,35 +251,74 @@ $(document).ready(function() {
         }
     });
 
-    // -------- LÓGICA DE FINALIZAR VENTA ACTUALIZADA --------
+    // -------- NUEVA LÓGICA DE MÉTODOS DE PAGO Y FINALIZAR VENTA --------
+    const totalVentaNum = parseFloat("{{ venta_actual.total }}") || 0;
+    
+    // Inicializar la vista (por si el total ya existe y está en efectivo)
+    if ($('#pagoEfectivo').is(':checked') && totalVentaNum > 0) {
+        $('#calculo-cambio-div').show();
+    }
+
+    $('.btn-metodo-pago').change(function() {
+        if ($('#pagoEfectivo').is(':checked')) {
+            $('#calculo-cambio-div').slideDown(200);
+        } else {
+            $('#calculo-cambio-div').slideUp(200);
+            $('#monto-recibido').val(''); 
+            $('#cambio-mostrar').text('$0.00');
+        }
+    });
+    
+    $('#monto-recibido').on('keyup change', function() {
+        const recibido = parseFloat($(this).val()) || 0;
+        let cambio = recibido - totalVentaNum;
+        if (cambio < 0) cambio = 0;
+        $('#cambio-mostrar').text('$' + cambio.toFixed(2));
+    });
+
     $('#finalizar-btn').on('click', function() {
-        if (confirm("¿Confirmar el cierre de la venta?")) {
+        const metodoPagoSeleccionado = $('input[name="metodoPago"]:checked').val();
+        let montoRecibido = $('#monto-recibido').val();
+
+        if (metodoPagoSeleccionado !== 'Efectivo' || !montoRecibido) {
+            montoRecibido = totalVentaNum; 
+        } else {
+            montoRecibido = parseFloat(montoRecibido);
+            if (montoRecibido < totalVentaNum) {
+                alert("El monto recibido es menor al total de la venta.");
+                return;
+            }
+        }
+
+        if (confirm("¿Confirmar el cierre de la venta pagando con " + metodoPagoSeleccionado + "?")) {
+            $(this).prop('disabled', true).text('Procesando...');
+
             $.ajax({
                 url: "{% url 'ajax_finalizar_venta' %}",
                 type: 'POST',
                 data: {
-                    'csrfmiddlewaretoken': csrftoken
+                    'csrfmiddlewaretoken': csrftoken,
+                    'metodo_pago': metodoPagoSeleccionado,
+                    'monto_pagado_por_cliente': montoRecibido
                 },
                 success: function(response) {
-                    // Al finalizar la venta, preguntamos si se desea imprimir el recibo
                     const venta_id = response.venta_id;
                     const imprimir = confirm("Venta finalizada con éxito. ¿Deseas imprimir el recibo?");
                     
                     if (imprimir) {
-                        // Si el usuario acepta, abrimos la URL del recibo en una nueva ventana
                         window.open(`{% url 'imprimir_recibo' 99999 %}`.replace('99999', venta_id), '_blank');
                     }
                     
-                    // Redirigimos al punto de venta para una nueva transacción
                     window.location.href = "{% url 'punto_venta' %}";
                 },
                 error: function(response) {
-                    alert(response.responseJSON.error);
+                    alert(response.responseJSON.error || "Error al procesar la venta.");
+                    $('#finalizar-btn').prop('disabled', false).text('Finalizar Venta');
                 }
             });
         }
     });
-    // --------------------------------------------------------
+    // -------------------------------------------------------------------
 });
 </script>
 {% endblock %}

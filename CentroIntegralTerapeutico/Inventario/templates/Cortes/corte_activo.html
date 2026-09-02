@@ -11,23 +11,40 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 mb-3">
                     <p><strong>Usuario:</strong> {{ corte.usuario.username }}</p>
                     <p><strong>Apertura:</strong> {{ corte.fecha_apertura|date:"d/m/Y H:i" }}</p>
                 </div>
                 <div class="col-md-8">
                     <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
                             Fondo Inicial
                             <span class="badge bg-secondary rounded-pill">${{ corte.fondo_inicial|floatformat:2 }}</span>
                         </li>
+                        
+                        <!-- NUEVO: DESGLOSE DE VENTAS -->
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span><i class="bi bi-cash text-success"></i> Ventas en Efectivo</span>
+                                <span class="text-success fw-bold">+ ${{ total_efectivo|floatformat:2 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span><i class="bi bi-credit-card text-primary"></i> Ventas con Tarjeta</span>
+                                <span class="text-primary">+ ${{ total_tarjeta|floatformat:2 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-phone text-info"></i> Ventas por Transferencia</span>
+                                <span class="text-info">+ ${{ total_transferencia|floatformat:2 }}</span>
+                            </div>
+                        </li>
+
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Total de Ventas Realizadas
-                            <span class="badge bg-success rounded-pill">+ ${{ total_ventas|floatformat:2 }}</span>
+                            Total General de Ventas
+                            <span class="badge bg-dark rounded-pill">${{ total_ventas|floatformat:2 }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center active">
-                            <strong>Total Esperado en Caja</strong>
-                            <strong>${{ total_esperado|floatformat:2 }}</strong>
+                            <strong>Efectivo Esperado en Caja (Fondo + Efectivo)</strong>
+                            <strong>${{ total_esperado_efectivo|floatformat:2 }}</strong>
                         </li>
                     </ul>
                 </div>
@@ -48,6 +65,7 @@
                 <tr>
                     <th># Venta</th>
                     <th>Fecha</th>
+                    <th>Método</th>
                     <th>Total</th>
                 </tr>
             </thead>
@@ -56,11 +74,20 @@
                 <tr>
                     <td>{{ venta.pk }}</td>
                     <td>{{ venta.fecha_finalizacion|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if venta.metodo_pago == 'Efectivo' %}
+                            <span class="badge bg-success">Efectivo</span>
+                        {% elif venta.metodo_pago == 'Tarjeta' %}
+                            <span class="badge bg-primary">Tarjeta</span>
+                        {% else %}
+                            <span class="badge bg-info text-dark">Transferencia</span>
+                        {% endif %}
+                    </td>
                     <td>${{ venta.total|floatformat:2 }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" class="text-center">Aún no se han registrado ventas en este corte.</td>
+                    <td colspan="4" class="text-center">Aún no se han registrado ventas en este corte.</td>
                 </tr>
                 {% endfor %}
             </tbody>
