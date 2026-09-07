@@ -74,11 +74,11 @@ WSGI_APPLICATION = 'CentroIntegralTerapeutico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'doctora',
-        'USER': 'postgres',      # Tu usuario local de PostgreSQL (suele ser postgres)
-        'PASSWORD': 'Mjl41412',
-        'HOST': 'localhost',     # <-- ESTO ES LO QUE ESTABA CAUSANDO EL ERROR
-        'PORT': '5432',          # <-- PUERTO LOCAL POR DEFECTO
+        'NAME': 'myappdb',  # O el nombre de tu base de datos si es diferente
+        'USER': 'myappuser',  # O tu nombre de usuario si es diferente
+        'PASSWORD': '1234',
+        'HOST': 'CentroIntegral-4779.postgres.pythonanywhere-services.com',
+        'PORT': '14779',
     }
 }
 
@@ -153,9 +153,12 @@ SESSION_COOKIE_AGE = 8 * 60 * 60  # 28800 segundos
 # 4. Forzar el uso de HTTPS y HSTS
 # Django redirigirá todo el tráfico de HTTP a HTTPS.
 # 4. Forzar el uso de HTTPS y HSTS
-SECURE_SSL_REDIRECT = False  # Cambia a False
-SECURE_HSTS_SECONDS = 0      # Cambia a 0
+
+SECURE_SSL_REDIRECT = True
+# HSTS instruye a los navegadores a usar solo HTTPS durante un año.
+SECURE_HSTS_SECONDS = 31536000
 
 # 5. Proteger las cookies y los tokens de sesión
-SESSION_COOKIE_SECURE = False # Cambia a False
-CSRF_COOKIE_SECURE = False    # Cambia a False
+# Las cookies de sesión y de CSRF solo se enviarán a través de conexiones HTTPS.
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
