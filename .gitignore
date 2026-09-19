@@ -1,0 +1,73 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments (this repo vendors one at CentroIntegralTerapeutico/env/)
+env/
+venv/
+.venv/
+ENV/
+virtualenv/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*.pot
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# Database dumps / backups (copia_seguridad.dump lives in the project tree)
+*.dump
+*.sql
+*.backup
+copia_seguridad.dump
+
+# OS / OneDrive
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+~$*
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.cursor/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test / tooling
+celerybeat-schedule
+*.pid

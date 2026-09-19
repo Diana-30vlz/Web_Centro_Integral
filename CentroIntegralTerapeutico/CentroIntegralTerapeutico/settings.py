@@ -74,11 +74,11 @@ WSGI_APPLICATION = 'CentroIntegralTerapeutico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cit',
-        'USER': 'postgres',      # Tu usuario local de PostgreSQL (suele ser postgres)
-        'PASSWORD': 'Mjl41412#',
-        'HOST': '127.0.0.1',     # IPv4 local (trust). localhost resuelve a ::1 y falla con SCRAM.
-        'PORT': '5432',          # <-- PUERTO LOCAL POR DEFECTO
+        'NAME': 'myappdb',  # O el nombre de tu base de datos si es diferente
+        'USER': 'myappuser',  # O tu nombre de usuario si es diferente
+        'PASSWORD': '1234',
+        'HOST': 'CentroIntegral-4779.postgres.pythonanywhere-services.com',
+        'PORT': '14779',
     }
 }
 
@@ -92,10 +92,10 @@ LOGIN_URL = '/signin/'             # La URL de tu página de inicio de sesión
 
 
 #URLs FARMACIA
-LOGIN_REDIRECT_URL = '/doctor_home/' # Dashboard de doctora; farmacia redirige en su propia vista de login
+LOGIN_REDIRECT_URL = '/farmacia/dashboard/' # Cambia esto a la URL de tu dashboard de farmacia
 
 # URL a la que redirigir si se requiere inicio de sesión
-LOGIN_URL = '/signin/' # Login de doctora (no sobreescribir con /login/ de farmacia)
+LOGIN_URL = '/login/' # La URL de tu página de login
 
 
 # Password validation
@@ -153,9 +153,12 @@ SESSION_COOKIE_AGE = 8 * 60 * 60  # 28800 segundos
 # 4. Forzar el uso de HTTPS y HSTS
 # Django redirigirá todo el tráfico de HTTP a HTTPS.
 # 4. Forzar el uso de HTTPS y HSTS
-SECURE_SSL_REDIRECT = False  # Cambia a False
-SECURE_HSTS_SECONDS = 0      # Cambia a 0
+
+SECURE_SSL_REDIRECT = True
+# HSTS instruye a los navegadores a usar solo HTTPS durante un año.
+SECURE_HSTS_SECONDS = 31536000
 
 # 5. Proteger las cookies y los tokens de sesión
-SESSION_COOKIE_SECURE = False # Cambia a False
-CSRF_COOKIE_SECURE = False    # Cambia a False
+# Las cookies de sesión y de CSRF solo se enviarán a través de conexiones HTTPS.
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
