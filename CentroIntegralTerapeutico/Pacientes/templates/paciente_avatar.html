@@ -1,0 +1,5 @@
+{% load static %}
+<img src="{% static paciente.avatar_genero %}"
+     alt="{{ paciente.get_genero_display }}"
+     title="{{ paciente.get_genero_display }}"
+     class="{{ avatar_class }}">

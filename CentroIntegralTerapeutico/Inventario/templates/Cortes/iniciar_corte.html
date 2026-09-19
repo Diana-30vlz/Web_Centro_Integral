@@ -1,40 +1,49 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Iniciar Corte de Caja{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/cortes_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Iniciar Corte de Caja</h3>
-                </div>
-                <div class="card-body">
-                    <p>Ingresa el monto inicial de efectivo en caja para comenzar el día.</p>
-                    
-                    <form method="post">
-                        {% csrf_token %}
+<div class="container cortes-v2 narrow">
+    <section class="cx-hero">
+        <div>
+            <p class="cx-kicker">Caja</p>
+            <h1>Iniciar corte</h1>
+            <p>Registra el fondo inicial para abrir el turno.</p>
+        </div>
+    </section>
 
-                        <div class="mb-3">
-                            <label for="{{ form.fondo_inicial.id_for_label }}" class="form-label">{{ form.fondo_inicial.label }}</label>
-                            
-                            {{ form.fondo_inicial }}
+    <div class="cx-toolbar">
+        <a href="#" onclick="history.back()" class="cx-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
 
-                            {% if form.fondo_inicial.errors %}
-                                <div class="alert alert-danger mt-2 p-2">
-                                    {% for error in form.fondo_inicial.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+    <div class="cx-card">
+        <div class="cx-card-head">
+            <h2>Fondo inicial</h2>
+        </div>
+        <div class="cx-card-body">
+            <p class="form-text mb-3">Ingresa el efectivo que hay en caja antes de vender.</p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.fondo_inicial.id_for_label }}">{{ form.fondo_inicial.label }}</label>
+                    {{ form.fondo_inicial }}
+                    {% if form.fondo_inicial.errors %}
+                        <div class="alert alert-danger mt-2 p-2">
+                            {% for error in form.fondo_inicial.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
                         </div>
-                        
-                        <div class="d-grid mt-3">
-                            <button type="submit" class="btn btn-primary">Iniciar Corte</button>
-                        </div>
-                    </form>
+                    {% endif %}
                 </div>
-            </div>
+                <button type="submit" class="cx-submit">Iniciar corte</button>
+            </form>
         </div>
     </div>
 </div>

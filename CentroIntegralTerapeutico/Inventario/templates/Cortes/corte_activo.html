@@ -1,97 +1,108 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Corte de Caja Activo{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/cortes_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4"><i class="bi bi-activity"></i> Corte de Caja Activo</h1>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            Resumen del Corte
+<div class="container cortes-v2">
+    <section class="cx-hero">
+        <div>
+            <p class="cx-kicker">Turno abierto</p>
+            <h1>Corte de caja activo</h1>
+            <p>{{ corte.usuario.username }} · abierto el {{ corte.fecha_apertura|date:"d/m/Y H:i" }}</p>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <p><strong>Usuario:</strong> {{ corte.usuario.username }}</p>
-                    <p><strong>Apertura:</strong> {{ corte.fecha_apertura|date:"d/m/Y H:i" }}</p>
-                </div>
-                <div class="col-md-8">
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
-                            Fondo Inicial
-                            <span class="badge bg-secondary rounded-pill">${{ corte.fondo_inicial|floatformat:2 }}</span>
-                        </li>
-                        
-                        <!-- NUEVO: DESGLOSE DE VENTAS -->
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span><i class="bi bi-cash text-success"></i> Ventas en Efectivo</span>
-                                <span class="text-success fw-bold">+ ${{ total_efectivo|floatformat:2 }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span><i class="bi bi-credit-card text-primary"></i> Ventas con Tarjeta</span>
-                                <span class="text-primary">+ ${{ total_tarjeta|floatformat:2 }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-phone text-info"></i> Ventas por Transferencia</span>
-                                <span class="text-info">+ ${{ total_transferencia|floatformat:2 }}</span>
-                            </div>
-                        </li>
+        <span class="cx-pill">En curso</span>
+    </section>
 
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Total General de Ventas
-                            <span class="badge bg-dark rounded-pill">${{ total_ventas|floatformat:2 }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center active">
-                            <strong>Efectivo Esperado en Caja (Fondo + Efectivo)</strong>
-                            <strong>${{ total_esperado_efectivo|floatformat:2 }}</strong>
-                        </li>
-                    </ul>
-                </div>
+    <div class="cx-toolbar">
+        <a href="#" onclick="history.back()" class="cx-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% if is_doctora %}
+        <a href="{% url 'historial_cortes' %}" class="cx-icon" title="Historial">
+            <i class="bi bi-clock-history"></i>
+        </a>
+        {% endif %}
+    </div>
+
+    <section class="cx-metrics">
+        <div class="cx-metric">
+            <span>Fondo inicial</span>
+            <strong>${{ corte.fondo_inicial|floatformat:2 }}</strong>
+        </div>
+        <div class="cx-metric">
+            <span>Efectivo</span>
+            <strong>${{ total_efectivo|floatformat:2 }}</strong>
+        </div>
+        <div class="cx-metric">
+            <span>Total de ventas</span>
+            <strong>${{ total_ventas|floatformat:2 }}</strong>
+        </div>
+        <div class="cx-metric highlight">
+            <span>Efectivo esperado</span>
+            <strong>${{ total_esperado_efectivo|floatformat:2 }}</strong>
+        </div>
+    </section>
+
+    <div class="cx-card">
+        <div class="cx-card-head">
+            <h2>Desglose del turno</h2>
+        </div>
+        <div class="cx-card-body">
+            <p class="mb-2">Ventas en efectivo: <strong>${{ total_efectivo|floatformat:2 }}</strong></p>
+            <p class="mb-2">Ventas con tarjeta: <strong>${{ total_tarjeta|floatformat:2 }}</strong></p>
+            <p class="mb-2">Ventas por transferencia: <strong>${{ total_transferencia|floatformat:2 }}</strong></p>
+            <p class="mb-0">Total de ventas: <strong>${{ total_ventas|floatformat:2 }}</strong></p>
+            <div class="cx-actions mt-3">
+                <a href="{% url 'cerrar_corte' %}" class="cx-link">
+                    <i class="bi bi-lock"></i> Cerrar corte de caja
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="text-center mb-4">
-        <a href="{% url 'cerrar_corte' %}" class="btn btn-danger btn-lg">
-            <i class="bi bi-lock"></i> Cerrar Corte de Caja
-        </a>
-    </div>
-
-    <h4>Ventas de este Corte ({{ ventas.count }})</h4>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th># Venta</th>
-                    <th>Fecha</th>
-                    <th>Método</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.pk }}</td>
-                    <td>{{ venta.fecha_finalizacion|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        {% if venta.metodo_pago == 'Efectivo' %}
-                            <span class="badge bg-success">Efectivo</span>
-                        {% elif venta.metodo_pago == 'Tarjeta' %}
-                            <span class="badge bg-primary">Tarjeta</span>
-                        {% else %}
-                            <span class="badge bg-info text-dark">Transferencia</span>
-                        {% endif %}
-                    </td>
-                    <td>${{ venta.total|floatformat:2 }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">Aún no se han registrado ventas en este corte.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="cx-card">
+        <div class="cx-card-head">
+            <h2>Ventas de este corte ({{ ventas.count }})</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th># Venta</th>
+                        <th>Fecha</th>
+                        <th>Método</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.pk }}</td>
+                        <td>{{ venta.fecha_finalizacion|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if venta.metodo_pago == 'Efectivo' %}
+                                <span class="badge bg-success">Efectivo</span>
+                            {% elif venta.metodo_pago == 'Tarjeta' %}
+                                <span class="badge bg-primary">Tarjeta</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">Transferencia</span>
+                            {% endif %}
+                        </td>
+                        <td>${{ venta.total|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="cx-empty">Aún no se han registrado ventas en este corte.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

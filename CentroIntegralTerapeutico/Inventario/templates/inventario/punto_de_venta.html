@@ -1,27 +1,70 @@
 {# Inventario/templates/inventario/punto_de_venta.html #}
 {% extends "BaseSinInicio.html" %}
+{% load static %}
 
 {% block title %}Punto de Venta{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/ventas_v2.css' %}?v=20260918b">
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid my-5">
+<div class="container-fluid pos-v2">
+    <section class="vs-hero">
+        <div>
+            <p class="vs-kicker">Caja</p>
+            <h1>Punto de venta</h1>
+            <p>Agrega medicamentos, cobra y cierra el ticket.</p>
+        </div>
+        <span class="vs-pill">Venta #{{ venta_actual.pk }}</span>
+    </section>
+
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="vs-toolbar">
+        {% if is_doctora %}
+        <a href="{% url 'doctor_home' %}" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% elif is_farmacia %}
+        <a href="{% url 'dashboard_farmacia' %}" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% else %}
+        <a href="#" onclick="history.back()" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% endif %}
+        {% if is_doctora %}
+        <a href="{% url 'historial_ventas' %}" class="vs-icon" title="Reporte de ventas">
+            <i class="bi bi-graph-up"></i>
+        </a>
+        {% endif %}
+    </div>
+
     <div class="row g-4">
-<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-    Regresar a la página anterior
-</a>
-        <div class="col-lg-8">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Inventario de Productos</h4>
+        <div class="col-lg-6">
+            <div class="vs-card">
+                <div class="vs-card-head">
+                    <h2>Inventario de productos</h2>
                 </div>
-                <div class="card-body">
-                    <div class="input-group mb-3">
+                <div class="vs-card-body">
+                    <div class="vs-search">
+                        <i class="bi bi-search"></i>
                         <input type="text" class="form-control" id="search-input" placeholder="Buscar medicamento por nombre...">
-                        <span class="input-group-text"><i class="fa fa-search"></i></span>
                     </div>
 
-                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
-                        <table class="table table-hover table-striped">
+                    <div class="table-responsive pos-list">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -34,21 +77,25 @@
                                 {% for medicamento in medicamentos %}
                                 <tr class="medicamento-row" data-name="{{ medicamento.nombre|lower }}">
                                     <td>{{ medicamento.nombre }}</td>
-                                    <td>{{ medicamento.cantidad_disponible }}</td>
+                                    <td>
+                                        <span class="vs-stock{% if medicamento.cantidad_disponible <= 0 %} out{% endif %}">
+                                            {{ medicamento.cantidad_disponible }}
+                                        </span>
+                                    </td>
                                     <td>${{ medicamento.precio_unitario }}</td>
                                     <td class="text-center">
                                         {% if medicamento.cantidad_disponible > 0 %}
-                                        <button class="btn btn-success btn-sm agregar-btn" data-id="{{ medicamento.pk }}" data-nombre="{{ medicamento.nombre }}" data-precio="{{ medicamento.precio_unitario }}">
-                                            <i class="fa fa-plus"></i> Agregar
+                                        <button class="vs-add agregar-btn" data-id="{{ medicamento.pk }}" data-nombre="{{ medicamento.nombre }}" data-precio="{{ medicamento.precio_unitario }}">
+                                            <i class="bi bi-plus-lg"></i> Agregar
                                         </button>
                                         {% else %}
-                                        <span class="badge bg-danger">Agotado</span>
+                                        <span class="vs-stock out">Agotado</span>
                                         {% endif %}
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center">No hay medicamentos en el inventario.</td>
+                                    <td colspan="4" class="vs-empty">No hay medicamentos en el inventario.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -58,14 +105,14 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Venta Actual</h4>
+        <div class="col-lg-6 pos-cart">
+            <div class="vs-card">
+                <div class="vs-card-head">
+                    <h2>Venta actual</h2>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm" id="venta-items-table">
+                <div class="vs-card-body pos-cart-body">
+                    <div class="table-responsive pos-cart-list">
+                        <table class="table" id="venta-items-table">
                             <thead>
                                 <tr>
                                     <th>Producto</th>
@@ -83,78 +130,83 @@
                                     <td class="text-end">${{ item.precio_unitario_venta }}</td>
                                     <td class="text-end">${{ item.subtotal }}</td>
                                     <td class="text-center">
-                                        <button class="btn btn-danger btn-sm eliminar-btn" data-id="{{ item.pk }}">
-                                            <i class="fa fa-times"></i>
+                                        <button class="vs-remove eliminar-btn" data-id="{{ item.pk }}" title="Quitar">
+                                            <i class="bi bi-x-lg"></i>
                                         </button>
                                     </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="vs-empty">Aún no hay productos en el ticket.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-                
-                <!-- SECCIÓN FOOTER MODIFICADA CON MÉTODOS DE PAGO -->
-                <div class="card-footer fw-bold">
-                    <div class="mb-3 text-start border-bottom pb-2">
-                        <label class="form-label d-block mb-2">Método de Pago:</label>
-                        
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoEfectivo" value="Efectivo" checked>
-                            <label class="form-check-label" for="pagoEfectivo">
-                                <i class="bi bi-cash text-success"></i> Efectivo
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTarjeta" value="Tarjeta">
-                            <label class="form-check-label" for="pagoTarjeta">
-                                <i class="bi bi-credit-card text-primary"></i> Tarjeta
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTransferencia" value="Transferencia">
-                            <label class="form-check-label" for="pagoTransferencia">
-                                <i class="bi bi-phone text-info"></i> Transfer.
-                            </label>
+
+                <div class="vs-footer fw-bold">
+                    <div class="mb-2">
+                        <label class="form-label d-block mb-2">Método de pago</label>
+                        <div class="vs-pay">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoEfectivo" value="Efectivo" checked>
+                                <label class="form-check-label" for="pagoEfectivo">
+                                    <i class="bi bi-cash"></i> Efectivo
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTarjeta" value="Tarjeta">
+                                <label class="form-check-label" for="pagoTarjeta">
+                                    <i class="bi bi-credit-card"></i> Tarjeta
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input btn-metodo-pago" type="radio" name="metodoPago" id="pagoTransferencia" value="Transferencia">
+                                <label class="form-check-label" for="pagoTransferencia">
+                                    <i class="bi bi-phone"></i> Transfer.
+                                </label>
+                            </div>
                         </div>
 
-                        <!-- Opcional: Campo para calcular cambio si es efectivo -->
                         <div id="calculo-cambio-div" class="mt-2" style="display: none;">
+                            <label for="monto-recibido">Recibido</label>
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text">Recibido $</span>
+                                <span class="input-group-text">$</span>
                                 <input type="number" class="form-control form-control-sm" id="monto-recibido" placeholder="0.00" step="0.01" min="0">
                             </div>
-                            <small class="text-muted d-block mt-1">Cambio: <span id="cambio-mostrar" class="text-danger">$0.00</span></small>
+                            <small class="text-muted d-block mt-1">Cambio: <span id="cambio-mostrar">$0.00</span></small>
                         </div>
                     </div>
 
-                    <h5 class="text-end">Total: <span id="total-venta">${{ venta_actual.total }}</span></h5>
-                    <button class="btn btn-success w-100 mt-2" id="finalizar-btn" {% if not items_venta %}disabled{% endif %}>Finalizar Venta</button>
+                    <div class="vs-total">
+                        <span>Total</span>
+                        <strong id="total-venta">${{ venta_actual.total }}</strong>
+                    </div>
+                    <button class="btn" id="finalizar-btn" {% if not items_venta %}disabled{% endif %}>Finalizar venta</button>
                 </div>
-                <!-- FIN SECCIÓN FOOTER MODIFICADA -->
-                
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="agregarModal" tabindex="-1" aria-labelledby="agregarModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="agregarModalLabel">Agregar Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Producto: <span id="producto-modal-nombre" class="fw-bold"></span></p>
-                <div class="mb-3">
-                    <label for="cantidad-input" class="form-label">Cantidad a agregar</label>
-                    <input type="number" class="form-control" id="cantidad-input" value="1" min="1">
+    <div class="modal fade" id="agregarModal" tabindex="-1" aria-labelledby="agregarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarModalLabel">Agregar producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmar-agregar-btn">Confirmar</button>
+                <div class="modal-body">
+                    <p>Producto: <span id="producto-modal-nombre" class="fw-bold"></span></p>
+                    <div class="mb-3">
+                        <label for="cantidad-input" class="form-label">Cantidad a agregar</label>
+                        <input type="number" class="form-control" id="cantidad-input" value="1" min="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmar-agregar-btn">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -163,7 +215,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -195,12 +247,12 @@ $(document).ready(function() {
     let currentMedId = null;
     let currentMedNombre = '';
     let currentMedPrecio = '';
-    
+
     $(document).on('click', '.agregar-btn', function() {
         currentMedId = $(this).data('id');
         currentMedNombre = $(this).data('nombre');
         currentMedPrecio = $(this).data('precio');
-        
+
         $('#producto-modal-nombre').text(currentMedNombre);
         $('#cantidad-input').val(1);
         var agregarModal = new bootstrap.Modal(document.getElementById('agregarModal'));
@@ -251,10 +303,8 @@ $(document).ready(function() {
         }
     });
 
-    // -------- NUEVA LÓGICA DE MÉTODOS DE PAGO Y FINALIZAR VENTA --------
     const totalVentaNum = parseFloat("{{ venta_actual.total }}") || 0;
-    
-    // Inicializar la vista (por si el total ya existe y está en efectivo)
+
     if ($('#pagoEfectivo').is(':checked') && totalVentaNum > 0) {
         $('#calculo-cambio-div').show();
     }
@@ -264,11 +314,11 @@ $(document).ready(function() {
             $('#calculo-cambio-div').slideDown(200);
         } else {
             $('#calculo-cambio-div').slideUp(200);
-            $('#monto-recibido').val(''); 
+            $('#monto-recibido').val('');
             $('#cambio-mostrar').text('$0.00');
         }
     });
-    
+
     $('#monto-recibido').on('keyup change', function() {
         const recibido = parseFloat($(this).val()) || 0;
         let cambio = recibido - totalVentaNum;
@@ -281,7 +331,7 @@ $(document).ready(function() {
         let montoRecibido = $('#monto-recibido').val();
 
         if (metodoPagoSeleccionado !== 'Efectivo' || !montoRecibido) {
-            montoRecibido = totalVentaNum; 
+            montoRecibido = totalVentaNum;
         } else {
             montoRecibido = parseFloat(montoRecibido);
             if (montoRecibido < totalVentaNum) {
@@ -304,21 +354,20 @@ $(document).ready(function() {
                 success: function(response) {
                     const venta_id = response.venta_id;
                     const imprimir = confirm("Venta finalizada con éxito. ¿Deseas imprimir el recibo?");
-                    
+
                     if (imprimir) {
                         window.open(`{% url 'imprimir_recibo' 99999 %}`.replace('99999', venta_id), '_blank');
                     }
-                    
+
                     window.location.href = "{% url 'punto_venta' %}";
                 },
                 error: function(response) {
                     alert(response.responseJSON.error || "Error al procesar la venta.");
-                    $('#finalizar-btn').prop('disabled', false).text('Finalizar Venta');
+                    $('#finalizar-btn').prop('disabled', false).text('Finalizar venta');
                 }
             });
         }
     });
-    // -------------------------------------------------------------------
 });
 </script>
 {% endblock %}

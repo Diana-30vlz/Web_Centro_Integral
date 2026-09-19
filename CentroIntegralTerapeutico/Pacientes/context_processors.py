@@ -7,8 +7,14 @@ def user_roles_processor(request):
     context = {
         'is_doctora': False,
         'is_farmacia': False,
+        'cit_sesion_anim': '',
+        'cit_sesion_nombre': '',
     }
-    
+
+    if hasattr(request, 'session'):
+        context['cit_sesion_anim'] = request.session.pop('cit_sesion_anim', '')
+        context['cit_sesion_nombre'] = request.session.pop('cit_sesion_nombre', '')
+
     # Solo calculamos los roles si el usuario ha iniciado sesión
     if request.user.is_authenticated:
         context['is_doctora'] = request.user.groups.filter(name='Doctora').exists()

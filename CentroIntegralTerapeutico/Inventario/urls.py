@@ -46,6 +46,8 @@ urlpatterns = [
 
     # URL para el historial de ventas
     path('reporte/ventas/', views.historial_ventas, name='historial_ventas'),
+    path('reporte/ventas/eliminar-lote/', views.eliminar_ventas_lote, name='eliminar_ventas_lote'),
+    path('reporte/ventas/eliminar-antiguas/', views.eliminar_ventas_antiguas, name='eliminar_ventas_antiguas'),
     
     path('cortes/eliminar-antiguos/', views.eliminar_cortes_antiguos, name='eliminar_cortes_antiguos'),
 

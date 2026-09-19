@@ -12,7 +12,7 @@ class InsumoForm(forms.ModelForm):
 
     class Meta:
         model = Insumo
-        fields = '__all__'
+        exclude = ('doctor',)
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),

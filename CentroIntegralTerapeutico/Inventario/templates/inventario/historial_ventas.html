@@ -4,78 +4,255 @@
 
 {% block title %}Historial de Ventas{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/ventas_v2.css' %}?v=20260918c">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4 text-center">{{ titulo }}</h2>
-<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-    Regresar a la página anterior
-</a>
-    <div class="card shadow-sm p-3 mb-4">
-        <form method="get" class="row g-3 align-items-end">
-            <div class="col-md-5">
-                <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
-                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio|default_if_none:'' }}">
+<div class="container ventas-v2">
+    <section class="vs-hero">
+        <div>
+            <p class="vs-kicker">Caja</p>
+            <h1>{{ titulo }}</h1>
+            <p>Tickets cerrados, gráficas del periodo y limpieza de registros.</p>
+        </div>
+        <div class="vs-hero-side">
+            <span class="vs-pill">{{ ventas|length }} venta{{ ventas|length|pluralize }} · ${{ total_periodo|floatformat:2 }}</span>
+            <div class="dropdown">
+                <button class="vs-clean dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-trash"></i> Limpiar
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li>
+                        <form method="post" action="{% url 'eliminar_ventas_antiguas' %}" onsubmit="return confirm('¿Borrar todas las ventas de más de 3 meses? Esta acción no se puede deshacer y el stock no se devolverá.');">
+                            {% csrf_token %}
+                            <input type="hidden" name="periodo" value="3_meses">
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-calendar3-x"></i> Borrar ventas de más de 3 meses
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
-            <div class="col-md-5">
-                <label for="fecha_fin" class="form-label">Fecha de fin</label>
-                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin|default_if_none:'' }}">
-            </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
-            </div>
-        </form>
+        </div>
+    </section>
+
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="vs-toolbar">
+        {% if is_doctora %}
+        <a href="{% url 'doctor_home' %}" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% elif is_farmacia %}
+        <a href="{% url 'dashboard_farmacia' %}" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% else %}
+        <a href="#" onclick="history.back()" class="vs-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% endif %}
+        <a href="{% url 'punto_venta' %}" class="vs-icon" title="Punto de venta">
+            <i class="bi bi-cart3"></i>
+        </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID de Venta</th>
-                    <th>Fecha y Hora</th>
-                    <th style="width: 30%;">Medicamentos Vendidos</th> <th>Encargado</th>
-                    <th class="text-end">Total</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.pk }}</td>
-                    <td>{{ venta.fecha_finalizacion|date:"d M Y, H:i" }}</td>
-                    
-                    {# COLUMNA DE MEDICAMENTOS VENDIDOS #}
-                    <td>
-                        <ul class="list-unstyled mb-0">
-                            {% for item in venta.items.all %}
-                                <li>
-                                    <span class="badge bg-dark rounded-pill">{{ item.cantidad }}x</span> 
-                                    **{{ item.medicamento.nombre }}** (${{ item.precio_unitario_venta|floatformat:2 }} c/u)
-                                </li>
-                            {% empty %}
-                                <li><small class="text-muted">Sin artículos.</small></li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-
-                    {# COLUMNA DE ENCARGADO #}
-                    <td>
-                        <strong>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</strong>
-                    </td>
-                    
-                    <td class="text-end">${{ venta.total|floatformat:2 }}</td>
-                    <td class="text-center">
-                        <a href="{% url 'imprimir_recibo' venta.pk %}" target="_blank" class="btn btn-info btn-sm" title="Ver Recibo">
-                            <i class="bi bi-receipt"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No se encontraron ventas finalizadas.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="vs-card">
+        <div class="vs-card-head">
+            <h2>Ventas en el tiempo</h2>
+        </div>
+        <div class="vs-card-body">
+            <div class="vs-chart-tabs">
+                <button type="button" class="vs-tab active" data-range="mes">Este mes</button>
+                <button type="button" class="vs-tab" data-range="6m">6 meses</button>
+                <button type="button" class="vs-tab" data-range="anio">1 año</button>
+            </div>
+            <p class="vs-chart-total">Total del periodo: <strong id="chart-total">${{ chart_mes.total|floatformat:2 }}</strong></p>
+            <div class="vs-chart-wrap">
+                <canvas id="grafica-ventas"></canvas>
+            </div>
+        </div>
     </div>
+
+    <div class="vs-card">
+        <div class="vs-card-head">
+            <h2>Filtrar por fecha</h2>
+        </div>
+        <div class="vs-card-body">
+            <form method="get" class="vs-filters">
+                <div>
+                    <label for="fecha_inicio">Fecha de inicio</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio|default_if_none:'' }}">
+                </div>
+                <div>
+                    <label for="fecha_fin">Fecha de fin</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin|default_if_none:'' }}">
+                </div>
+                <button type="submit" class="vs-filter-btn">Filtrar</button>
+            </form>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'eliminar_ventas_lote' %}">
+        {% csrf_token %}
+        <div class="vs-card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 42px;">
+                                <input class="form-check-input" type="checkbox" id="selectAllVentas" {% if not ventas %}disabled{% endif %}>
+                            </th>
+                            <th>ID</th>
+                            <th>Fecha y hora</th>
+                            <th>Medicamentos</th>
+                            <th>Pago</th>
+                            <th>Encargado</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td>
+                                <input class="form-check-input venta-checkbox" type="checkbox" name="ventas_ids" value="{{ venta.pk }}">
+                            </td>
+                            <td>#{{ venta.pk }}</td>
+                            <td>{{ venta.fecha_finalizacion|date:"d M Y, H:i" }}</td>
+                            <td>
+                                <ul class="vs-items">
+                                    {% for item in venta.items.all %}
+                                        <li>
+                                            <span class="vs-qty">{{ item.cantidad }}x</span>
+                                            {{ item.medicamento.nombre }}
+                                            <small class="text-muted">${{ item.precio_unitario_venta|floatformat:2 }}</small>
+                                        </li>
+                                    {% empty %}
+                                        <li class="text-muted">Sin artículos.</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                {% if venta.metodo_pago == 'Tarjeta' %}
+                                    <span class="vs-paychip tarjeta">Tarjeta</span>
+                                {% elif venta.metodo_pago == 'Transferencia' %}
+                                    <span class="vs-paychip transfer">Transfer.</span>
+                                {% else %}
+                                    <span class="vs-paychip">Efectivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</strong>
+                            </td>
+                            <td class="text-end fw-bold">${{ venta.total|floatformat:2 }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'imprimir_recibo' venta.pk %}" target="_blank" class="vs-receipt" title="Ver recibo">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="vs-empty">No se encontraron ventas finalizadas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if ventas %}
+            <div class="vs-actions-bar">
+                <small class="text-muted">Marca las ventas o usa seleccionar todo.</small>
+                <button type="submit" class="vs-delete" onclick="return confirm('¿Borrar las ventas seleccionadas? Esta acción no se puede deshacer y el stock no se devolverá.');">
+                    <i class="bi bi-trash3"></i> Borrar seleccionadas
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </form>
 </div>
+
+{{ chart_mes|json_script:"chart-mes" }}
+{{ chart_6m|json_script:"chart-6m" }}
+{{ chart_anio|json_script:"chart-anio" }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAllVentas');
+    const boxes = document.querySelectorAll('.venta-checkbox');
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            boxes.forEach(function(box) { box.checked = selectAll.checked; });
+        });
+    }
+
+    const series = {
+        mes: JSON.parse(document.getElementById('chart-mes').textContent),
+        '6m': JSON.parse(document.getElementById('chart-6m').textContent),
+        anio: JSON.parse(document.getElementById('chart-anio').textContent)
+    };
+    const totalEl = document.getElementById('chart-total');
+    const canvas = document.getElementById('grafica-ventas');
+    if (!canvas) return;
+
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: series.mes.labels,
+            datasets: [{
+                label: 'Ventas',
+                data: series.mes.values,
+                borderColor: '#18b1a3',
+                backgroundColor: 'rgba(24, 177, 163, 0.16)',
+                fill: true,
+                tension: 0.35,
+                pointRadius: 3,
+                pointBackgroundColor: '#0f7f76'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return '$' + value; }
+                    }
+                }
+            }
+        }
+    });
+
+    function money(value) {
+        return '$' + Number(value || 0).toFixed(2);
+    }
+
+    document.querySelectorAll('.vs-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.vs-tab').forEach(function(btn) { btn.classList.remove('active'); });
+            tab.classList.add('active');
+            const data = series[tab.dataset.range];
+            chart.data.labels = data.labels;
+            chart.data.datasets[0].data = data.values;
+            chart.update();
+            totalEl.textContent = money(data.total);
+        });
+    });
+});
+</script>
 {% endblock %}

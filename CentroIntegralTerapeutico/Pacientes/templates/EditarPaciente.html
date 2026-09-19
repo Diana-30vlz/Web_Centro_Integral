@@ -1,19 +1,28 @@
-{# CentroIntegralTerapeutico/Pacientes/templates/Pacientes/editar_paciente.html #}
 {% extends "BaseSinInicio.html" %}
 {% load static %}
 
-{% block title %}Editar Paciente{% endblock %}
+{% block title %}Editar paciente — {{ paciente.nombre }}{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/CrearPaciente.css' %}"> {# Puedes reutilizar el CSS si es similar #}
+    <link rel="stylesheet" href="{% static 'css/editar_paciente_v2.css' %}?v=20260918q">
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4 text-center">Editar Paciente: {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h1>
-<a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-    Regresar a la página anterior
-</a>
+<div class="container editar-paciente-v2">
+    <section class="ep-hero">
+        <div class="ep-hero-main">
+            {% include 'paciente_avatar.html' with paciente=paciente avatar_class='ep-avatar' %}
+            <div>
+                <p class="ep-kicker">Expediente</p>
+                <h1>Editar paciente</h1>
+                <p>
+                    {{ paciente.nombre }} {{ paciente.apellido_paterno }}
+                    {% if paciente.numero_expediente %} · {{ paciente.numero_expediente }}{% endif %}
+                </p>
+            </div>
+        </div>
+    </section>
+
     {% if messages %}
         <ul class="messages list-unstyled">
             {% for message in messages %}
@@ -25,37 +34,145 @@
         </ul>
     {% endif %}
 
-    <div class="card p-4 shadow-sm">
-        <h4 class="card-title text-center mb-4">Formulario de Edición</h4>
-        <form method="post">
-            {% csrf_token %}
-            {# Puedes renderizar el formulario completo con un solo {{ form.as_p }} o {{ form.as_table }} #}
-            {# O, si quieres más control y CSS de Bootstrap como en crear_paciente.html, copia el bloque de campos de allí #}
-            {# Por simplicidad, aquí pongo uno simple, pero puedes reemplazarlo con tus divs y labels individuales #}
-            {% for field in form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text }}</div>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <button type="submit" class="btn btn-success w-100 mt-3">Guardar Cambios</button>
-            <a href="{% url 'lista_pacientes' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
-        </form>
+    <div class="ep-toolbar">
+        {% if is_doctora %}
+        <a href="{% url 'expediente_paciente' paciente.pk %}" class="ep-icon" title="Volver al expediente">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'lista_pacientes' %}" class="ep-icon" title="Volver a la lista">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% endif %}
     </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="ep-card">
+            <div class="ep-card-head">
+                <h2>Identidad</h2>
+                <p>Nombre y datos demográficos del paciente.</p>
+            </div>
+            <div class="ep-card-body">
+                <div class="ep-grid">
+                    <div>
+                        {{ form.nombre.label_tag }}
+                        {{ form.nombre }}
+                        {% for error in form.nombre.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.apellido_paterno.label_tag }}
+                        {{ form.apellido_paterno }}
+                        {% for error in form.apellido_paterno.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.apellido_materno.label_tag }}
+                        {{ form.apellido_materno }}
+                        {% for error in form.apellido_materno.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.genero.label_tag }}
+                        {{ form.genero }}
+                        {% for error in form.genero.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="ep-wide">
+                        <label for="{{ form.fecha_nacimiento.id_for_label }}">{{ form.fecha_nacimiento.label }}</label>
+                        {% with fn=form.fecha_nacimiento.value %}
+                        <input type="date"
+                               name="{{ form.fecha_nacimiento.name }}"
+                               id="{{ form.fecha_nacimiento.id_for_label }}"
+                               class="form-control"
+                               value="{% if fn %}{{ fn|date:'Y-m-d'|default:fn }}{% elif paciente.fecha_nacimiento %}{{ paciente.fecha_nacimiento|date:'Y-m-d' }}{% endif %}">
+                        {% endwith %}
+                        {% for error in form.fecha_nacimiento.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ep-card">
+            <div class="ep-card-head">
+                <h2>Contacto</h2>
+                <p>Teléfono, correo y domicilio.</p>
+            </div>
+            <div class="ep-card-body">
+                <div class="ep-grid">
+                    <div>
+                        {{ form.telefono.label_tag }}
+                        {{ form.telefono }}
+                        {% for error in form.telefono.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {% for error in form.email.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="ep-wide">
+                        {{ form.direccion.label_tag }}
+                        {{ form.direccion }}
+                        {% for error in form.direccion.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ep-card">
+            <div class="ep-card-head">
+                <h2>Datos sociales</h2>
+                <p>Información complementaria del expediente.</p>
+            </div>
+            <div class="ep-card-body">
+                <div class="ep-grid">
+                    <div>
+                        {{ form.Ocupacion.label_tag }}
+                        {{ form.Ocupacion }}
+                        {% for error in form.Ocupacion.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.Estado_Civil.label_tag }}
+                        {{ form.Estado_Civil }}
+                        {% for error in form.Estado_Civil.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.Nacionalidad.label_tag }}
+                        {{ form.Nacionalidad }}
+                        {% for error in form.Nacionalidad.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.Residencia_Anterior.label_tag }}
+                        {{ form.Residencia_Anterior }}
+                        {% for error in form.Residencia_Anterior.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.Religion.label_tag }}
+                        {{ form.Religion }}
+                        {% for error in form.Religion.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div>
+                        {{ form.Deporte_que_practica.label_tag }}
+                        {{ form.Deporte_que_practica }}
+                        {% for error in form.Deporte_que_practica.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="ep-wide">
+                        {{ form.Pasatiempo.label_tag }}
+                        {{ form.Pasatiempo }}
+                        {% for error in form.Pasatiempo.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ep-actions">
+            <a href="{% if is_doctora %}{% url 'expediente_paciente' paciente.pk %}{% else %}{% url 'lista_pacientes' %}{% endif %}" class="ep-cancel">Cancelar</a>
+            <button type="submit" class="ep-submit">Guardar cambios</button>
+        </div>
+    </form>
 </div>
 {% endblock %}

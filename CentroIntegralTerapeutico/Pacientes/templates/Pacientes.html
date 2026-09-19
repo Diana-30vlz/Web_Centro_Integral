@@ -5,13 +5,17 @@
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/ListaPaciente.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ListaPacientes.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <h1 class="mb-4 text-center">Listado de Pacientes</h1>
-    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
-        Regresar a la página anterior
+    <a href="#" onclick="history.back()" class="btn btn-secondary btn-icon-only"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="Regresar a la página anterior">
+        <i class="bi bi-arrow-left"></i>
     </a>
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -30,15 +34,22 @@
     </div>
 
 
-    <div class="d-flex justify-content-end mb-3">
-        <a href="{% url 'CrearPaciente' %}" class="btn btn-primary">
-            <i class="bi bi-person-plus-fill me-2"></i> Crear Nuevo Paciente
+    <div class="d-flex justify-content-end mb-3 gap-2">
+        <a href="{% url 'CrearPaciente' %}"
+           class="btn btn-primary btn-icon-only"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Crear nuevo paciente">
+            <i class="bi bi-person-plus-fill"></i>
         </a>
         <a href="{% static 'img/Centro Integral version22.pdf' %}"
-           class="btn btn-carnet"
+           class="btn btn-carnet btn-icon-only"
            target="_blank"
-           download="Carnet_Citas_Centro_Integral.pdf">
-            <i class="bi bi-calendar2-check-fill me-2"></i> Nuevo Carnet
+           download="Carnet_Citas_Centro_Integral.pdf"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Descargar plantilla de carnet">
+            <i class="bi bi-calendar2-check-fill"></i>
        </a>
     </div>
 
@@ -67,18 +78,45 @@
                     <td>{{ paciente.telefono|default:"N/A" }}</td>
                     <td>
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'editar_paciente' paciente.pk %}" class="btn btn-sm btn-info text-white" title="Editar Paciente">
+                            <a href="{% url 'descargar_carnet_paciente' paciente.pk %}"
+                               class="btn btn-sm btn-carnet"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Descargar carnet de citas de {{ paciente.nombre }}">
+                                <i class="bi bi-person-vcard"></i>
+                            </a>
+                            <a href="{% url 'editar_paciente' paciente.pk %}"
+                               class="btn btn-sm btn-info text-white"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Editar datos del paciente">
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
-                            <a href="{% url 'nueva_consulta_paciente' paciente.pk %}" class="btn btn-sm btn-success" style="padding: 0.1rem 0.3rem; font-size: 0.90rem;" title="Nueva Bitácora/Consulta">
+                            <a href="{% url 'nueva_consulta_paciente' paciente.pk %}"
+                               class="btn btn-sm btn-success"
+                               style="padding: 0.1rem 0.3rem; font-size: 0.90rem;"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Registrar nueva consulta o bitácora">
                                 <i class="bi bi-journal-medical"></i>
                             </a>
-                            <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-sm btn-secondary" title="Ver Registros">
+                            {% if is_doctora %}
+                            <a href="{% url 'expediente_paciente' paciente.pk %}"
+                               class="btn btn-sm btn-secondary"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               data-bs-title="Ver expediente y registros">
                                 <i class="bi bi-journal-text"></i>
                             </a>
+                            {% endif %}
                             <form action="{% url 'eliminar_paciente' paciente.pk %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Paciente" onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ paciente.nombre }} {{ paciente.apellido_paterno }}? Esta acción es irreversible.');">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-title="Eliminar paciente"
+                                        onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ paciente.nombre }} {{ paciente.apellido_paterno }}? Esta acción es irreversible.');">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </form>
@@ -98,27 +136,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Obtenemos los elementos del DOM que necesitamos
+    const tooltipNodes = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipNodes.forEach(function(el) {
+        new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+    });
+
     const searchInput = document.getElementById('searchInput');
     const tableBody = document.getElementById('patientTableBody');
+    if (!searchInput || !tableBody) {
+        return;
+    }
     const rows = tableBody.getElementsByTagName('tr');
 
-    // 2. Añadimos un "escuchador" de eventos al campo de búsqueda
-    // El evento 'keyup' se dispara cada vez que el usuario suelta una tecla
     searchInput.addEventListener('keyup', function() {
-        const filterText = searchInput.value.toLowerCase(); // Texto de búsqueda en minúsculas
+        const filterText = searchInput.value.toLowerCase();
 
-        // 3. Recorremos todas las filas de la tabla
         for (let i = 0; i < rows.length; i++) {
             let row = rows[i];
-            // Obtenemos el texto de la fila completa y lo ponemos en minúsculas
             let rowText = row.textContent.toLowerCase();
 
-            // 4. Comparamos si el texto de la fila incluye el texto de búsqueda
             if (rowText.includes(filterText)) {
-                row.style.display = ''; // Si coincide, mostramos la fila
+                row.style.display = '';
             } else {
-                row.style.display = 'none'; // Si no coincide, la ocultamos
+                row.style.display = 'none';
             }
         }
     });

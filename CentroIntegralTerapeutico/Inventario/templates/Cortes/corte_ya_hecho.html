@@ -1,13 +1,29 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Acción no permitida{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/cortes_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container text-center my-5">
-    <div class="alert alert-warning p-5" role="alert">
-        <h4 class="alert-heading">Acción no Permitida</h4>
-        <p>Ya has realizado y cerrado tu corte de caja correspondiente al día de hoy.</p>
-        <hr>
-        <p class="mb-0">Podrás iniciar un nuevo corte mañana.</p>
+<div class="container cortes-v2 narrow">
+    <section class="cx-hero">
+        <div>
+            <p class="cx-kicker">Caja</p>
+            <h1>Corte ya cerrado</h1>
+            <p>Hoy ya registraste y cerraste tu turno.</p>
+        </div>
+    </section>
+
+    <div class="cx-card">
+        <div class="cx-status">
+            <i class="bi bi-exclamation-triangle-fill cx-warn" style="font-size: 2.2rem;"></i>
+            <h2 class="cx-warn">Acción no permitida</h2>
+            <p>Podrás iniciar un nuevo corte mañana.</p>
+            <a href="/" class="cx-icon" style="width:auto; padding:0.7rem 1rem; text-decoration:none;">Volver al inicio</a>
+        </div>
     </div>
-    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
 </div>
 {% endblock %}

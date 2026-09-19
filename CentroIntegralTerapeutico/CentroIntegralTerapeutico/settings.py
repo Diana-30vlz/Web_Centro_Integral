@@ -74,10 +74,10 @@ WSGI_APPLICATION = 'CentroIntegralTerapeutico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'doctora',
+        'NAME': 'cit',
         'USER': 'postgres',      # Tu usuario local de PostgreSQL (suele ser postgres)
-        'PASSWORD': 'Mjl41412',
-        'HOST': 'localhost',     # <-- ESTO ES LO QUE ESTABA CAUSANDO EL ERROR
+        'PASSWORD': 'Mjl41412#',
+        'HOST': '127.0.0.1',     # IPv4 local (trust). localhost resuelve a ::1 y falla con SCRAM.
         'PORT': '5432',          # <-- PUERTO LOCAL POR DEFECTO
     }
 }
@@ -92,10 +92,10 @@ LOGIN_URL = '/signin/'             # La URL de tu página de inicio de sesión
 
 
 #URLs FARMACIA
-LOGIN_REDIRECT_URL = '/farmacia/dashboard/' # Cambia esto a la URL de tu dashboard de farmacia
+LOGIN_REDIRECT_URL = '/doctor_home/' # Dashboard de doctora; farmacia redirige en su propia vista de login
 
 # URL a la que redirigir si se requiere inicio de sesión
-LOGIN_URL = '/login/' # La URL de tu página de login
+LOGIN_URL = '/signin/' # Login de doctora (no sobreescribir con /login/ de farmacia)
 
 
 # Password validation

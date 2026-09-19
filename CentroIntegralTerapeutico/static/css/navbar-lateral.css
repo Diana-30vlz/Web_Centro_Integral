@@ -1,0 +1,141 @@
+.cit-menu-host {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    position: relative;
+    z-index: 1060;
+}
+
+.cit-hamburger {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    background: transparent;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.cit-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2.5px;
+    border-radius: 99px;
+    background: #fff;
+}
+
+.cit-user-nav {
+    margin-left: auto;
+}
+
+.cit-user-trigger {
+    padding: 0.15rem 0.35rem !important;
+}
+
+.cit-user-trigger::after {
+    display: none;
+}
+
+.cit-user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #5b6d8a;
+    color: #e8eef5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
+.cit-user-avatar i {
+    line-height: 1;
+}
+
+.cit-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: #0f5132;
+    color: #fff;
+    padding: 5.2rem 1rem 1.25rem;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.18);
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    z-index: 1055;
+    overflow-y: auto;
+}
+
+.cit-sidebar-title {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin: 0 0.75rem 0.75rem;
+}
+
+.cit-sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.75rem;
+}
+
+.cit-sidebar a:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.cit-sidebar .cit-sub {
+    margin: 0 0 0.35rem 1.9rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.92rem;
+}
+
+.cit-menu-host:hover .cit-sidebar,
+.cit-menu-host.is-open .cit-sidebar,
+.cit-sidebar:hover {
+    transform: translateX(0);
+}
+
+.cit-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1048;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+
+.cit-menu-host:hover ~ .cit-backdrop,
+.cit-menu-host.is-open ~ .cit-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.navbar.bg-success {
+    position: relative;
+    z-index: 1050;
+}
+
+.cit-legacy-nav,
+#navbarNav {
+    display: none !important;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-toggler {
+        display: none;
+    }
+}

@@ -1,0 +1,225 @@
+{# Inventario/templates/inventario/lista_medicamentos.html #}
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+
+{% block title %}Inventario de Medicamentos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Inventario de Medicamentos</h2>
+
+    <a href="#" onclick="history.back()" class="btn btn-secondary mt-3">
+        Regresar a la página anterior
+    </a>
+
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="input-group" style="max-width: 400px;">
+            <span class="input-group-text bg-dark border-dark text-white"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="medicamentoSearch" placeholder="Buscar por nombre, fabricante..." aria-label="Buscar insumos">
+        </div>
+        
+        {% if is_doctora or is_farmacia %}
+        <a href="{% url 'crear_medicamento' %}" class="btn btn-primary me-2">
+            <i class="bi bi-plus-circle me-2"></i> Añadir Nuevo Medicamento
+        </a>
+        {% endif %}
+
+        <a href="{% url 'seleccionar_medicamentos_para_imprimir' %}" class="btn btn-info">
+            <i class="bi bi-printer me-2"></i> Imprimir Varias Etiquetas
+        </a>
+    </div>
+
+    {% if medicamentos %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fabricante</th>
+                    <th>Cantidad Disponible</th>
+                    <th>Unidad</th>
+                    <th>Fecha Caducidad</th>
+                    <th>Etiquetas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="medicamentoTableBody">
+            
+                {% for med in medicamentos %}
+                <tr>
+                    <td>{{ med.nombre }}</td>
+                    <td>{{ med.fabricante|default:"N/A" }}</td>
+                    
+                    <td>
+                        {% if is_doctora %}
+                            <div class="input-group" style="width: 130px;">
+                                
+                                <button class="btn btn-outline-danger btn-sm btn-modificar-cantidad" 
+                                        data-action="disminuir" 
+                                        data-id="{{ med.pk }}"
+                                        data-url="{% url 'modificar_cantidad_medicamento' med.pk %}">
+                                    <i class="bi bi-dash-lg"></i>
+                                </button>
+                                
+                                <span class="form-control form-control-sm text-center" id="cantidad-med-{{ med.pk }}">{{ med.cantidad_disponible }}</span>
+                                
+                                <button class="btn btn-outline-success btn-sm btn-modificar-cantidad" 
+                                        data-action="aumentar" 
+                                        data-id="{{ med.pk }}"
+                                        data-url="{% url 'modificar_cantidad_medicamento' med.pk %}">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        {% else %}
+                            {{ med.cantidad_disponible }}
+                        {% endif %}
+                    </td>
+
+                    <td>{{ med.unidad_medida }}</td>
+                    <td>
+                        {% if med.fecha_caducidad %}
+                            {{ med.fecha_caducidad|date:"d M Y" }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for tag in med.tags.all %}
+                            <span class="badge bg-secondary me-1">{{ tag.nombre }}</span>
+                        {% empty %}
+                            <small class="text-muted">Ninguna</small>
+                        {% endfor %}
+                    </td>
+                    
+                    <td>
+                        {% if is_doctora or is_farmacia %}
+                        <a href="{% url 'editar_medicamento' med.pk %}" class="btn btn-sm btn-outline-info me-1" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="{% url 'eliminar_medicamento' med.pk %}" class="btn btn-sm btn-outline-danger me-1" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'imprimir_etiqueta_medicamento' med.pk %}" class="btn btn-sm btn-outline-secondary" title="Imprimir Etiqueta" target="_blank">
+                            <i class="bi bi-printer"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No hay medicamentos registrados en el inventario. 
+        {% if is_doctora or is_farmacia %}
+        <a href="{% url 'crear_medicamento' %}" class="alert-link">Añade uno ahora.</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- SCRIPT DE BÚSQUEDA ---
+        const searchInput = document.getElementById('medicamentoSearch');
+        const tableBody = document.getElementById('medicamentoTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        searchInput.addEventListener('keyup', function() {
+            const filter = searchInput.value.toLowerCase();
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < 4; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        const textValue = cell.textContent || cell.innerText;
+                        if (textValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        });
+
+        // --- SCRIPT PARA MODIFICAR CANTIDAD (AJAX) ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        document.querySelectorAll('.btn-modificar-cantidad').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                const medId = this.dataset.id;
+                const action = this.dataset.action;
+                const url = this.dataset.url; 
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest' 
+                    },
+                    body: `action=${action}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    if (data.success) {
+                        const spanCantidad = document.getElementById(`cantidad-med-${medId}`);
+                        spanCantidad.textContent = data.nueva_cantidad;
+                    } else if (data.status === 'info') {
+                        console.warn(data.message);
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la petición AJAX:', error);
+                    alert('No se pudo modificar la cantidad. Revisa los permisos o la consola.');
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

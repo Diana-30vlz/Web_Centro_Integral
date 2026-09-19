@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body:has(.home-v2) {
+    background:
+        radial-gradient(900px 420px at 12% 10%, rgba(24, 177, 163, 0.28), transparent 55%),
+        radial-gradient(800px 380px at 90% 80%, rgba(231, 165, 108, 0.24), transparent 50%),
+        #d8eee8;
+}
+
+.home-v2 {
+    --cit-cyan: #18b1a3;
+    --cit-teal: #18b1a3;
+    --cit-ink: #1d3a38;
+    --cit-muted: #5f7876;
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    position: relative;
+    min-height: calc(100vh - 72px);
+    overflow: hidden;
+    color: var(--cit-ink);
+}
+
+.home-v2 #hmNet {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.home-v2 .hm-orbs {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.home-v2 .hm-orb {
+    position: absolute;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 30%, rgba(24, 177, 163, 0.42), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(231, 165, 108, 0.26), transparent 62%);
+    box-shadow:
+        0 0 60px rgba(24, 177, 163, 0.22),
+        inset 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+.home-v2 .hm-orb.a { width: 280px; height: 280px; right: 8%; top: 18%; }
+.home-v2 .hm-orb.b { width: 170px; height: 170px; right: 28%; bottom: 12%; }
+.home-v2 .hm-orb.c { width: 120px; height: 120px; left: 6%; bottom: 18%; }
+
+.home-v2 .hm-content {
+    position: relative;
+    z-index: 2;
+    min-height: calc(100vh - 96px);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 2.4rem;
+    padding: 2rem 0 2.6rem;
+}
+
+.home-v2 .hm-hero-inner {
+    max-width: none;
+    padding: 0;
+}
+
+.home-v2 .hm-in {
+    animation: hmFromLeft 0.7s ease both;
+}
+
+.home-v2 .hm-in.d1 { animation-delay: 0.05s; }
+.home-v2 .hm-in.d2 { animation-delay: 0.12s; }
+.home-v2 .hm-in.d3 { animation-delay: 0.2s; }
+.home-v2 .hm-in.d4 { animation-delay: 0.28s; }
+.home-v2 .hm-in.d5 { animation-delay: 0.36s; }
+.home-v2 .hm-in.d6 { animation-delay: 0.44s; }
+
+.home-v2 .hm-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.4rem;
+}
+
+.home-v2 .hm-brand img {
+    width: 58px;
+    height: 36px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 0.6rem;
+    padding: 0.18rem;
+}
+
+.home-v2 .hm-brand span {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #0f7f76;
+}
+
+.home-v2 .hm-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--cit-cyan);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.home-v2 .hm-hero-inner h1 {
+    margin: 0 0 0.9rem;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+}
+
+.home-v2 .hm-line {
+    width: 92px;
+    height: 2px;
+    margin: 0 0 1.1rem;
+    background: linear-gradient(90deg, var(--cit-teal), transparent);
+    box-shadow: none;
+}
+
+.home-v2 .hm-hero-inner > p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--cit-muted);
+}
+
+.home-v2 .hm-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.4rem;
+}
+
+.home-v2 .hm-pill {
+    border-radius: 999px;
+    padding: 0.36rem 0.8rem;
+    border: 1px solid #b7ddd7;
+    background: #e7f6f3;
+    color: #0f7f76;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.home-v2 .hm-access {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 0;
+}
+
+.home-v2 .hm-card,
+.home-v2 .hm-feature {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid #d7ebe7;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 16px 36px rgba(12, 61, 44, 0.08);
+}
+
+.home-v2 .hm-card {
+    border-radius: 1.35rem;
+    padding: 1.45rem 1.4rem 1.35rem;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.home-v2 .hm-card-in {
+    animation: hmFromRight 0.75s ease both;
+}
+
+.home-v2 .hm-card-in.delay {
+    animation-delay: 0.18s;
+}
+
+.home-v2 .hm-card:hover {
+    transform: translateY(-8px);
+    border-color: #18b1a3;
+    box-shadow: 0 18px 36px rgba(15, 127, 118, 0.14);
+}
+
+.home-v2 .hm-card:hover .hm-card-icon {
+    animation: hmPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes hmFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes hmFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(32px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes hmPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(24, 177, 163, 0.15); }
+    50% { box-shadow: 0 0 0 8px rgba(24, 177, 163, 0.08); }
+}
+
+.home-v2 .hm-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    border: 1px solid #b7ddd7;
+    color: #0f7f76;
+    background: #e7f6f3;
+    box-shadow: none;
+}
+
+.home-v2 .hm-card h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.home-v2 .hm-card p {
+    margin: 0 0 1.1rem;
+    color: var(--cit-muted);
+    line-height: 1.5;
+}
+
+.home-v2 .hm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.home-v2 .hm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 999px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.home-v2 .hm-btn.primary {
+    background: #0c3d2c;
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(12, 61, 44, 0.16);
+}
+
+.home-v2 .hm-btn.ghost {
+    border: 1px solid #b7ddd7;
+    color: #0f7f76;
+    background: #f3faf8;
+}
+
+.home-v2 .hm-btn:hover {
+    filter: brightness(1.08);
+    color: inherit;
+}
+
+@media (max-width: 991.98px) {
+    .home-v2 .hm-content {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        gap: 1.6rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .home-v2 .hm-orb.a,
+    .home-v2 .hm-orb.b {
+        opacity: 0.55;
+    }
+}

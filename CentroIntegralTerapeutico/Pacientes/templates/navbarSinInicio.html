@@ -1,14 +1,46 @@
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/navbar-lateral.css' %}">
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container-fluid">
-        <a class="navbar-brand">
-            <img src="{% static 'img/logo.png' %}" alt="Logo" width="80" height="50" class="d-inline-block align-text-top me-2">
+        <div class="cit-menu-host" id="citMenuHost">
+            <button class="cit-hamburger" type="button" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <aside class="cit-sidebar">
+                <p class="cit-sidebar-title">Menú</p>
+                {% if user.is_authenticated %}
+                    {% if is_doctora %}
+                        <a href="{% url 'doctor_home' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        <a href="{% url 'lista_medicamentos' %}"><i class="bi bi-capsule"></i> Medicamentos</a>
+                        <a href="{% url 'lista_insumos' %}"><i class="bi bi-box-seam"></i> Insumos</a>
+                        <a href="{% url 'agenda' %}"><i class="bi bi-calendar-check"></i> Agenda</a>
+                        <a href="{% url 'lista_pacientes' %}"><i class="bi bi-person-fill"></i> Pacientes</a>
+                    {% endif %}
+                    {% if is_farmacia %}
+                        <a href="{% url 'dashboard_farmacia' %}"><i class="bi bi-speedometer2"></i> Inicio Farmacia</a>
+                        <a href="{% url 'lista_medicamentos' %}"><i class="bi bi-capsule"></i> Medicamentos</a>
+                        <a href="{% url 'lista_insumos' %}"><i class="bi bi-box-seam"></i> Insumos</a>
+                        <a href="{% url 'agenda' %}"><i class="bi bi-calendar-check"></i> Agenda</a>
+                        <a href="{% url 'lista_pacientes' %}"><i class="bi bi-person-fill"></i> Pacientes</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'HomeSinInicio' %}"><i class="bi bi-house"></i> Home</a>
+                    <a href="{% url 'signin' %}"><i class="bi bi-heart-pulse"></i> Iniciar sesión doctor</a>
+                    <a href="{% url 'login' %}"><i class="bi bi-capsule"></i> Iniciar sesión farmacia</a>
+                {% endif %}
+            </aside>
+        </div>
+        <a class="navbar-brand mb-0">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" width="80" height="50" class="d-inline-block align-text-top">
         </a>
+        <div class="cit-backdrop" id="citBackdrop"></div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 cit-legacy-nav">
                 {% if user.is_authenticated %}
                     {# Enlaces para el grupo 'Doctora' #}
                     {% if is_doctora %}
@@ -63,34 +95,40 @@
                 {% endif %}
             </ul>
 
-            <ul class="navbar-nav">
-                {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hola, {{ user.first_name|default:user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Cambiar Contraseña</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                                    Cerrar Sesión
-                                </button>
-                            </li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
         </div>
+        <ul class="navbar-nav cit-user-nav">
+            {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link cit-user-trigger" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Cuenta de {{ user.first_name|default:user.username }}">
+                        <span class="cit-user-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'password_change' %}">Cambiar Contraseña</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button type="button" class="dropdown-item cit-logout-item"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#logoutModal"
+                                    data-cit-tooltip="Sesión de {{ user.get_full_name|default:user.first_name|default:user.username }}">
+                                Cerrar Sesión
+                            </button>
+                        </li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
     </div>
 </nav>
 
+{% if user.is_authenticated %}
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -103,7 +141,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="logout-form" method="post" action="{% url 'logout' %}">
+                <form id="logout-form" method="post" action="{% url 'logout' %}"
+                      data-cit-nombre="{{ user.get_full_name|default:user.username }}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
                 </form>
@@ -111,3 +150,36 @@
         </div>
     </div>
 </div>
+{% endif %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const host = document.getElementById('citMenuHost');
+    if (!host) return;
+    host.querySelectorAll('.cit-hamburger').forEach(function(el) {
+        el.addEventListener('click', function(event) {
+            event.preventDefault();
+            host.classList.toggle('is-open');
+        });
+    });
+    document.addEventListener('click', function(event) {
+        if (!host.contains(event.target)) {
+            host.classList.remove('is-open');
+        }
+    });
+    const backdrop = document.getElementById('citBackdrop');
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            host.classList.remove('is-open');
+        });
+    }
+    document.querySelectorAll('.cit-logout-item').forEach(function(el) {
+        if (window.bootstrap && bootstrap.Tooltip) {
+            new bootstrap.Tooltip(el, {
+                title: el.getAttribute('data-cit-tooltip'),
+                placement: 'left',
+                container: 'body'
+            });
+        }
+    });
+});
+</script>

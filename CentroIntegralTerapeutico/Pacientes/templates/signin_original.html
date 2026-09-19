@@ -1,0 +1,75 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+
+{% block title %}Iniciar Sesión Doctor(a) {% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+        <style>
+        body {
+            min-height: calc(100vh - 56px); /* 56px es la altura estándar del navbar */
+            background: linear-gradient(to right, #b7dd79ff, #dda87dff);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 shadow-sm auth-card">
+        <h3 class="card-title text-center mb-4">Inicio de sesión Doctora</h3>
+        <form method="post">
+            {% csrf_token %}
+
+            {# Mostrar mensajes de Django (success, error, info) #}
+            {% if messages %}
+                <ul class="messages list-unstyled">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    <input type="{{ field.field.widget.input_type }}"
+                           class="form-control"
+                           name="{{ field.name }}"
+                           id="{{ field.id_for_label }}"
+                           value="{{ field.value|default_if_none:'' }}"
+                           {% if field.field.required %}required{% endif %}
+                           {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
+
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-success w-100 mt-3">Iniciar Sesión</button>
+        </form>
+
+        <div class="text-end mt-2">
+            <a href="{% url 'recovery_request' %}" class="small">¿Olvidaste tu contraseña?</a>
+        </div>
+        <hr class="mt-3">
+        <div class="text-center mt-3">
+            ¿No tienes una cuenta? <a href="{% url 'signup' %}">Registrarse</a>
+        </div>
+        
+
+    </div>
+</div>
+{% endblock %}

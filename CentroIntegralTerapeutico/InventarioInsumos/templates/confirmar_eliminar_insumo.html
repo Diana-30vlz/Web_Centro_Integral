@@ -4,26 +4,31 @@
 
 {% block title %}Confirmar Eliminación{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/inventario_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4 text-center text-danger">Confirmar Eliminación de Insumo</h2>
+<div class="container inv-v2 narrow">
+    <section class="iv-hero">
+        <div>
+            <p class="iv-kicker">Insumos</p>
+            <h1>Eliminar insumo</h1>
+            <p>Esta acción no se puede deshacer.</p>
+        </div>
+    </section>
 
-    <div class="alert alert-warning text-center mx-auto" role="alert" style="max-width: 600px;">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        ¿Estás seguro de que deseas eliminar el insumo **"{{ insumo.nombre }}"** del inventario?
-        Esta acción es irreversible.
-    </div>
-
-    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
-        <p><strong>Nombre:</strong> {{ insumo.nombre }}</p>
-        <p><strong>Fabricante:</strong> {{ insumo.fabricante|default:"N/A" }}</p>
-        <p><strong>Cantidad:</strong> {{ insumo.cantidad_disponible }} {{ insumo.unidad_medida }}</p>
-
-        <form method="post" action="{% url 'eliminar_insumo' insumo.pk %}" class="d-flex justify-content-center mt-4">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger me-3">Sí, Eliminar</button>
-            <a href="{% url 'lista_insumos' %}" class="btn btn-secondary">Cancelar</a>
-        </form>
+    <div class="iv-card">
+        <div class="iv-card-body">
+            <p>¿Eliminar <strong>{{ insumo.nombre }}</strong> del inventario?</p>
+            <p>Fabricante: {{ insumo.fabricante|default:"N/A" }}</p>
+            <p>Cantidad: {{ insumo.cantidad_disponible }} {{ insumo.unidad_medida }}</p>
+            <form method="post" action="{% url 'eliminar_insumo' insumo.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="iv-danger">Sí, eliminar</button>
+                <a href="{% url 'lista_insumos' %}" class="iv-cancel">Cancelar</a>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

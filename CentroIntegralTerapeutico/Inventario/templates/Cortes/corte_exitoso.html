@@ -1,13 +1,29 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Corte Finalizado{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/cortes_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container text-center my-5">
-    <div class="alert alert-success p-5" role="alert">
-        <h4 class="alert-heading">¡Corte Realizado con Éxito!</h4>
-        <p>Tu corte de caja ha sido registrado correctamente.</p>
-        <hr>
-        <p class="mb-0">Ya puedes cerrar sesión.</p>
+<div class="container cortes-v2 narrow">
+    <section class="cx-hero">
+        <div>
+            <p class="cx-kicker">Caja</p>
+            <h1>Corte finalizado</h1>
+            <p>El turno quedó registrado correctamente.</p>
+        </div>
+    </section>
+
+    <div class="cx-card">
+        <div class="cx-status">
+            <i class="bi bi-check-circle-fill cx-ok" style="font-size: 2.2rem;"></i>
+            <h2 class="cx-ok">Corte realizado con éxito</h2>
+            <p>Ya puedes cerrar sesión o volver al inicio.</p>
+            <a href="/" class="cx-submit" style="display:inline-block; width:auto; padding:0.8rem 1.3rem; text-decoration:none;">Volver al inicio</a>
+        </div>
     </div>
-    <a href="/" class="btn btn-primary">Volver al Inicio</a>
 </div>
 {% endblock %}

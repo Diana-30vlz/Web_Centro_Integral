@@ -12,7 +12,7 @@ class MedicamentoForm(forms.ModelForm):
 
     class Meta:
         model = Medicamento
-        fields = '__all__'
+        exclude = ('doctor',)
         widgets = {
             # MODIFICACIÓN CLAVE AQUÍ
             'fecha_caducidad': forms.DateInput(

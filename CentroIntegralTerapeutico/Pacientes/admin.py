@@ -50,7 +50,7 @@ class DoctorProfileAdmin(admin.ModelAdmin):
 @admin.register(FarmaciaProfile)
 class FarmaciaProfileAdmin(admin.ModelAdmin):
     # CORRECCIÓN: Accede a first_name y last_name a través de 'user'
-    list_display = ('id', 'user', 'user_id', 'get_user_first_name', 'get_user_last_name',)
+    list_display = ('id', 'user', 'user_id', 'get_user_first_name', 'get_user_last_name', 'aceptada',)
     readonly_fields = ('id', 'user',) # Los IDs no se editan
     # Si tienes campos específicos en FarmaciaProfile, añádelos aquí:
     # list_display = ('id', 'user', 'user_id', 'get_user_first_name', 'get_user_last_name', 'nombre_farmacia', 'rfc',)

@@ -1,115 +1,132 @@
 {% extends "BaseSinInicio.html" %}
-{% load static %} {# ¡Asegúrate de tener esto para cargar CSS! #}
+{% load static %}
 
-{% block title %} Centro Integral Terapeutico{% endblock %}
+{% block title %}Centro Integral Terapéutico{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/HomeSinInicio.css' %}">
-    {# Puedes añadir estilos adicionales aquí si los necesitas solo para esta página #}
-    <style>
-        .role-card {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px; /* Espacio entre las tarjetas en móviles */
-        }
-        .role-card h3 {
-            color: #00b345ff; /* Color primario de Bootstrap */
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        .btn-role {
-            display: block; /* Ocupa todo el ancho */
-            width: 100%;
-            margin-bottom: 10px; /* Espacio entre los botones */
-            padding: 10px 15px;
-            font-size: 1.1rem;
-            border-radius: 5px;
-        }
-        .btn-register {
-            background-color: #28a745; /* Verde Bootstrap */
-            border-color: #28a745;
-            color: white;
-        }
-        .btn-register:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-        }
-        .btn-login-role {
-            background-color: #007bff; /* Azul Bootstrap */
-            border-color: #007bff;
-            color: white;
-        }
-        .btn-login-role:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        .intro-section {
-            text-align: center;
-            margin-bottom: 50px;
-            padding: 20px;
-            background-color: #ffffffff; /* Un azul muy suave */
-            border-radius: 8px;
-            border: 1px solid #b3d9ff;
-        }
-        .intro-section h2 {
-            color: #b37a00ff;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-        .intro-section p {
-            color: #333;
-            line-height: 1.6;
-            font-size: 1.1rem;
-        }
-        /* Responsividad básica para tarjetas */
-        @media (min-width: 768px) {
-            .role-card {
-                margin-bottom: 0; /* Quita el margen inferior en pantallas grandes */
-            }
-        }
-
-       
-        body {
-            min-height: calc(100vh - 56px); /* 56px es la altura estándar del navbar */
-            background: linear-gradient(to right, #b7dd79ff, #dda87dff);
-        }
-    
-    </style>
+    <link rel="stylesheet" href="{% static 'css/home_v2.css' %}?v=20260918o">
 {% endblock %}
 
 {% block content %}
-    <div class="container my-5"> {# my-5 añade margen arriba y abajo #}
-        <div class="intro-section">
-            <h2>Bienvenido a nuestro sistema</h2>
-            <p>Este es un sistema de gestión para el Centro Integral Terapéutico, un espacio donde se pueden registrar, consultar y atender pacientes.</p>
-            <p>Por favor, selecciona tu rol para continuar:</p>
-        </div>
-
-        <div class="row justify-content-center">
-            {# Sección para DOCTORA #}
-            <div class="col-md-5 mb-4"> {# col-md-5 para ocupar casi la mitad, mb-4 para móviles #}
-                <div class="role-card">
-                    <h3>Acceso para Doctora</h3>
-                    <p>Si eres una doctora del centro, accede aquí a tu panel de gestión de pacientes.</p>
-                    <a href="{% url 'signup' %}" class="btn btn-register btn-role">Registrarse como Doctora</a>
-                    <a href="{% url 'signin' %}" class="btn btn-login-role btn-role">Iniciar Sesión</a>
-                </div>
-            </div>
-
-            {# Sección para FARMACIA #}
-            <div class="col-md-5 mb-4">
-                <div class="role-card">
-                    <h3>Acceso para Farmacia</h3>
-                    <p>Si eres parte del personal de farmacia, ingresa aquí para gestionar el inventario y pedidos.</p>
-                    <a href="{% url 'registro_farmacia' %}" class="btn btn-register btn-role">Registrarse como Farmacia</a>
-                    <a href="{% url 'login' %}" class="btn btn-login-role btn-role">Iniciar Sesión (Farmacia)</a>
-                </div>
-            </div>
-        </div>
+<div class="home-v2">
+    <canvas id="hmNet"></canvas>
+    <div class="hm-orbs">
+        <span class="hm-orb a"></span>
+        <span class="hm-orb b"></span>
+        <span class="hm-orb c"></span>
     </div>
+
+    <div class="container hm-content">
+        <section class="hm-hero-inner">
+            <div class="hm-brand hm-in d1">
+                <img src="{% static 'img/logo.png' %}" alt="CIT">
+                <span>Centro Integral Terapéutico</span>
+            </div>
+            <p class="hm-kicker hm-in d2">Sistema clínico conectado</p>
+            <h1 class="hm-in d3">El consultorio, en red.</h1>
+            <div class="hm-line hm-in d4"></div>
+            <p class="hm-in d5">Agenda, expediente, inventario y caja en un solo entorno. Entra según tu rol y trabaja con los datos de tu consultorio.</p>
+            <div class="hm-pills hm-in d6">
+                <span class="hm-pill">Agenda</span>
+                <span class="hm-pill">Expediente</span>
+                <span class="hm-pill">Inventario</span>
+                <span class="hm-pill">Punto de venta</span>
+            </div>
+        </section>
+
+        <section class="hm-access">
+            <article class="hm-card hm-card-in">
+                <span class="hm-card-icon"><i class="bi bi-heart-pulse"></i></span>
+                <h2>Acceso doctora</h2>
+                <p>Pacientes, bitácora, agenda y seguimiento clínico de tu consultorio.</p>
+                <div class="hm-actions">
+                    <a href="{% url 'signin' %}" class="hm-btn primary">Iniciar sesión</a>
+                    <a href="{% url 'signup' %}" class="hm-btn ghost">Registrarme</a>
+                </div>
+            </article>
+            <article class="hm-card hm-card-in delay">
+                <span class="hm-card-icon"><i class="bi bi-capsule"></i></span>
+                <h2>Acceso farmacia</h2>
+                <p>Inventario, punto de venta y caja del doctor con el que ya estás vinculada.</p>
+                <div class="hm-actions">
+                    <a href="{% url 'login' %}" class="hm-btn primary">Iniciar sesión</a>
+                    <a href="{% url 'registro_farmacia' %}" class="hm-btn ghost">Registrarme</a>
+                </div>
+            </article>
+        </section>
+    </div>
+</div>
 {% endblock %}
 
+{% block scripts %}
+<script>
+(function() {
+    const canvas = document.getElementById('hmNet');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const nodes = [];
+    const count = 120;
+    const linkDist = 175;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    function makeNodes() {
+        nodes.length = 0;
+        for (let i = 0; i < count; i += 1) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: (Math.random() - 0.5) * 0.35
+            });
+        }
+    }
+
+    function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#d8eee8';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < nodes.length; i += 1) {
+            const a = nodes[i];
+            a.x += a.vx;
+            a.y += a.vy;
+            if (a.x < 0 || a.x > canvas.width) a.vx *= -1;
+            if (a.y < 0 || a.y > canvas.height) a.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(a.x, a.y, 2.9, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(12, 61, 44, 0.78)';
+            ctx.fill();
+
+            for (let j = i + 1; j < nodes.length; j += 1) {
+                const b = nodes[j];
+                const dx = a.x - b.x;
+                const dy = a.y - b.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < linkDist) {
+                    ctx.strokeStyle = 'rgba(15, 127, 118,' + (1 - dist / linkDist) * 0.7 + ')';
+                    ctx.lineWidth = 1.35;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
+    resize();
+    makeNodes();
+    tick();
+    window.addEventListener('resize', function() {
+        resize();
+        makeNodes();
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Dashboard de Farmacia{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/dashboard_v2.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container dashboard-v2">
+    <section class="dh-hero">
+        <div class="dh-hero-copy">
+            <div class="dh-brand">
+                <img src="{% static 'img/logo.png' %}" alt="CIT">
+                <span>Farmacia</span>
+            </div>
+            <p class="dh-kicker">{{ saludo }}</p>
+            <h1>{{ farmacia_name }}</h1>
+            <p class="dh-date">Hoy es {{ fecha_hoy }} · <strong id="dhClock"></strong></p>
+            <div class="dh-pills">
+                <a class="dh-pill" href="{% url 'punto_venta' %}">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    Punto de venta
+                </a>
+                <a class="dh-pill" href="{% if corte_activo %}{% url 'corte_activo' %}{% else %}{% url 'iniciar_corte' %}{% endif %}">
+                    <i class="bi bi-cash-coin"></i>
+                    Caja {% if corte_activo %}abierta{% else %}cerrada{% endif %}
+                </a>
+            </div>
+        </div>
+
+        <aside class="dh-featured">
+            <div class="dh-featured-label">
+                Estado de caja
+                <span class="dh-featured-dot{% if not corte_activo %} is-off{% endif %}"></span>
+            </div>
+            {% if corte_activo %}
+                <h2>Turno abierto</h2>
+                <p>El corte está activo y listo para registrar ventas.</p>
+                <div class="dh-featured-meta">
+                    <span class="dh-tag">Desde las {{ corte_activo.fecha_apertura|date:"H:i" }}</span>
+                    <span class="dh-tag orange">En curso</span>
+                </div>
+                <a class="dh-featured-link" href="{% url 'corte_activo' %}">Ver corte activo</a>
+            {% else %}
+                <h2>Caja cerrada</h2>
+                <p>Abre el turno para comenzar a cobrar en farmacia.</p>
+                <a class="dh-featured-link" href="{% url 'iniciar_corte' %}">Iniciar corte</a>
+            {% endif %}
+        </aside>
+    </section>
+
+    <div class="dh-section-head">
+        <div>
+            <h2>Herramientas de farmacia</h2>
+            <p>Inventario, cobro y seguimiento de pacientes.</p>
+        </div>
+    </div>
+
+    <section class="dh-bento">
+        <a href="{% url 'punto_venta' %}" class="dh-card wide tint-teal">
+            <span class="dh-card-icon tone-cyan"><i class="bi bi-credit-card-2-front-fill"></i></span>
+            <h3>Punto de venta</h3>
+            <p>Cobra medicamentos, insumos y servicios del día.</p>
+        </a>
+        <a href="{% if corte_activo %}{% url 'corte_activo' %}{% else %}{% url 'iniciar_corte' %}{% endif %}" class="dh-card wide tint-green">
+            <span class="dh-card-icon tone-orange"><i class="bi bi-safe2-fill"></i></span>
+            <h3>{% if corte_activo %}Corte activo{% else %}Iniciar corte{% endif %}</h3>
+            {% if corte_activo %}
+                <p>Revisa el turno y cierra la caja cuando termines.</p>
+                <span class="dh-chip chip-ok">En curso</span>
+            {% else %}
+                <p>Abre la caja para empezar a registrar ventas.</p>
+                <span class="dh-chip chip-go">Abrir caja</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'lista_medicamentos' %}" class="dh-card">
+            <span class="dh-card-icon tone-blue"><i class="bi bi-capsule"></i></span>
+            <h3>Medicamentos</h3>
+            <p>Productos y existencias.</p>
+        </a>
+        <a href="{% url 'lista_insumos' %}" class="dh-card">
+            <span class="dh-card-icon tone-red"><i class="bi bi-box-seam"></i></span>
+            <h3>Insumos</h3>
+            <p>Materiales y suministros.</p>
+        </a>
+        <a href="{% url 'agenda' %}" class="dh-card">
+            <span class="dh-card-icon tone-teal"><i class="bi bi-calendar-check-fill"></i></span>
+            <h3>Agenda</h3>
+            <p>Citas programadas.</p>
+        </a>
+        <a href="{% url 'lista_pacientes' %}" class="dh-card">
+            <span class="dh-card-icon tone-green"><i class="bi bi-people-fill"></i></span>
+            <h3>Pacientes</h3>
+            <p>Directorio del centro.</p>
+        </a>
+    </section>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clock = document.getElementById('dhClock');
+    if (!clock) return;
+    const tick = function() {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    };
+    tick();
+    setInterval(tick, 30000);
+});
+</script>
+{% endblock %}

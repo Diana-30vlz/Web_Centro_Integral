@@ -198,3 +198,28 @@ h1 {
 .btn-carnet i {
     font-size: 1.1rem;
 }
+
+.table tbody .btn-carnet {
+    background-color: #16a085;
+    color: white;
+    border: none;
+}
+
+.table tbody .btn-carnet:hover {
+    background-color: #1abc9c;
+    color: white;
+}
+
+.btn-icon-only {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-only i {
+    margin: 0;
+    font-size: 1.15rem;
+}

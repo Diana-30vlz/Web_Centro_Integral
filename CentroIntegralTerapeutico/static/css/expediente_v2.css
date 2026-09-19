@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body:has(.expediente-v2) {
+    background:
+        radial-gradient(1100px 380px at 0% -8%, rgba(24, 177, 163, 0.14), transparent 55%),
+        radial-gradient(900px 340px at 100% 0%, rgba(231, 165, 108, 0.12), transparent 50%),
+        #eef6f4;
+}
+
+.expediente-v2 {
+    --cit-teal: #18b1a3;
+    --cit-teal-dark: #0f7f76;
+    --cit-forest: #0c3d2c;
+    --cit-orange: #e7a56c;
+    --cit-ink: #1d2b32;
+    --cit-muted: #667780;
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    padding: 1.6rem 0 3rem;
+    max-width: 980px;
+}
+
+.expediente-v2 .ex-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    border-radius: 1.4rem;
+    color: #fff;
+    background: linear-gradient(135deg, #0c3d2c 0%, #12725f 52%, #18b1a3 100%);
+    box-shadow: 0 18px 40px rgba(12, 61, 44, 0.18);
+    margin-bottom: 1.1rem;
+}
+
+.expediente-v2 .ex-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.expediente-v2 .ex-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fffef5;
+    border: 2px solid #c5e8e2;
+    flex-shrink: 0;
+    display: block;
+}
+
+.expediente-v2 .ex-kicker {
+    margin: 0 0 0.2rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.expediente-v2 .ex-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.expediente-v2 .ex-hero p {
+    margin: 0.3rem 0 0;
+    color: rgba(255, 254, 245, 0.82);
+}
+
+.expediente-v2 .ex-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.expediente-v2 .ex-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+}
+
+.expediente-v2 .ex-icon:hover {
+    background: #dceae7;
+    color: var(--cit-teal-dark);
+}
+
+.expediente-v2 .ex-card {
+    background: #fff;
+    border-radius: 1.35rem;
+    box-shadow: 0 14px 34px rgba(18, 143, 132, 0.08);
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.expediente-v2 .ex-card-head {
+    padding: 1rem 1.3rem;
+    border-bottom: 1px solid #e8efee;
+}
+
+.expediente-v2 .ex-card-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cit-ink);
+}
+
+.expediente-v2 .ex-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+.expediente-v2 .ex-field {
+    padding: 0.85rem 1.3rem;
+    border-bottom: 1px solid #eef3f2;
+}
+
+.expediente-v2 .ex-field span {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cit-muted);
+    margin-bottom: 0.2rem;
+}
+
+.expediente-v2 .ex-field strong {
+    color: var(--cit-ink);
+    font-weight: 600;
+}
+
+.expediente-v2 .ex-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    padding: 1.15rem 1.3rem 1.3rem;
+}
+
+.expediente-v2 .ex-action {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: inherit;
+    background: #f6fbfa;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.expediente-v2 .ex-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(18, 143, 132, 0.1);
+    color: inherit;
+}
+
+.expediente-v2 .ex-action i {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #d8f3ef;
+    color: var(--cit-teal-dark);
+    font-size: 1.1rem;
+}
+
+.expediente-v2 .ex-action.orange i { background: #f8eadc; color: #c27a3c; }
+.expediente-v2 .ex-action.navy i { background: #e4ebf5; color: #3d5a80; }
+.expediente-v2 .ex-action.green i { background: #d9f3e6; color: #1f7a4d; }
+
+.expediente-v2 .ex-action b {
+    display: block;
+    color: var(--cit-ink);
+    font-size: 0.95rem;
+}
+
+.expediente-v2 .ex-action small {
+    color: var(--cit-muted);
+}
+
+.expediente-v2 .ex-footer {
+    display: flex;
+    gap: 0.7rem;
+    padding: 0 0.1rem 0.2rem;
+}
+
+.expediente-v2 .ex-btn {
+    flex: 1;
+    text-align: center;
+    border-radius: 0.95rem;
+    padding: 0.85rem 1rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.expediente-v2 .ex-btn.main {
+    background: var(--cit-teal);
+    color: #fff;
+}
+
+.expediente-v2 .ex-btn.main:hover {
+    background: var(--cit-teal-dark);
+    color: #fff;
+}
+
+.expediente-v2 .ex-btn.ghost {
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+}
+
+.expediente-v2 .ex-btn.ghost:hover {
+    background: #dceae7;
+    color: var(--cit-forest);
+}
+
+.expediente-v2 .modal-content {
+    border: 0;
+    border-radius: 1.15rem;
+    overflow: hidden;
+}
+
+.expediente-v2 .modal-header {
+    background: linear-gradient(135deg, #0c3d2c, #18b1a3);
+    color: #fff;
+    border: 0;
+}
+
+.expediente-v2 .modal-header .btn-close {
+    filter: invert(1);
+}
+
+@media (max-width: 767.98px) {
+    .expediente-v2 .ex-hero,
+    .expediente-v2 .ex-grid,
+    .expediente-v2 .ex-actions,
+    .expediente-v2 .ex-footer {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

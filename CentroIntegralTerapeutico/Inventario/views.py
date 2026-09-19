@@ -7,7 +7,8 @@ from .models import *
 from .forms import MedicamentoForm, Tag
 import io
 from django.http import HttpResponse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from collections import defaultdict
 from .models import CorteDeCaja
 # Importaciones para ReportLab
 from reportlab.pdfgen import canvas
@@ -31,6 +32,19 @@ from datetime import datetime
 # --- CORRECCIÓN 2: Se añadió la importación faltante ---
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import user_passes_test
+from Pacientes.alcance import doctor_del_usuario, ids_usuarios_consultorio
+
+
+def _medicamentos_consultorio(request):
+    doctor = doctor_del_usuario(request.user)
+    if not doctor:
+        return Medicamento.objects.none()
+    return Medicamento.objects.filter(doctor=doctor)
+
+
+def _asignar_doctor_medicamento(request, medicamento):
+    medicamento.doctor = doctor_del_usuario(request.user)
+    medicamento.save()
 
 # ... (asegúrate de que los imports necesarios estén arriba) ...
 
@@ -39,7 +53,7 @@ def lista_medicamentos(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    medicamentos = Medicamento.objects.all().order_by('nombre')
+    medicamentos = _medicamentos_consultorio(request).order_by('nombre')
     context = {
         'medicamentos': medicamentos,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
@@ -55,7 +69,10 @@ def crear_medicamento(request):
     if request.method == 'POST':
         form = MedicamentoForm(request.POST)
         if form.is_valid():
-            form.save()
+            medicamento = form.save(commit=False)
+            medicamento.doctor = doctor_del_usuario(request.user)
+            medicamento.save()
+            form.save_m2m()
             messages.success(request, 'Medicamento añadido al inventario exitosamente.')
             return redirect('lista_medicamentos')
     else:
@@ -74,7 +91,7 @@ def editar_medicamento(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    medicamento = get_object_or_404(Medicamento, pk=pk)
+    medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
     if request.method == 'POST':
         form = MedicamentoForm(request.POST, instance=medicamento)
         if form.is_valid():
@@ -98,7 +115,7 @@ def eliminar_medicamento(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    medicamento = get_object_or_404(Medicamento, pk=pk)
+    medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
     if request.method == 'POST':
         medicamento.delete()
         messages.success(request, 'Medicamento eliminado del inventario.')
@@ -134,7 +151,7 @@ def modificar_cantidad_medicamento(request, pk):
         return JsonResponse({'error': 'No tienes permiso para esta acción.'}, status=403)
 
     try:
-        medicamento = get_object_or_404(Medicamento, pk=pk)
+        medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
         action = request.POST.get('action')  # 'aumentar' o 'disminuir'
 
         if action == 'aumentar':
@@ -283,7 +300,7 @@ def dibujar_una_etiqueta(p, medicamento, x_offset, y_offset):
 def lista_medicamentos(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    medicamentos = Medicamento.objects.all().order_by('nombre')
+    medicamentos = _medicamentos_consultorio(request).order_by('nombre')
     context = {
         'medicamentos': medicamentos,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
@@ -298,7 +315,10 @@ def crear_medicamento(request):
     if request.method == 'POST':
         form = MedicamentoForm(request.POST)
         if form.is_valid():
-            form.save()
+            medicamento = form.save(commit=False)
+            medicamento.doctor = doctor_del_usuario(request.user)
+            medicamento.save()
+            form.save_m2m()
             messages.success(request, 'Medicamento añadido al inventario exitosamente.')
             return redirect('lista_medicamentos')
     else:
@@ -318,7 +338,7 @@ def editar_medicamento(request, pk):
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
 
-    medicamento = get_object_or_404(Medicamento, pk=pk)
+    medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
     if request.method == 'POST':
         form = MedicamentoForm(request.POST, instance=medicamento)
         if form.is_valid():
@@ -341,7 +361,7 @@ def editar_medicamento(request, pk):
 def eliminar_medicamento(request, pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    medicamento = get_object_or_404(Medicamento, pk=pk)
+    medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
     if request.method == 'POST':
         medicamento.delete()
         messages.success(request, 'Medicamento eliminado del inventario.')
@@ -356,7 +376,7 @@ def eliminar_medicamento(request, pk):
 
 @login_required
 def imprimir_etiqueta_medicamento(request, pk):
-    medicamento = get_object_or_404(Medicamento, pk=pk)
+    medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=pk)
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=TAMANO_ETIQUETA)
     dibujar_una_etiqueta(p, medicamento, 0, 0)
@@ -374,7 +394,8 @@ def seleccionar_medicamentos_para_imprimir(request):
 
 
     # Este formulario solo se usa para obtener la lista de medicamentos para la plantilla
-    form = SeleccionarMedicamentosForm() #
+    form = SeleccionarMedicamentosForm()
+    form.fields['medicamentos'].queryset = _medicamentos_consultorio(request).order_by('nombre')
 
     return render(request, 'inventario/seleccionar_medicamentos.html', {'form': form}) #
 
@@ -404,7 +425,7 @@ def imprimir_varias_etiquetas_pdf(request, selected_ids_str):
     # Obtener los objetos Medicamento de la base de datos
     # Solo necesitamos los IDs, luego iteraremos según las cantidades
     medicamento_ids = list(medicamentos_con_cantidades.keys())
-    medicamentos_dict = {med.pk: med for med in Medicamento.objects.filter(pk__in=medicamento_ids)}
+    medicamentos_dict = {med.pk: med for med in _medicamentos_consultorio(request).filter(pk__in=medicamento_ids)}
 
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=(HOJA_ANCHO, HOJA_ALTO))
@@ -486,11 +507,15 @@ def punto_venta(request):
             request.session.pop('venta_actual_id', None)
 
     if not venta_actual:
-        venta_actual = Venta.objects.create(farmaceuta=request.user, estado='pendiente')
+        venta_actual = Venta.objects.create(
+            farmaceuta=request.user,
+            doctor=doctor_del_usuario(request.user),
+            estado='pendiente',
+        )
         request.session['venta_actual_id'] = venta_actual.pk
 
     context = {
-        'medicamentos': Medicamento.objects.all().order_by('nombre'),
+        'medicamentos': _medicamentos_consultorio(request).order_by('nombre'),
         'venta_actual': venta_actual,
         'items_venta': venta_actual.items.all() if venta_actual else [],
         'is_farmacia': is_farmacia,
@@ -506,7 +531,7 @@ def ajax_agregar_a_venta(request):
         cantidad = int(request.POST.get('cantidad', 1))
 
         try:
-            medicamento = Medicamento.objects.get(pk=med_id)
+            medicamento = get_object_or_404(_medicamentos_consultorio(request), pk=med_id)
             if cantidad > medicamento.cantidad_disponible:
                 return JsonResponse({'error': f'No hay suficiente stock para {medicamento.nombre}. Stock disponible: {medicamento.cantidad_disponible}'}, status=400)
         except Medicamento.DoesNotExist:
@@ -645,12 +670,83 @@ def imprimir_recibo(request, venta_id):
     return render(request, 'inventario/recibo.html', context)
 
 
+_MESES_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+
+
+def _fecha_local_venta(dt):
+    if not dt:
+        return None
+    if timezone.is_aware(dt):
+        return timezone.localtime(dt).date()
+    return dt.date()
+
+
+def _restar_meses(origen, meses):
+    mes = origen.month - meses
+    anio = origen.year
+    while mes <= 0:
+        mes += 12
+        anio -= 1
+    return date(anio, mes, 1)
+
+
+def _serie_ventas(desde, hasta, agrupacion='dia', doctor=None):
+    qs = Venta.objects.filter(
+        estado='finalizada',
+        fecha_finalizacion__isnull=False,
+        fecha_finalizacion__date__gte=desde,
+        fecha_finalizacion__date__lte=hasta,
+    ).only('fecha_finalizacion', 'total')
+    if doctor:
+        qs = qs.filter(doctor=doctor)
+
+    buckets = defaultdict(lambda: Decimal('0.00'))
+    for venta in qs:
+        dia = _fecha_local_venta(venta.fecha_finalizacion)
+        if not dia:
+            continue
+        clave = dia if agrupacion == 'dia' else date(dia.year, dia.month, 1)
+        buckets[clave] += venta.total or Decimal('0.00')
+
+    labels = []
+    values = []
+    if agrupacion == 'dia':
+        cursor = desde
+        while cursor <= hasta:
+            labels.append(str(cursor.day))
+            values.append(float(buckets[cursor]))
+            cursor += timedelta(days=1)
+    else:
+        anio, mes = desde.year, desde.month
+        fin = date(hasta.year, hasta.month, 1)
+        while date(anio, mes, 1) <= fin:
+            clave = date(anio, mes, 1)
+            labels.append(f"{_MESES_ES[mes - 1]} {anio}")
+            values.append(float(buckets[clave]))
+            if mes == 12:
+                anio += 1
+                mes = 1
+            else:
+                mes += 1
+
+    return {
+        'labels': labels,
+        'values': values,
+        'total': round(sum(values), 2),
+    }
+
+
 @login_required
 def historial_ventas(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    ventas = Venta.objects.filter(estado='finalizada').select_related('farmaceuta').order_by('-fecha_finalizacion')
+    if is_farmacia and not is_doctora:
+        messages.error(request, "No tienes permiso para ver el reporte de ventas.")
+        return redirect('dashboard_farmacia')
+
+    doctor = doctor_del_usuario(request.user)
+    ventas = Venta.objects.filter(estado='finalizada', doctor=doctor).select_related('farmaceuta').prefetch_related('items__medicamento').order_by('-fecha_finalizacion')
 
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
@@ -669,11 +765,25 @@ def historial_ventas(request):
         except ValueError:
             messages.error(request, "El formato de la fecha de fin no es válido.")
 
+    total_periodo = Decimal('0.00')
+    for venta in ventas:
+        if venta.total:
+            total_periodo += venta.total
+
+    hoy = timezone.localdate()
+    chart_mes = _serie_ventas(hoy.replace(day=1), hoy, 'dia', doctor)
+    chart_6m = _serie_ventas(_restar_meses(hoy, 5), hoy, 'mes', doctor)
+    chart_anio = _serie_ventas(_restar_meses(hoy, 11), hoy, 'mes', doctor)
+
     context = {
         'ventas': ventas,
         'fecha_inicio': fecha_inicio_str,
         'fecha_fin': fecha_fin_str,
         'titulo': 'Historial de Ventas',
+        'total_periodo': total_periodo,
+        'chart_mes': chart_mes,
+        'chart_6m': chart_6m,
+        'chart_anio': chart_anio,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
     }
@@ -864,7 +974,11 @@ from .forms import IniciarCorteForm, CerrarCorteForm
 @login_required
 @user_passes_test(es_doctora, login_url='/')
 def historial_cortes_view(request):
-    cortes = CorteDeCaja.objects.filter(is_open=False).order_by('-fecha_cierre')
+    doctor = doctor_del_usuario(request.user)
+    cortes = CorteDeCaja.objects.filter(
+        is_open=False,
+        usuario_id__in=ids_usuarios_consultorio(doctor),
+    ).order_by('-fecha_cierre')
     return render(request, 'Cortes/historial_cortes.html', {'cortes': cortes})
 
 
@@ -925,7 +1039,12 @@ def eliminar_cortes_antiguos(request):
         return redirect('historial_cortes')
         
     # Buscamos cortes cerrados (is_open=False) anteriores a la fecha límite
-    cortes_a_borrar = CorteDeCaja.objects.filter(is_open=False, fecha_cierre__lt=fecha_limite)
+    doctor = doctor_del_usuario(request.user)
+    cortes_a_borrar = CorteDeCaja.objects.filter(
+        is_open=False,
+        fecha_cierre__lt=fecha_limite,
+        usuario_id__in=ids_usuarios_consultorio(doctor),
+    )
     cantidad = cortes_a_borrar.count()
     
     if cantidad > 0:
@@ -935,3 +1054,63 @@ def eliminar_cortes_antiguos(request):
         messages.info(request, "No se encontraron cortes tan antiguos para borrar.")
         
     return redirect('historial_cortes')
+
+
+def _puede_borrar_ventas(user):
+    return user.groups.filter(name='Doctora').exists()
+
+
+@login_required
+@require_POST
+def eliminar_ventas_lote(request):
+    if not _puede_borrar_ventas(request.user):
+        messages.error(request, "No tienes permiso para borrar ventas.")
+        return redirect('historial_ventas')
+
+    ventas_ids = request.POST.getlist('ventas_ids')
+    if not ventas_ids:
+        messages.warning(request, "No seleccionaste ninguna venta para borrar.")
+        return redirect('historial_ventas')
+
+    ventas_a_borrar = Venta.objects.filter(
+        pk__in=ventas_ids,
+        estado='finalizada',
+        doctor=doctor_del_usuario(request.user),
+    )
+    cantidad = ventas_a_borrar.count()
+    ventas_a_borrar.delete()
+
+    if cantidad:
+        messages.success(request, f"Se borraron {cantidad} venta{'s' if cantidad != 1 else ''} del historial.")
+    else:
+        messages.info(request, "No se encontraron ventas finalizadas para borrar.")
+    return redirect('historial_ventas')
+
+
+@login_required
+@require_POST
+def eliminar_ventas_antiguas(request):
+    if not _puede_borrar_ventas(request.user):
+        messages.error(request, "No tienes permiso para borrar ventas.")
+        return redirect('historial_ventas')
+
+    periodo = request.POST.get('periodo')
+    if periodo != '3_meses':
+        messages.error(request, "Período no válido.")
+        return redirect('historial_ventas')
+
+    fecha_limite = timezone.now() - timedelta(days=90)
+    ventas_a_borrar = Venta.objects.filter(
+        estado='finalizada',
+        fecha_finalizacion__isnull=False,
+        fecha_finalizacion__lt=fecha_limite,
+        doctor=doctor_del_usuario(request.user),
+    )
+    cantidad = ventas_a_borrar.count()
+    ventas_a_borrar.delete()
+
+    if cantidad:
+        messages.success(request, f"Se borraron {cantidad} ventas de más de 3 meses.")
+    else:
+        messages.info(request, "No hay ventas de más de 3 meses para borrar.")
+    return redirect('historial_ventas')

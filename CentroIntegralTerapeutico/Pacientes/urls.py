@@ -27,6 +27,7 @@ urlpatterns = [
     path('<int:pk>/editar/', views.editar_paciente_view, name='editar_paciente'),
     path('<int:pk>/eliminar/', views.eliminar_paciente_view, name='eliminar_paciente'),
     path('<int:pk>/expediente/', views.registros_paciente_view, name='expediente_paciente'),
+    path('<int:pk>/carnet/', views.descargar_carnet_paciente, name='descargar_carnet_paciente'),
 
     # URLs para la Agenda
     path('agenda', views.agenda_view, name='agenda'),

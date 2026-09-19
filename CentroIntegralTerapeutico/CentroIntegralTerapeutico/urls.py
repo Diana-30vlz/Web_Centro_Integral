@@ -37,6 +37,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'), # URL de inicio de sesión de Farmacia
     path('farmacia/dashboard/', views.dashboard_farmacia, name='dashboard_farmacia'), # Dashboard de Farmacia
     path('farmacia/registro/', views.registro_farmacia_view, name='registro_farmacia'), # Registro de Farmacia
+    path('farmacia/<int:pk>/aceptar/', views.aceptar_farmacia_v2, name='aceptar_farmacia_v2'),
+    path('farmacia/<int:pk>/eliminar/', views.eliminar_farmacia_v2, name='eliminar_farmacia_v2'),
     
     
 # ... (tus otras URLs)

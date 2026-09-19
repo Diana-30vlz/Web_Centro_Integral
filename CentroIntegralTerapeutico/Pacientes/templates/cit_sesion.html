@@ -1,0 +1,66 @@
+{% load static %}
+<div id="citSesionOverlay" class="cit-sesion-overlay" hidden aria-live="polite">
+    <div class="cit-sesion-card">
+        <img src="{% static 'img/logo.png' %}" alt="CIT">
+        <p class="cit-sesion-kicker">Centro Integral Terapéutico</p>
+        <h2 id="citSesionTitulo"></h2>
+        <p class="cit-sesion-name" id="citSesionNombre"></p>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('citSesionOverlay');
+    const titulo = document.getElementById('citSesionTitulo');
+    const nombreEl = document.getElementById('citSesionNombre');
+    if (!overlay || !titulo) {
+        return;
+    }
+
+    function mostrarSesion(tipo, nombre) {
+        overlay.hidden = false;
+        overlay.classList.remove('is-out', 'is-entrar', 'is-salir');
+        overlay.classList.add('is-on', tipo === 'salir' ? 'is-salir' : 'is-entrar');
+        titulo.textContent = tipo === 'salir' ? 'Hasta pronto' : 'Bienvenido de nuevo';
+        nombreEl.textContent = nombre || '';
+    }
+
+    function ocultarSesion() {
+        overlay.classList.add('is-out');
+        setTimeout(function() {
+            overlay.hidden = true;
+            overlay.classList.remove('is-on', 'is-out', 'is-entrar', 'is-salir');
+        }, 380);
+    }
+
+    const bienvenida = '{{ cit_sesion_anim|default:""|escapejs }}';
+    const nombreBienvenida = '{{ cit_sesion_nombre|default:""|escapejs }}';
+    if (bienvenida === 'entrar') {
+        mostrarSesion('entrar', nombreBienvenida);
+        setTimeout(ocultarSesion, 1800);
+    }
+
+    const form = document.getElementById('logout-form');
+    if (!form) {
+        return;
+    }
+    form.addEventListener('submit', function(event) {
+        if (form.dataset.citReady === '1') {
+            return;
+        }
+        event.preventDefault();
+        const modalEl = document.getElementById('logoutModal');
+        if (window.bootstrap && modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+                modal.hide();
+            }
+        }
+        const nombreSalida = form.getAttribute('data-cit-nombre') || '';
+        mostrarSesion('salir', nombreSalida);
+        setTimeout(function() {
+            form.dataset.citReady = '1';
+            form.submit();
+        }, 1700);
+    });
+});
+</script>

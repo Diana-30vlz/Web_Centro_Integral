@@ -16,6 +16,7 @@ from django.contrib.auth import update_session_auth_hash
 from formtools.wizard.views import SessionWizardView
 from django.views.decorators.http import require_POST # Importa este decorador
 from django.db import IntegrityError
+from .alcance import doctor_del_usuario, pacientes_del_consultorio
 
 
 # views.py
@@ -149,8 +150,8 @@ def signup_view(request):
 
                 Doctor.objects.create(user=user)
 
-                messages.success(request, '¡Tu cuenta de doctor ha sido creada exitosamente!')
-                return redirect('doctor_home')
+                messages.success(request, '¡Tu cuenta de doctor ha sido creada exitosamente! Inicia sesión para continuar.')
+                return redirect('signin')
 
             elif user_type == 'farmacia':
                 try:
@@ -194,6 +195,8 @@ def signin_view(request):
             # --- NUEVA LÓGICA DE VERIFICACIÓN DEL GRUPO 'Doctora' ---
             if user.groups.filter(name='Doctora').exists():
                 login(request, user) # Inicia la sesión solo si es del grupo 'Doctora'
+                request.session['cit_sesion_anim'] = 'entrar'
+                request.session['cit_sesion_nombre'] = (user.get_full_name() or '').strip() or user.first_name or user.username
                 messages.success(request, f'¡Bienvenido de nuevo, {user.username}!')
 
                 # Redireccionar después de login
@@ -224,13 +227,21 @@ def logout_view(request):
 
 
 
+def _farmacia_pendiente_mensaje():
+    return "Tu cuenta está pendiente de aceptación. El doctor debe vincularte antes de que puedas ingresar."
+
+
 def login_view(request):
     """
     Vista para manejar el inicio de sesión exclusivo del personal de Farmacia.
     """
     # Si el usuario ya está autenticado Y pertenece al grupo 'Farmacia', redirige al dashboard.
     if request.user.is_authenticated and request.user.groups.filter(name='Farmacia').exists():
-        return redirect('dashboard_farmacia')
+        perfil = FarmaciaProfile.objects.filter(user=request.user).first()
+        if perfil and perfil.aceptada:
+            return redirect('dashboard_farmacia')
+        logout(request)
+        messages.error(request, _farmacia_pendiente_mensaje())
 
     # Si el usuario está autenticado pero NO es de Farmacia, le deslogueamos.
     # Esto evita que un Doctor inicie sesión a través de este formulario.
@@ -248,16 +259,33 @@ def login_view(request):
             if user is not None:
                 # Si el usuario existe, verifica si pertenece al grupo 'Farmacia'.
                 if user.groups.filter(name='Farmacia').exists():
-                    login(request, user)
-                    messages.success(request, f"¡Bienvenido, {username}!")
-                    return redirect('dashboard_farmacia')
+                    perfil = FarmaciaProfile.objects.filter(user=user).first()
+                    if not perfil or not perfil.aceptada:
+                        messages.error(request, _farmacia_pendiente_mensaje())
+                    else:
+                        login(request, user)
+                        request.session['cit_sesion_anim'] = 'entrar'
+                        request.session['cit_sesion_nombre'] = (user.get_full_name() or '').strip() or user.first_name or user.username
+                        messages.success(request, f"¡Bienvenido, {username}!")
+                        return redirect('dashboard_farmacia')
                 else:
                     # Si no es de Farmacia, muestra un error y no lo loguea.
                     messages.error(request, "Tu cuenta no está asociada al rol de Farmacia.")
             else:
-                messages.error(request, "Nombre de usuario o contraseña incorrectos.")
+                candidato = CustomUser.objects.filter(username=username).first()
+                perfil = FarmaciaProfile.objects.filter(user=candidato).first() if candidato else None
+                if perfil and not perfil.aceptada:
+                    messages.error(request, _farmacia_pendiente_mensaje())
+                else:
+                    messages.error(request, "Nombre de usuario o contraseña incorrectos.")
         else:
-            messages.error(request, "Error en el formulario de login. Por favor, revisa tus credenciales.")
+            username = request.POST.get('username')
+            candidato = CustomUser.objects.filter(username=username).first()
+            perfil = FarmaciaProfile.objects.filter(user=candidato).first() if candidato else None
+            if perfil and not perfil.aceptada:
+                messages.error(request, _farmacia_pendiente_mensaje())
+            else:
+                messages.error(request, "Error en el formulario de login. Por favor, revisa tus credenciales.")
     else:
         form = LoginForm()
 
@@ -308,8 +336,10 @@ def registro_farmacia_view(request):
 
             user.groups.add(farmacia_group)
 
-            messages.success(request, "¡Cuenta de Farmacia creada exitosamente! Por favor, inicia sesión.")
-            return redirect('HomeSinInicio')
+            user.is_active = False
+            user.save(update_fields=['is_active'])
+            messages.success(request, "Cuenta creada. El doctor debe aceptar tu solicitud antes de que puedas ingresar.")
+            return redirect('login')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -333,7 +363,7 @@ def logout_view(request):
 
 from Inventario.models import CorteDeCaja
 
-@login_required
+@login_required(login_url='/login/')
 def dashboard_farmacia(request):
     # Verifica si el usuario pertenece al grupo 'Farmacia'
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
@@ -344,13 +374,35 @@ def dashboard_farmacia(request):
         messages.warning(request, "No tienes permiso para acceder a este área de Farmacia.")
         return redirect('HomeSinInicio') # Redirige a un lugar seguro si no tiene permiso
 
+    perfil = FarmaciaProfile.objects.filter(user=request.user).first()
+    if not perfil or not perfil.aceptada:
+        logout(request)
+        messages.error(request, _farmacia_pendiente_mensaje())
+        return redirect('login')
+
+    farmacia_name = request.user.first_name if request.user.first_name else request.user.username
+    hora = datetime.now().hour
+    if hora < 12:
+        saludo = 'Buenos días'
+    elif hora < 19:
+        saludo = 'Buenas tardes'
+    else:
+        saludo = 'Buenas noches'
+    now_dt = datetime.now()
+    dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
+    meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    fecha_hoy = f"{dias[now_dt.weekday()]}, {now_dt.day} de {meses[now_dt.month - 1]} de {now_dt.year}"
+
     context = {
         'is_farmacia': is_farmacia,
         'corte_activo': corte_activo,
-
+        'farmacia_name': farmacia_name,
+        'saludo': saludo,
+        'fecha_hoy': fecha_hoy,
     }
 
-    return render(request, 'registration/dashboard_farmacia.html', context)
+    return render(request, 'registration/dashboard_farmacia_v2.html', context)
 
 
 
@@ -401,17 +453,73 @@ def doctor_home_view(request):
     if not doctor_full_name:
         doctor_full_name = request.user.username
 
+    corte_activo = CorteDeCaja.objects.filter(usuario=request.user, is_open=True).first()
+    total_pacientes = Paciente.objects.filter(doctor_responsable__user=request.user).count()
+    hora = datetime.now().hour
+    if hora < 12:
+        saludo = 'Buenos días'
+    elif hora < 19:
+        saludo = 'Buenas tardes'
+    else:
+        saludo = 'Buenas noches'
+    now_dt = datetime.now()
+    dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
+    meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    fecha_hoy = f"{dias[now_dt.weekday()]}, {now_dt.day} de {meses[now_dt.month - 1]} de {now_dt.year}"
+
     # --- Modificamos el Contexto para incluir las variables del Navbar ---
     context = {
-        'doctor_name': request.user.first_name if request.user.first_name else request.user.username,
+        'doctor_name': doctor_full_name,
         'ultimos_pacientes': ultimos_pacientes,
         'total_citas_hoy_pendientes': citas_hoy_pendientes,
         'proximas_citas': proximas_citas,
         'is_farmacia': is_farmacia, # <-- ¡AGREGADO!
         'is_doctora': is_doctora, # <-- ¡AGREGADO!
+        'corte_activo': corte_activo,
+        'total_pacientes': total_pacientes,
+        'saludo': saludo,
+        'fecha_hoy': fecha_hoy,
+        'farmacias_pendientes': FarmaciaProfile.objects.filter(doctor__user=request.user, aceptada=False).select_related('user'),
+        'farmacias_vinculadas': FarmaciaProfile.objects.filter(doctor__user=request.user, aceptada=True).select_related('user'),
     }
 
     return render(request, 'doctor_home.html', context)
+
+
+@login_required
+@require_POST
+def aceptar_farmacia_v2(request, pk):
+    if not request.user.groups.filter(name='Doctora').exists():
+        messages.error(request, "Solo el doctor puede aceptar farmacias.")
+        return redirect('HomeSinInicio')
+
+    farmacia = get_object_or_404(FarmaciaProfile, pk=pk, doctor__user=request.user)
+    farmacia.aceptada = True
+    farmacia.save(update_fields=['aceptada'])
+    cuenta = farmacia.user
+    if not cuenta.is_active:
+        cuenta.is_active = True
+        cuenta.save(update_fields=['is_active'])
+    nombre = cuenta.get_full_name() or cuenta.username
+    messages.success(request, f"Aceptaste a {nombre}. Ya puede ingresar al sistema.")
+    return redirect('doctor_home')
+
+
+@login_required
+@require_POST
+def eliminar_farmacia_v2(request, pk):
+    if not request.user.groups.filter(name='Doctora').exists():
+        messages.error(request, "Solo el doctor puede eliminar farmacias.")
+        return redirect('HomeSinInicio')
+
+    farmacia = get_object_or_404(FarmaciaProfile, pk=pk, doctor__user=request.user)
+    cuenta = farmacia.user
+    nombre = cuenta.get_full_name() or cuenta.username
+    farmacia.delete()
+    cuenta.delete()
+    messages.success(request, f"Se eliminó la cuenta de farmacia {nombre}.")
+    return redirect('doctor_home')
 
 
 
@@ -572,24 +680,14 @@ def Lista_Pacientes_view(request):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    pacientes = Paciente.objects.none()  # Por defecto vacío
-
-    if is_doctora:
-        try:
-            doctor_profile = request.user.doctor_profile
-            pacientes = Paciente.objects.filter(doctor_responsable=doctor_profile).order_by('apellido_paterno', 'apellido_materno', 'nombre')
-        except Doctor.DoesNotExist:
-            pacientes = Paciente.objects.none()
-    elif is_farmacia:
-        # Mostrar todos los pacientes para Farmacia
-        pacientes = Paciente.objects.all().order_by('apellido_paterno', 'apellido_materno', 'nombre')
+    pacientes = pacientes_del_consultorio(request.user).order_by('apellido_paterno', 'apellido_materno', 'nombre')
 
     context = {
         'pacientes': pacientes,
         'is_farmacia': is_farmacia,
         'is_doctora': is_doctora,
     }
-    return render(request, 'Pacientes.html', context)
+    return render(request, 'Pacientes_v3.html', context)
 
 
 
@@ -606,7 +704,7 @@ def editar_paciente_view(request, pk):
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
 
     if request.method == 'POST':
         form = PacienteForm(request.POST, instance=paciente)
@@ -640,7 +738,7 @@ def editar_paciente_view(request, pk):
 # 2. Vista para ELIMINAR Paciente
 @login_required
 def eliminar_paciente_view(request, pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
 
     if request.method == 'POST':
         # Solo permite la eliminación si la petición es POST (más seguro)
@@ -672,7 +770,7 @@ def registros_paciente_view(request, pk):
         return redirect('lista_pacientes') # O a la URL de inicio del dashboard
     # --- FIN DE LA LÓGICA DE RESTRICCIÓN ---
 
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     consultas = paciente.registros_consultas.all().order_by('-fecha')
     context = {
         'paciente': paciente,
@@ -692,7 +790,7 @@ def registros_paciente_view(request, pk):
 # Las nuevas vistas para las historias clínicas y orden médica
 @login_required
 def historia_clinica_paciente(request, pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinica = paciente.PacienteHistoriaClinica.all() # ¡Esta es la forma correcta! # Obtiene todas las historias clínicas del paciente
 
     context = { 'paciente': paciente, 'historia_clinica': historia_clinica }
@@ -700,7 +798,7 @@ def historia_clinica_paciente(request, pk):
 
 @login_required
 def historia_clinica_paciente_me(request, pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinicaME = paciente.historiales_musculoesqueleticos.all() # ¡Esta es la forma correcta! # Obtiene todas las historias clínicas del paciente
 
     context = { 'paciente': paciente, 'historia_clinicaME': historia_clinicaME }
@@ -754,7 +852,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
 
         paciente_id = self.kwargs.get('paciente_id')
         if paciente_id:
-            context['paciente'] = get_object_or_404(Paciente, pk=paciente_id)
+            context['paciente'] = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
         # Puedes añadir contexto extra aquí, por ejemplo el nombre del paso actual
         context['step_title'] = self.steps.current
         print(f"[Wizard] get_context_data para step: {self.steps.current}")
@@ -770,7 +868,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
         paciente_id = self.kwargs.get('paciente_id')
         if paciente_id:
             try:
-                paciente = Paciente.objects.get(id=paciente_id)
+                paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
                 if paciente.genero == 'Masculino' and 'ginecologico' in form_list: # <-- ¡La corrección es aquí!
                     del form_list['ginecologico']
                     print(f"[Wizard] Omitiendo formulario ginecologico para paciente masculino")
@@ -788,7 +886,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
             form_data.update(form.cleaned_data)
 
         paciente_id = self.kwargs.get('paciente_id')
-        paciente_obj = Paciente.objects.get(id=paciente_id) # Obtenemos el objeto Paciente
+        paciente_obj = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
 
         print(f"[Wizard] Creando HistoriaClinica para paciente {paciente_id}")
         HistoriaClinica.objects.create(
@@ -805,14 +903,14 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
 # Pacientes/views.py
 @login_required
 def Resultados_Historial_Clinico(request, pk, historia_pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinica = get_object_or_404(HistoriaClinica, pk=historia_pk, paciente=paciente)
 
     context = {'paciente': paciente, 'historia_clinica': historia_clinica}
     return render(request, 'Resultados_Historial_Clinico.html', context)
 @login_required
 def Resultados_Historial_ClinicoME(request, pk, historia_pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinicaME = get_object_or_404(HistoriaClinicaMusculoEsqueletico, pk=historia_pk, paciente=paciente)
 
     context = {'paciente': paciente, 'historia_clinicaME': historia_clinicaME}
@@ -831,7 +929,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         # Obtenemos el objeto paciente para pasarlo al template
         paciente_id = self.kwargs.get('paciente_id')
-        context['paciente'] = get_object_or_404(Paciente, id=paciente_id)
+        context['paciente'] = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
 
         # Título para cada paso en la plantilla
         step_titles = {
@@ -851,7 +949,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
 
         # Obtiene el paciente y crea la instancia del modelo
         paciente_id = self.kwargs.get('paciente_id')
-        paciente_obj = Paciente.objects.get(id=paciente_id)
+        paciente_obj = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
 
         # Crea el objeto de HistoriaClinicaMusculoEsqueletico con los datos combinados
         HistoriaClinicaMusculoEsqueletico.objects.create(
@@ -885,7 +983,7 @@ def safe_str(value):
 def HistorialMusculoEsqueleticoPDF(request, pk, historia_pk):
     # 1. Obtener datos
     # Asegúrate de importar tus modelos Paciente y HistoriaClinicaMusculoEsqueletico
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinicaME = get_object_or_404(HistoriaClinicaMusculoEsqueletico, pk=historia_pk, paciente=paciente)
 
     response = HttpResponse(content_type='application/pdf')
@@ -1193,7 +1291,7 @@ def safe_str(value):
 
 @login_required
 def HistorialClinicoPDF(request, pk, historia_pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     historia_clinica = get_object_or_404(HistoriaClinica, pk=historia_pk, paciente=paciente)
 
     response = HttpResponse(content_type='application/pdf')
@@ -2623,7 +2721,7 @@ def orden_medica_paciente(request, pk):
         is_farmacia = request.user.groups.filter(name='Farmacia').exists()
         is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     context = {
         'paciente': paciente,
         'is_farmacia': is_farmacia, # <-- AGREGADO
@@ -2674,7 +2772,7 @@ def agenda_view(request):
         citas_mes = Cita.objects.filter(
             doctor=doctor_user_obj,
             fecha__range=[first_day_of_month, last_day_of_month]
-        ).order_by('fecha', 'hora_inicio')
+        ).select_related('paciente').order_by('fecha', 'hora_inicio')
     else:
         messages.error(request, "No se encontró un perfil de doctor asociado.")
         return redirect('HomeSinInicio')
@@ -2683,6 +2781,9 @@ def agenda_view(request):
     # Se corrige el nombre del campo de 'motivo_cita' a 'motivo'
     citas_suero = citas_mes.filter(motivo='Suero')
     citas_generales = citas_mes.exclude(motivo='Suero')
+    citas_por_fecha = {}
+    for cita in citas_mes:
+        citas_por_fecha.setdefault(cita.fecha, []).append(cita)
 
     cal = calendar.Calendar()
     month_calendar = cal.monthdatescalendar(selected_year, selected_month)
@@ -2693,6 +2794,19 @@ def agenda_view(request):
         for day_obj in week:
             count_suero = citas_suero.filter(fecha=day_obj).count()
             count_generales = citas_generales.filter(fecha=day_obj).count()
+            citas_dia = citas_por_fecha.get(day_obj, [])
+            grupos = []
+            vistos = []
+            for cita in citas_dia:
+                if cita.motivo in vistos:
+                    continue
+                vistos.append(cita.motivo)
+                grupos.append({
+                    'key': cita.motivo,
+                    'label': cita.get_motivo_display(),
+                    'css': cita.motivo_css,
+                    'count': sum(1 for item in citas_dia if item.motivo == cita.motivo),
+                })
 
             week_data.append({
                 'date': day_obj,
@@ -2702,18 +2816,27 @@ def agenda_view(request):
                 'count_generales': count_generales,
                 'citas_del_dia_suero': citas_suero.filter(fecha=day_obj),
                 'citas_del_dia_generales': citas_generales.filter(fecha=day_obj),
+                'citas_del_dia': citas_dia,
+                'motivos_del_dia': grupos,
             })
         calendar_days_with_counts.append(week_data)
 
     prev_month_date = first_day_of_month - timedelta(days=1)
     next_month_date = last_day_of_month + timedelta(days=1)
 
+    meses_es = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
     context = {
         'selected_year': selected_year,
         'selected_month': selected_month,
         'month_name': first_day_of_month.strftime('%B'),
+        'month_name_es': meses_es[selected_month - 1],
         'calendar_days_with_citas': calendar_days_with_counts,
         'today': date.today(),
+        'total_citas_mes': citas_mes.count(),
+        'total_citas_generales': citas_generales.count(),
+        'total_citas_suero': citas_suero.count(),
 
         'prev_month_year': prev_month_date.year,
         'prev_month_month': prev_month_date.month,
@@ -2742,8 +2865,9 @@ def crear_cita_view(request):
         messages.error(request, "Tu perfil no está completo. No se puede agendar la cita.")
         return redirect('HomeSinInicio')
 
+    pacientes = pacientes_del_consultorio(request.user).order_by('nombre')
     if request.method == 'POST':
-        form = CitaForm(request.POST)
+        form = CitaFormAgenda(request.POST, pacientes=pacientes)
         if form.is_valid():
             cita = form.save(commit=False)
             cita.doctor = doctor_user_obj
@@ -2753,8 +2877,7 @@ def crear_cita_view(request):
         else:
             messages.error(request, 'Hubo un error al crear la cita. Por favor, revisa los datos.')
     else:
-        form = CitaForm()
-        form.fields['paciente'].queryset = Paciente.objects.filter(doctor_responsable=doctor_profile_obj).order_by('nombre')
+        form = CitaFormAgenda(pacientes=pacientes)
 
     context = {
         'form': form,
@@ -2782,8 +2905,9 @@ def editar_cita_view(request, pk):
     # Obtener cita
     cita = get_object_or_404(Cita, pk=pk, doctor=doctor_user_obj)
 
+    pacientes = pacientes_del_consultorio(request.user).order_by('nombre')
     if request.method == 'POST':
-        form = CitaForm(request.POST, instance=cita)
+        form = CitaFormAgenda(request.POST, instance=cita, pacientes=pacientes)
 
         if form.is_valid():
             cita_editada = form.save(commit=False)
@@ -2802,7 +2926,7 @@ def editar_cita_view(request, pk):
         else:
             messages.error(request, 'Hubo un error al actualizar la cita. Por favor, revisa los datos.')
     else:
-        form = CitaForm(instance=cita)
+        form = CitaFormAgenda(instance=cita, pacientes=pacientes)
 
         # Prellenar correctamente las fechas y horas
         if cita.fecha:
@@ -2811,15 +2935,6 @@ def editar_cita_view(request, pk):
             form.fields['hora_inicio'].initial = cita.hora_inicio.strftime('%H:%M')
         if cita.hora_fin:
             form.fields['hora_fin'].initial = cita.hora_fin.strftime('%H:%M')
-
-        # Filtrar pacientes según doctora responsable
-        doctor_profile_obj = get_doctor_profile(request.user)
-        if doctor_profile_obj:
-            form.fields['paciente'].queryset = Paciente.objects.filter(
-                doctor_responsable=doctor_profile_obj
-            ).order_by('nombre')
-        else:
-            form.fields['paciente'].queryset = Paciente.objects.none()
 
     context = {
         'form': form,
@@ -2861,7 +2976,7 @@ def eliminar_cita_view(request, pk):
 
 @login_required
 def consentimiento_create(request, paciente_pk):
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
 
     # Lógica para determinar el grupo del usuario
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
@@ -2892,7 +3007,7 @@ def consentimiento_create(request, paciente_pk):
 # VISTA PARA LISTAR LOS CONSENTIMIENTOS DE UN PACIENTE
 @login_required
 def consentimiento_list_by_paciente(request, paciente_pk):
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
     # Asume que el modelo es ConsentimientoInformado, basándome en tu código anterior
     consentimientos = ConsentimientoInformado.objects.filter(paciente=paciente).order_by('-fecha')
 
@@ -3160,7 +3275,7 @@ def historia_clinica_pdf(request, pk):
 
 @login_required
 def orden_medica_paciente(request, pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
     # Aquí puedes listar órdenes médicas existentes o dar un enlace para crear una nueva
     return render(request, 'orden_medica_selector.html', {'paciente': paciente}) # Ajusta la ruta de plantilla
 
@@ -3170,7 +3285,7 @@ def orden_medica_paciente(request, pk):
 # Vista para crear una nueva receta
 @login_required
 def crear_receta_view(request, paciente_pk):
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
     if request.method == 'POST':
         form = RecetaForm(request.POST)
         if form.is_valid():
@@ -3207,7 +3322,7 @@ def lista_recetas_view(request, paciente_pk):
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
 
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
 
     context = {
         'paciente': paciente,
@@ -3426,7 +3541,7 @@ def actualizar_asistencia_simple(request, pk):
 
 @login_required
 def consentimiento_real_list(request, paciente_pk):
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
     consentimientos = ConsentimientoInformadoReal.objects.filter(paciente=paciente).order_by('-fecha_creacion')
     context = {
         'paciente': paciente,
@@ -3437,7 +3552,7 @@ def consentimiento_real_list(request, paciente_pk):
 
 @login_required
 def consentimiento_real_create(request, paciente_pk):
-    paciente = get_object_or_404(Paciente, pk=paciente_pk)
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_pk)
     if request.method == 'POST':
         form = ConsentimientoInformadoRealForm(request.POST)
         if form.is_valid():
@@ -3644,8 +3759,11 @@ def es_doctora(user):
 @login_required
 @user_passes_test(es_doctora, login_url='/')
 def nueva_consulta_paciente(request, pk):
-    paciente = get_object_or_404(Paciente, pk=pk)
-    insumos_disponibles = Insumo.objects.filter(cantidad_disponible__gt=0).order_by('nombre')
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
+    insumos_disponibles = Insumo.objects.filter(
+        doctor=doctor_del_usuario(request.user),
+        cantidad_disponible__gt=0,
+    ).order_by('nombre')
 
     if request.method == 'POST':
         descripcion = request.POST.get('descripcion_procedimiento')
@@ -3674,7 +3792,10 @@ def nueva_consulta_paciente(request, pk):
                         insumo_id = item.get('id')
                         cantidad_usada = int(item.get('cantidad', 1))
 
-                        insumo_db = Insumo.objects.select_for_update().get(pk=insumo_id)
+                        insumo_db = Insumo.objects.select_for_update().get(
+                            pk=insumo_id,
+                            doctor=doctor_del_usuario(request.user),
+                        )
 
                         if insumo_db.cantidad_disponible >= cantidad_usada:
                             # Restar del inventario
@@ -3712,6 +3833,9 @@ def ver_consulta(request, consulta_pk):
     if not (request.user.groups.filter(name='Doctora').exists() or request.user.groups.filter(name='Farmacia').exists()):
         messages.error(request, "No tienes permiso para ver esto.")
         return redirect('/')
+    if consulta.paciente.doctor_responsable != doctor_del_usuario(request.user):
+        messages.error(request, "Esa consulta no pertenece a tu consultorio.")
+        return redirect('lista_pacientes')
 
     return render(request, 'ver_consulta.html', {'consulta': consulta})
 
@@ -3720,6 +3844,9 @@ def ver_consulta(request, consulta_pk):
 @user_passes_test(es_doctora, login_url='/')
 def eliminar_consulta(request, consulta_pk):
     consulta = get_object_or_404(RegistroConsulta, pk=consulta_pk)
+    if consulta.paciente.doctor_responsable != doctor_del_usuario(request.user):
+        messages.error(request, "Esa consulta no pertenece a tu consultorio.")
+        return redirect('lista_pacientes')
     paciente_pk = consulta.paciente.pk
 
     try:
@@ -3769,3 +3896,31 @@ def eliminar_consultas_lote(request):
         messages.error(request, f"Error: {str(e)}")
 
     return redirect('expediente_paciente', pk=paciente_id)
+
+
+@login_required
+def descargar_carnet_paciente(request, pk):
+    """Genera el carnet de citas con el nombre del paciente. No reemplaza la plantilla estática."""
+    is_farmacia = request.user.groups.filter(name='Farmacia').exists()
+    is_doctora = request.user.groups.filter(name='Doctora').exists()
+    if not (is_farmacia or is_doctora):
+        messages.warning(request, 'No tienes permiso para descargar el carnet.')
+        return redirect('lista_pacientes')
+
+    paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=pk)
+    if is_doctora and not is_farmacia:
+        try:
+            if paciente.doctor_responsable_id != request.user.doctor_profile.pk:
+                messages.warning(request, 'Ese paciente no está asignado a tu cuenta.')
+                return redirect('lista_pacientes')
+        except Doctor.DoesNotExist:
+            messages.warning(request, 'No tienes un perfil de doctora asociado.')
+            return redirect('lista_pacientes')
+
+    from .carnet_pdf import build_carnet_pdf, _nombre_completo
+
+    buffer = build_carnet_pdf(paciente)
+    filename = f"Carnet_Citas_{_nombre_completo(paciente).replace(' ', '_')}.pdf"
+    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response

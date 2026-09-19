@@ -1,0 +1,182 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Panel de Control{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/dashboard_v2.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container dashboard-v2">
+    <section class="dh-hero">
+        <div class="dh-hero-copy">
+            <div class="dh-brand">
+                <img src="{% static 'img/logo.png' %}" alt="CIT">
+                <span>Consultorio</span>
+            </div>
+            <p class="dh-kicker">{{ saludo }}</p>
+            <h1>{{ doctor_name }}</h1>
+            <p class="dh-date">Hoy es {{ fecha_hoy }} · <strong id="dhClock"></strong></p>
+            <div class="dh-pills">
+                <a class="dh-pill" href="{% url 'agenda' %}">
+                    <i class="bi bi-calendar-check"></i>
+                    {{ total_citas_hoy_pendientes }} cita{{ total_citas_hoy_pendientes|pluralize }} hoy
+                </a>
+                <a class="dh-pill" href="{% url 'lista_pacientes' %}">
+                    <i class="bi bi-people"></i>
+                    {{ total_pacientes }} paciente{{ total_pacientes|pluralize }}
+                </a>
+                <a class="dh-pill" href="{% if corte_activo %}{% url 'corte_activo' %}{% else %}{% url 'iniciar_corte' %}{% endif %}">
+                    <i class="bi bi-cash-coin"></i>
+                    Caja {% if corte_activo %}abierta{% else %}cerrada{% endif %}
+                </a>
+            </div>
+        </div>
+
+        <aside class="dh-featured">
+            <div class="dh-featured-label">
+                Siguiente cita
+                <span class="dh-featured-dot{% if not proximas_citas %} is-off{% endif %}"></span>
+            </div>
+            {% with cita=proximas_citas.0 %}
+                {% if cita %}
+                    <h2>{{ cita.paciente }}</h2>
+                    <p>{{ cita.get_motivo_display }}</p>
+                    <div class="dh-featured-meta">
+                        <span class="dh-tag">{{ cita.hora_inicio|time:"H:i" }} – {{ cita.hora_fin|time:"H:i" }}</span>
+                        <span class="dh-tag orange">{{ cita.fecha|date:"d/m/Y" }}</span>
+                    </div>
+                    <a class="dh-featured-link" href="{% url 'agenda' %}">Abrir agenda</a>
+                {% else %}
+                    <h2>Agenda libre</h2>
+                    <p>No hay citas próximas. Puedes revisar el calendario o registrar una nueva.</p>
+                    <a class="dh-featured-link" href="{% url 'agenda' %}">Ir a la agenda</a>
+                {% endif %}
+            {% endwith %}
+        </aside>
+    </section>
+
+    <section class="dh-workspace">
+        <article class="dh-panel">
+            <div class="dh-panel-head">
+                <h2>Hoy en el consultorio</h2>
+                <a href="{% url 'agenda' %}">Ver agenda</a>
+            </div>
+            {% if proximas_citas %}
+                <div class="dh-timeline">
+                    {% for cita in proximas_citas %}
+                        <div class="dh-row">
+                            <span class="dh-avatar">
+                                {{ cita.paciente.nombre|first }}{{ cita.paciente.apellido_paterno|first }}
+                            </span>
+                            <div>
+                                <div class="dh-row-title">{{ cita.paciente }}</div>
+                                <div class="dh-row-meta">{{ cita.get_motivo_display }} · {{ cita.fecha|date:"d/m/Y" }}</div>
+                            </div>
+                            <span class="dh-time">{{ cita.hora_inicio|time:"H:i" }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="dh-empty">No hay citas próximas por mostrar.</p>
+            {% endif %}
+        </article>
+
+        <div class="dh-side">
+            <article class="dh-panel dh-patient-list">
+                <div class="dh-panel-head">
+                    <h2>Pacientes recientes</h2>
+                    <a href="{% url 'lista_pacientes' %}">Ver todos</a>
+                </div>
+                {% if ultimos_pacientes %}
+                    {% for paciente in ultimos_pacientes %}
+                        <a href="{% url 'lista_pacientes' %}" class="dh-row">
+                            <span class="dh-avatar">
+                                {{ paciente.nombre|first }}{{ paciente.apellido_paterno|first }}
+                            </span>
+                            <div>
+                                <div class="dh-row-title">{{ paciente }}</div>
+                                <div class="dh-row-meta">
+                                    {% if paciente.numero_expediente %}{{ paciente.numero_expediente }}{% else %}Sin expediente{% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="dh-empty">Aún no hay pacientes a tu cargo.</p>
+                {% endif %}
+            </article>
+
+            <article class="dh-panel dh-corte">
+                <div class="dh-panel-head">
+                    <h2>Corte de caja</h2>
+                </div>
+                <div class="dh-corte-body">
+                    {% if corte_activo %}
+                        <div class="dh-corte-status open">Turno abierto</div>
+                        <p class="dh-row-meta">Inició a las {{ corte_activo.fecha_apertura|date:"H:i" }}</p>
+                        <a href="{% url 'corte_activo' %}">Revisar corte activo</a>
+                    {% else %}
+                        <div class="dh-corte-status">Caja cerrada</div>
+                        <p class="dh-row-meta">Abre el turno para registrar ventas.</p>
+                        <a href="{% url 'iniciar_corte' %}">Iniciar corte</a>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <div class="dh-section-head">
+        <div>
+            <h2>Herramientas del consultorio</h2>
+            <p>Todo lo que usas durante el día, en un solo lugar.</p>
+        </div>
+    </div>
+
+    <section class="dh-bento">
+        <a href="{% url 'agenda' %}" class="dh-card wide tint-teal">
+            <span class="dh-card-icon tone-teal"><i class="bi bi-calendar-check-fill"></i></span>
+            <h3>Agenda</h3>
+            <p>Organiza el día, confirma asistencia y abre la siguiente consulta.</p>
+        </a>
+        <a href="{% url 'lista_pacientes' %}" class="dh-card wide tint-green">
+            <span class="dh-card-icon tone-green"><i class="bi bi-person-vcard"></i></span>
+            <h3>Pacientes</h3>
+            <p>Directorio, expedientes clínicos y carnets de citas.</p>
+        </a>
+        <a href="{% url 'lista_medicamentos' %}" class="dh-card">
+            <span class="dh-card-icon tone-blue"><i class="bi bi-capsule"></i></span>
+            <h3>Medicamentos</h3>
+            <p>Existencias y control de inventario.</p>
+        </a>
+        <a href="{% url 'lista_insumos' %}" class="dh-card">
+            <span class="dh-card-icon tone-slate"><i class="bi bi-box-seam"></i></span>
+            <h3>Insumos</h3>
+            <p>Materiales del consultorio.</p>
+        </a>
+        <a href="{% url 'punto_venta' %}" class="dh-card">
+            <span class="dh-card-icon tone-cyan"><i class="bi bi-credit-card-2-front-fill"></i></span>
+            <h3>Punto de venta</h3>
+            <p>Cobra consultas y productos.</p>
+        </a>
+        <a href="{% url 'historial_ventas' %}" class="dh-card">
+            <span class="dh-card-icon tone-orange"><i class="bi bi-cash-stack"></i></span>
+            <h3>Ventas</h3>
+            <p>Historial y reportes de cobro.</p>
+        </a>
+    </section>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clock = document.getElementById('dhClock');
+    if (!clock) return;
+    const tick = function() {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    };
+    tick();
+    setInterval(tick, 30000);
+});
+</script>
+{% endblock %}

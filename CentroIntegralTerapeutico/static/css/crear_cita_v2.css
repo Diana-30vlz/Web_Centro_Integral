@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body:has(.crear-cita-v2) {
+    background:
+        radial-gradient(1100px 380px at 0% -8%, rgba(24, 177, 163, 0.14), transparent 55%),
+        radial-gradient(900px 340px at 100% 0%, rgba(231, 165, 108, 0.12), transparent 50%),
+        #eef6f4;
+}
+
+.crear-cita-v2 {
+    --cit-teal: #18b1a3;
+    --cit-teal-dark: #0f7f76;
+    --cit-forest: #0c3d2c;
+    --cit-orange: #e7a56c;
+    --cit-ink: #1d2b32;
+    --cit-muted: #667780;
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    padding: 1.6rem 0 3rem;
+    max-width: 860px;
+}
+
+.crear-cita-v2 .cc-hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    border-radius: 1.4rem;
+    color: #fff;
+    background: linear-gradient(135deg, #0c3d2c 0%, #12725f 52%, #18b1a3 100%);
+    box-shadow: 0 18px 40px rgba(12, 61, 44, 0.18);
+    margin-bottom: 1.1rem;
+}
+
+.crear-cita-v2 .cc-kicker {
+    margin: 0 0 0.25rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.crear-cita-v2 .cc-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.55rem, 3vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.crear-cita-v2 .cc-hero p {
+    margin: 0.35rem 0 0;
+    color: rgba(255, 254, 245, 0.82);
+}
+
+.crear-cita-v2 .cc-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.crear-cita-v2 .cc-icon {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+}
+
+.crear-cita-v2 .cc-icon:hover {
+    background: #dceae7;
+    color: var(--cit-teal-dark);
+}
+
+.crear-cita-v2 .cc-card {
+    background: #fff;
+    border-radius: 1.4rem;
+    box-shadow: 0 14px 34px rgba(18, 143, 132, 0.08);
+    overflow: hidden;
+}
+
+.crear-cita-v2 .cc-card-head {
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid #e8efee;
+}
+
+.crear-cita-v2 .cc-card-head h2 {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--cit-ink);
+}
+
+.crear-cita-v2 .cc-card-head p {
+    margin: 0.25rem 0 0;
+    color: var(--cit-muted);
+    font-size: 0.88rem;
+}
+
+.crear-cita-v2 form {
+    padding: 1.3rem 1.4rem 1.45rem;
+}
+
+.crear-cita-v2 .cc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.crear-cita-v2 .cc-wide {
+    grid-column: 1 / -1;
+}
+
+.crear-cita-v2 label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.86rem;
+    color: var(--cit-ink);
+    margin-bottom: 0.4rem;
+}
+
+.crear-cita-v2 .form-control,
+.crear-cita-v2 .form-select,
+.crear-cita-v2 input,
+.crear-cita-v2 select,
+.crear-cita-v2 textarea {
+    width: 100%;
+    border: 1px solid #d7e4e1;
+    border-radius: 0.85rem;
+    padding: 0.72rem 0.9rem;
+    background: #f8fbfb;
+    color: var(--cit-ink);
+    font-size: 0.95rem;
+}
+
+.crear-cita-v2 .form-control:focus,
+.crear-cita-v2 .form-select:focus,
+.crear-cita-v2 input:focus,
+.crear-cita-v2 select:focus,
+.crear-cita-v2 textarea:focus {
+    outline: none;
+    border-color: var(--cit-teal);
+    box-shadow: 0 0 0 3px rgba(24, 177, 163, 0.16);
+    background: #fff;
+}
+
+.crear-cita-v2 .form-text {
+    color: var(--cit-muted);
+    font-size: 0.8rem;
+}
+
+.crear-cita-v2 .cc-actions {
+    display: flex;
+    gap: 0.7rem;
+    margin-top: 1.2rem;
+}
+
+.crear-cita-v2 .cc-submit {
+    flex: 1;
+    border: 0;
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: var(--cit-teal);
+    color: #fff;
+    font-weight: 800;
+}
+
+.crear-cita-v2 .cc-submit:hover {
+    background: var(--cit-teal-dark);
+    color: #fff;
+}
+
+.crear-cita-v2 .cc-cancel {
+    flex: 1;
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.crear-cita-v2 .cc-cancel:hover {
+    background: #dceae7;
+    color: var(--cit-forest);
+}
+
+.crear-cita-v2 .messages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .crear-cita-v2 .cc-grid,
+    .crear-cita-v2 .cc-actions {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+}

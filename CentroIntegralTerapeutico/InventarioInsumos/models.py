@@ -14,6 +14,14 @@ class TagInsumo(models.Model):
 
 class Insumo(models.Model):
     id = models.AutoField(primary_key=True)
+    doctor = models.ForeignKey(
+        'Pacientes.Doctor',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='insumos',
+        verbose_name="Doctor dueño",
+    )
     nombre = models.CharField(max_length=200, verbose_name="Nombre del Insumo")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción")
     

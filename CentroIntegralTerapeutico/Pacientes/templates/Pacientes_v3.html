@@ -1,0 +1,156 @@
+{% extends "BaseSinInicio.html" %}
+{% load static %}
+
+{% block title %}Lista de Pacientes{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/lista_pacientes_v3.css' %}?v=20260918r">
+{% endblock %}
+
+{% block content %}
+<div class="container lista-pacientes-v3">
+    <section class="lp-hero lp-in">
+        <div>
+            <p class="lp-kicker">Consultorio</p>
+            <h1>Pacientes</h1>
+            <p>Expedientes del consultorio de quien está en sesión.</p>
+        </div>
+        <span class="lp-pill">{{ pacientes|length }} paciente{{ pacientes|length|pluralize }}</span>
+    </section>
+
+    <div class="lp-toolbar lp-in lp-d2">
+        <a href="#" onclick="history.back()" class="lp-icon" title="Regresar" data-bs-toggle="tooltip" data-bs-title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div class="lp-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar paciente..." aria-label="Buscar Paciente">
+        </div>
+        <a href="{% url 'CrearPaciente' %}" class="lp-icon lp-create" title="Crear paciente" data-bs-toggle="tooltip" data-bs-title="Crear nuevo paciente">
+            <i class="bi bi-person-plus-fill"></i>
+        </a>
+        <a href="{% static 'img/Centro Integral version22.pdf' %}"
+           class="lp-icon lp-carnet"
+           target="_blank"
+           download="Carnet_Citas_Centro_Integral.pdf"
+           title="Plantilla de carnet"
+           data-bs-toggle="tooltip"
+           data-bs-title="Descargar plantilla de carnet">
+            <i class="bi bi-calendar2-check-fill"></i>
+        </a>
+    </div>
+
+    {% if pacientes %}
+    <div class="lp-card lp-card-in">
+        <div class="lp-card-head">
+            <h2>Listado</h2>
+            <p>Nombre, datos de contacto y acciones del expediente.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Paciente</th>
+                        <th scope="col">Apellido paterno</th>
+                        <th scope="col">Apellido materno</th>
+                        <th scope="col">Fecha nac.</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col" class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                    {% for paciente in pacientes %}
+                    <tr class="lp-row" style="--i: {{ forloop.counter }};">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <div class="lp-patient">
+                                {% include 'paciente_avatar.html' with paciente=paciente avatar_class='lp-avatar' %}
+                                <div>
+                                    <div class="lp-name">{{ paciente.nombre }}</div>
+                                    {% if paciente.numero_expediente %}
+                                        <div class="lp-meta">{{ paciente.numero_expediente }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ paciente.apellido_paterno }}</td>
+                        <td>{{ paciente.apellido_materno|default:"N/A" }}</td>
+                        <td>{{ paciente.fecha_nacimiento|date:"d M Y" }}</td>
+                        <td>{{ paciente.telefono|default:"N/A" }}</td>
+                        <td>
+                            <div class="lp-actions">
+                                <a href="{% url 'descargar_carnet_paciente' paciente.pk %}"
+                                   class="btn btn-sm lp-btn-carnet"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   data-bs-title="Descargar carnet de citas de {{ paciente.nombre }}">
+                                    <i class="bi bi-person-vcard"></i>
+                                </a>
+                                <a href="{% url 'editar_paciente' paciente.pk %}"
+                                   class="btn btn-sm lp-btn-edit"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   data-bs-title="Editar datos del paciente">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a href="{% url 'nueva_consulta_paciente' paciente.pk %}"
+                                   class="btn btn-sm lp-btn-consulta"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   data-bs-title="Registrar nueva consulta o bitácora">
+                                    <i class="bi bi-journal-medical"></i>
+                                </a>
+                                {% if is_doctora %}
+                                <a href="{% url 'expediente_paciente' paciente.pk %}"
+                                   class="btn btn-sm lp-btn-exp"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   data-bs-title="Ver expediente y registros">
+                                    <i class="bi bi-journal-text"></i>
+                                </a>
+                                {% endif %}
+                                <form action="{% url 'eliminar_paciente' paciente.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-sm lp-btn-del"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-title="Eliminar paciente"
+                                            onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ paciente.nombre }} {{ paciente.apellido_paterno }}? Esta acción es irreversible.');">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+        <div class="lp-card lp-card-in">
+            <p class="lp-empty">No hay pacientes registrados aún. ¡Comienza creando uno!</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+        new bootstrap.Tooltip(el, { container: 'body', trigger: 'hover' });
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('patientTableBody');
+    if (!searchInput || !tableBody) {
+        return;
+    }
+    const rows = tableBody.getElementsByTagName('tr');
+    searchInput.addEventListener('keyup', function() {
+        document.querySelector('.lista-pacientes-v3').classList.add('is-searching');
+        const filterText = searchInput.value.toLowerCase();
+        for (let i = 0; i < rows.length; i++) {
+            const rowText = rows[i].textContent.toLowerCase();
+            rows[i].style.display = rowText.includes(filterText) ? '' : 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% for field in form %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% else %}
+        <div class="auth-field{% if field.name == 'username' or field.name == 'email' or field.name == 'user_type' or field.name == 'doctor' or field.name == 'password1' or field.name == 'password2' or field.name == 'recovery_nip' %} span-2{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <small class="form-text">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger mt-1">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endfor %}
+{% if form.non_field_errors %}
+    <div class="auth-field span-2">
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </div>
+    </div>
+{% endif %}

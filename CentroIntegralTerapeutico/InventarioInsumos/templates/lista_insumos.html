@@ -5,113 +5,19 @@
 {% block title %}Inventario de Insumos{% endblock %}
 
 {% block extra_head %}
-    <style>
-        /* Define una paleta de colores personalizada para los insumos */
-        :root {
-            --insumos-primary: #343a40; /* Gris oscuro casi negro */
-            --insumos-secondary: #6c757d; /* Gris medio */
-            --insumos-accent: #ffc107; /* Amarillo para destacar */
-            --table-row-bg: #2c2f33; /* Color de fondo para las filas */
-            --table-row-text: #f8f9fa; /* Color de texto para las filas */
-        }
-
-        /* Estilo para el contenedor principal con animación */
-        .insumos-container {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-
-        .insumos-container.fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Cambiar el color de fondo del encabezado de la tabla */
-        .table-insumos thead {
-            background-color: var(--insumos-primary);
-            color: white;
-            border-color: var(--insumos-secondary);
-        }
-
-        /* Estilo para las filas del cuerpo de la tabla */
-        .table-insumos tbody tr {
-            background-color: var(--table-row-bg);
-            color: var(--table-row-text);
-            border-color: #40444b;
-            transition: all 0.3s ease; /* Transición para un efecto suave */
-        }
-
-        /* Estilo de la fila al pasar el mouse */
-        .table-insumos tbody tr:hover {
-            background-color: #5eff14ff; /* Color de fondo verde neón */
-            color: black; /* Cambiar el color del texto a negro para que se vea */
-            box-shadow: 0 0 20px #39ff14; /* Sombra de resplandor neón */
-            transform: translateY(-2px) scale(1.02); /* Ligero movimiento y escalado */
-        }
-
-        /* Estilo para los botones */
-        .btn-insumos-primary {
-            background-color: var(--insumos-primary);
-            border-color: var(--insumos-primary);
-            color: white;
-            transition: all 0.2s ease;
-        }
-
-        .btn-insumos-primary:hover {
-            background-color: #212529; /* Un poco más oscuro */
-            border-color: #212529;
-            color: var(--insumos-accent); /* Usar el color de acento */
-        }
-
-        .btn-insumos-info {
-            background-color: var(--insumos-secondary);
-            border-color: var(--insumos-secondary);
-            color: white;
-        }
-
-        .btn-insumos-info:hover {
-            background-color: #5a6268;
-            border-color: #5a6268;
-        }
-
-        /* Estilo para el texto "Ninguna" cuando no hay etiquetas */
-        .text-muted {
-            color: #b0b4b8 !important;
-        }
-
-        /* Estilo para la barra de búsqueda */
-        #insumoSearch {
-            background-color: #868a91ff;
-            color: white;
-            border: 1px solid #868a91ff;
-            transition: all 0.3s ease;
-        }
-
-        #insumoSearch:focus {
-            background-color: #6e7279ff;
-            border-color: var(--insumos-accent);
-            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
-            color: white;
-        }
-
-        /* Estilo para el span de cantidad (para que combine con el tema oscuro) */
-        .cantidad-span-dark {
-            background-color: #495057 !important;
-            color: white !important;
-            font-weight: bold !important;
-            border-color: #495057 !important;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/inventario_v2.css' %}?v=20260918r">
 {% endblock %}
 
 {% block content %}
-<div class="container my-5 insumos-container">
-    <h2 class="mb-4 text-center">Inventario de Insumos</h2>
-
-    <a href="#" onclick="history.back()" class="btn btn-insumos-info mt-3">
-        <i class="bi bi-arrow-left-circle me-2"></i>Regresar
-    </a>
+<div class="container inv-v2">
+    <section class="iv-hero iv-in">
+        <div>
+            <p class="iv-kicker">Inventario</p>
+            <h1>Insumos</h1>
+            <p>Materiales y suministros del consultorio.</p>
+        </div>
+        <span class="iv-pill">{{ insumos|length }} registro{{ insumos|length|pluralize }}</span>
+    </section>
 
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -124,107 +30,107 @@
         </ul>
     {% endif %}
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="input-group" style="max-width: 400px;">
-            <span class="input-group-text bg-dark border-dark text-white"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" id="insumoSearch" placeholder="Buscar por nombre, fabricante..." aria-label="Buscar insumos">
+    <div class="iv-toolbar iv-in iv-d2">
+        <a href="#" onclick="history.back()" class="iv-icon" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div class="iv-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="insumoSearch" placeholder="Buscar por nombre, fabricante..." aria-label="Buscar insumos">
         </div>
-
-        {# --- Botón "Añadir" solo para Doctora --- #}
         {% if is_doctora %}
-        <a href="{% url 'crear_insumo' %}" class="btn btn-insumos-primary me-2">
-            <i class="bi bi-tools me-2"></i> Añadir Nuevo Insumo
+        <a href="{% url 'crear_insumo' %}" class="iv-icon iv-create" title="Añadir insumo">
+            <i class="bi bi-plus-lg"></i>
         </a>
         {% endif %}
     </div>
 
     {% if insumos %}
-    <div class="table-responsive">
-        <table class="table table-hover table-striped table-insumos">
-            <thead>
-                <tr>
-                    <th><i class="bi bi-clipboard-check"></i> Nombre</th>
-                    <th><i class="bi bi-building"></i> Fabricante</th>
-                    <th><i class="bi bi-boxes"></i> Cantidad Disponible</th>
-                    <th><i class="bi bi-rulers"></i> Unidad</th>
-                    <th><i class="bi bi-tags"></i> Etiquetas</th>
-
-                    {# --- Cabecera "Acciones" solo para Doctora --- #}
-                    {% if is_doctora %}
-                    <th class="text-center"><i class="bi bi-gear-wide-connected"></i> Acciones</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody id="insumoTableBody">
-                {% for insumo in insumos %}
-                <tr>
-                    <td>{{ insumo.nombre }}</td>
-                    <td>{{ insumo.fabricante|default:"N/A" }}</td>
-
-                    {# --- ¡¡¡ESTA ES LA LÍNEA CORREGIDA!!! --- #}
-                    <td style="min-width: 150px;">
-                        {% if is_doctora or is_farmacia %}
-                          <div class="input-group input-group-sm">
-
-                            <button class="btn btn-outline-danger btn-cantidad"
-                                    data-action="disminuir"
-                                    data-pk="{{ insumo.pk }}"
-                                    data-url="{% url 'modificar_cantidad_insumo' insumo.pk %}">
-                              <i class="bi bi-dash-lg"></i> {# Ícono de Bootstrap #}
-                            </button>
-
-                            <span class="form-control text-center cantidad-span-dark"
-                                  id="cantidad-insumo-{{ insumo.pk }}">
-                              {{ insumo.cantidad_disponible }}
-                            </span>
-
-                            <button class="btn btn-outline-success btn-cantidad"
-                                    data-action="aumentar"
-                                    data-pk="{{ insumo.pk }}"
-                                    data-url="{% url 'modificar_cantidad_insumo' insumo.pk %}">
-                              <i class="bi bi-plus-lg"></i> {# Ícono de Bootstrap #}
-                            </button>
-                          </div>
-                        {% else %}
-                          {{ insumo.cantidad_disponible }}
+    <div class="iv-card iv-card-in">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fabricante</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th>Etiquetas</th>
+                        {% if is_doctora %}
+                        <th class="text-end">Acciones</th>
                         {% endif %}
-                    </td>
-
-                    <td>{{ insumo.unidad_medida|default:"N/A" }}</td>
-                    <td>
-                        {% for tag in insumo.tags.all %}
-                            <span class="badge bg-secondary me-1">{{ tag.nombre }}</span>
-                        {% empty %}
-                            <small class="text-muted">Ninguna</small>
-                        {% endfor %}
-                    </td>
-
-                    {# --- Celda de Acciones solo para Doctora --- #}
-                    {% if is_doctora %}
-                    <td class="text-center">
-                        <a href="{% url 'editar_insumo' insumo.pk %}" class="btn btn-sm btn-outline-secondary me-1" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                        <form action="{% url 'eliminar_insumo' insumo.pk %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                    onclick="return confirm('¿Estás seguro de que quieres eliminar {{ insumo.nombre }}?');">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </tr>
+                </thead>
+                <tbody id="insumoTableBody">
+                    {% for insumo in insumos %}
+                    <tr class="iv-row" style="--i: {{ forloop.counter }};">
+                        <td>{{ insumo.nombre }}</td>
+                        <td>{{ insumo.fabricante|default:"N/A" }}</td>
+                        <td>
+                            {% if is_doctora or is_farmacia %}
+                              <div class="input-group input-group-sm flex-nowrap iv-qty">
+                                <button class="btn btn-outline-danger btn-cantidad"
+                                        data-action="disminuir"
+                                        data-pk="{{ insumo.pk }}"
+                                        data-url="{% url 'modificar_cantidad_insumo' insumo.pk %}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Quitar una unidad">
+                                  <i class="bi bi-dash-lg"></i>
+                                </button>
+                                <span class="form-control form-control-sm text-center" id="cantidad-insumo-{{ insumo.pk }}">
+                                  {{ insumo.cantidad_disponible }}
+                                </span>
+                                <button class="btn btn-outline-success btn-cantidad"
+                                        data-action="aumentar"
+                                        data-pk="{{ insumo.pk }}"
+                                        data-url="{% url 'modificar_cantidad_insumo' insumo.pk %}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Agregar una unidad">
+                                  <i class="bi bi-plus-lg"></i>
+                                </button>
+                              </div>
+                            {% else %}
+                              {{ insumo.cantidad_disponible }}
+                            {% endif %}
+                        </td>
+                        <td>{{ insumo.unidad_medida|default:"N/A" }}</td>
+                        <td>
+                            {% for tag in insumo.tags.all %}
+                                <span class="badge bg-secondary me-1">{{ tag.nombre }}</span>
+                            {% empty %}
+                                <small class="text-muted">Ninguna</small>
+                            {% endfor %}
+                        </td>
+                        {% if is_doctora %}
+                        <td>
+                            <div class="iv-actions">
+                                <a href="{% url 'editar_insumo' insumo.pk %}" class="btn btn-sm btn-outline-info"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar insumo">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="{% url 'eliminar_insumo' insumo.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar insumo"
+                                            onclick="return confirm('¿Estás seguro de que quieres eliminar {{ insumo.nombre }}?');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% else %}
-    <div class="alert alert-secondary text-center" role="alert">
-        No hay insumos registrados en el inventario.
-        {% if is_doctora %} {# El enlace para añadir solo tiene sentido si puede hacerlo #}
-        <a href="{% url 'crear_insumo' %}" class="alert-link">Añade uno ahora.</a>
-        {% endif %}
+    <div class="iv-card iv-card-in">
+        <p class="iv-empty">
+            No hay insumos registrados.
+            {% if is_doctora %}
+            <a href="{% url 'crear_insumo' %}">Añade uno ahora.</a>
+            {% endif %}
+        </p>
     </div>
     {% endif %}
 </div>
@@ -232,21 +138,22 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ----- TU SCRIPT EXISTENTE (Animación y Búsqueda) -----
-        const container = document.querySelector('.insumos-container');
-        container.classList.add('fade-in');
-
-        const searchInput = document.getElementById('insumoSearch');
-        const tableBody = document.getElementById('insumoTableBody');
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+        if (window.bootstrap && bootstrap.Tooltip) {
+            new bootstrap.Tooltip(el, { container: 'body' });
+        }
+    });
+    const searchInput = document.getElementById('insumoSearch');
+    const tableBody = document.getElementById('insumoTableBody');
+    if (searchInput && tableBody) {
         const rows = tableBody.getElementsByTagName('tr');
-
         searchInput.addEventListener('keyup', function() {
+            document.querySelector('.inv-v2').classList.add('is-searching');
             const filter = searchInput.value.toLowerCase();
             for (let i = 0; i < rows.length; i++) {
                 const cells = rows[i].getElementsByTagName('td');
                 let found = false;
-                // Búsqueda en las primeras 4 columnas (Nombre, Fabricante, Cantidad, Unidad)
                 for (let j = 0; j < 4; j++) {
                     const cell = cells[j];
                     if (cell) {
@@ -257,91 +164,70 @@
                         }
                     }
                 }
-                if (found) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
+                rows[i].style.display = found ? "" : "none";
             }
         });
+    }
 
-        // ----- NUEVO SCRIPT (AJAX para botones +/-) -----
-
-        // Función para obtener el CSRF token (necesario para POST en Django)
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-        const csrftoken = getCookie('csrftoken');
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
-        // Escuchar Clicks en *todos* los botones con la clase 'btn-cantidad'
-        document.querySelectorAll('.btn-cantidad').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault(); // Evitar acción default del botón
+    document.querySelectorAll('.btn-cantidad').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const insumoId = this.dataset.pk;
+            const action = this.dataset.action;
+            const url = this.dataset.url;
+            this.disabled = true;
+            const otherButton = this.closest('.input-group').querySelector(`.btn-cantidad:not([data-action="${action}"])`);
+            if (otherButton) otherButton.disabled = true;
 
-                const insumoId = this.dataset.pk;
-                const action = this.dataset.action;
-                const url = this.dataset.url; // La URL que pusimos en el data-url
+            const formData = new FormData();
+            formData.append('action', action);
 
-                // Deshabilitar botones temporalmente para evitar doble click
-                this.disabled = true;
-
-                // --- ¡ESTA ES LA LÍNEA CORREGIDA! ---
-                const otherButton = this.closest('.input-group').querySelector(`.btn-cantidad:not([data-action="${action}"])`);
-
-                if(otherButton) otherButton.disabled = true;
-
-                // Preparar los datos para enviar (como un formulario)
-                const formData = new FormData();
-                formData.append('action', action);
-
-                // Hacer la petición FETCH (AJAX)
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken,
-                        'X-Requested-With': 'XMLHttpRequest' // Importante para Django
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Manejar la respuesta JSON de la vista
-                    if (data.success) {
-                        // ¡Éxito! Actualizar el número en la pantalla
-                        const cantidadSpan = document.getElementById(`cantidad-insumo-${insumoId}`);
-                        cantidadSpan.textContent = data.nueva_cantidad;
-                    } else if (data.status === 'info') {
-                        // Caso especial: se intentó bajar de 0
-                        console.info(data.message);
-                    } else {
-                        // Mostrar un error si algo salió mal
-                        console.error('Error:', data.error);
-                        alert('Error: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error de red:', error);
-                    alert('Error de red al actualizar. Intente de nuevo.');
-                })
-                .finally(() => {
-                    // Reactivar los botones pase lo que pase
-                    this.disabled = false;
-                    if(otherButton) otherButton.disabled = false;
-                });
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cantidadSpan = document.getElementById(`cantidad-insumo-${insumoId}`);
+                    cantidadSpan.textContent = data.nueva_cantidad;
+                } else if (data.status === 'info') {
+                    console.info(data.message);
+                } else {
+                    console.error('Error:', data.error);
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error de red:', error);
+                alert('Error de red al actualizar. Intente de nuevo.');
+            })
+            .finally(() => {
+                this.disabled = false;
+                if (otherButton) otherButton.disabled = false;
             });
         });
-
-    }); // Fin del addEventListener('DOMContentLoaded')
+    });
+});
 </script>
 {% endblock %}

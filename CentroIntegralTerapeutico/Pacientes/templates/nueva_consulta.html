@@ -1,87 +1,94 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Nueva Consulta - {{ paciente.nombre }}{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/nueva_consulta_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid my-4">
-    <h2 class="mb-4">Registro Clínico y Uso de Insumos</h2>
-    <h5 class="text-secondary mb-4">Paciente: {{ paciente.nombre }} {{ paciente.apellido_paterno }}</h5>
+<div class="container consulta-v2">
+    <section class="nc-hero">
+        <div>
+            <p class="nc-kicker">Bitácora clínica</p>
+            <h1>Nueva consulta</h1>
+            <p>{{ paciente.nombre }} {{ paciente.apellido_paterno }}{% if paciente.numero_expediente %} · {{ paciente.numero_expediente }}{% endif %}</p>
+        </div>
+    </section>
+
+    <div class="nc-toolbar">
+        <a href="{% if is_doctora %}{% url 'expediente_paciente' paciente.pk %}{% else %}{% url 'lista_pacientes' %}{% endif %}" class="nc-icon" title="{% if is_doctora %}Volver al expediente{% else %}Volver a la lista{% endif %}">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
 
     <form method="post" id="form-consulta">
         {% csrf_token %}
-        <!-- Campo oculto donde JS guardará los insumos seleccionados -->
         <input type="hidden" name="insumos_usados" id="insumos_usados_input">
 
         <div class="row g-4">
-            <!-- COLUMNA IZQUIERDA: NOTAS MÉDICAS -->
             <div class="col-lg-7">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <i class="bi bi-journal-text"></i> Evolución y Receta
+                <div class="nc-card">
+                    <div class="nc-card-head">
+                        <h2>Evolución y receta</h2>
                     </div>
-                    <div class="card-body">
+                    <div class="nc-card-body">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Procedimiento realizado / Evolución clínica (Obligatorio)</label>
-                            <textarea name="descripcion_procedimiento" class="form-control" rows="6" required placeholder="Describe los síntomas, exploración y procedimientos realizados hoy..."></textarea>
+                            <label for="descripcion_procedimiento">Procedimiento / evolución clínica (obligatorio)</label>
+                            <textarea id="descripcion_procedimiento" name="descripcion_procedimiento" class="form-control" rows="6" required placeholder="Describe los síntomas, exploración y procedimientos realizados hoy..."></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Medicamentos o indicaciones recetadas (Opcional)</label>
-                            <textarea name="medicamentos_recetados" class="form-control" rows="4" placeholder="Ej: Paracetamol 500mg cada 8 horas por 3 días..."></textarea>
+                        <div class="mb-0">
+                            <label for="medicamentos_recetados">Medicamentos o indicaciones (opcional)</label>
+                            <textarea id="medicamentos_recetados" name="medicamentos_recetados" class="form-control" rows="4" placeholder="Ej: Paracetamol 500mg cada 8 horas por 3 días..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- COLUMNA DERECHA: SELECCIÓN DE INSUMOS -->
             <div class="col-lg-5">
-                <div class="card shadow-sm h-100 border-info">
-                    <div class="card-header bg-info text-white">
-                        <i class="bi bi-box-seam"></i> Insumos Usados en Consultorio
+                <div class="nc-card">
+                    <div class="nc-card-head">
+                        <h2>Insumos usados</h2>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        
-                        <!-- Buscador de Insumos -->
-                        <div class="input-group mb-3">
+                    <div class="nc-card-body">
+                        <div class="nc-search">
+                            <i class="bi bi-search"></i>
                             <input type="text" id="buscar-insumo" class="form-control" placeholder="Buscar insumo por nombre...">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
                         </div>
 
-                        <!-- Lista de Insumos Disponibles (Oculta por defecto o scrollable) -->
-                        <div class="list-group mb-3" style="max-height: 200px; overflow-y: auto;" id="lista-insumos">
+                        <div class="list-group mb-3" id="lista-insumos">
                             {% for insumo in insumos %}
-                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center btn-add-insumo" 
-                                    data-id="{{ insumo.pk }}" 
-                                    data-nombre="{{ insumo.nombre }}" 
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center btn-add-insumo"
+                                    data-id="{{ insumo.pk }}"
+                                    data-nombre="{{ insumo.nombre }}"
                                     data-stock="{{ insumo.cantidad_disponible }}">
                                 {{ insumo.nombre }}
                                 <span class="badge bg-secondary rounded-pill">Stock: {{ insumo.cantidad_disponible }}</span>
                             </button>
                             {% empty %}
-                            <p class="text-muted small">No hay insumos con stock disponible.</p>
+                            <p class="text-muted small mb-0">No hay insumos con stock disponible.</p>
                             {% endfor %}
                         </div>
 
-                        <hr>
-                        <h6 class="fw-bold">Insumos a descontar hoy:</h6>
-                        <!-- Lista donde se irán agregando los insumos seleccionados -->
-                        <ul class="list-group flex-grow-1" id="cesta-insumos">
+                        <h6 class="fw-bold">Insumos a descontar hoy</h6>
+                        <ul class="list-group" id="cesta-insumos">
                             <li class="list-group-item text-muted text-center" id="empty-cesta-msg">Aún no has seleccionado insumos</li>
                         </ul>
-
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="d-flex justify-content-between mt-4 border-top pt-3">
-            <a href="{% url 'expediente_paciente' paciente.pk %}" class="btn btn-secondary btn-lg">Cancelar</a>
-            <button type="button" class="btn btn-success btn-lg" id="btn-guardar-consulta">
-                <i class="bi bi-save"></i> Guardar Registro y Descontar Insumos
+        <div class="nc-actions">
+            <a href="{% if is_doctora %}{% url 'expediente_paciente' paciente.pk %}{% else %}{% url 'lista_pacientes' %}{% endif %}" class="nc-cancel">Cancelar</a>
+            <button type="button" class="nc-submit" id="btn-guardar-consulta">
+                <i class="bi bi-save"></i> Guardar registro y descontar insumos
             </button>
         </div>
     </form>
 </div>
 
-<!-- Lógica JavaScript para el carrito de insumos -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let cesta = [];
@@ -90,10 +97,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const itemsLista = document.querySelectorAll('.btn-add-insumo');
     const cestaContenedor = document.getElementById('cesta-insumos');
     const emptyMsg = document.getElementById('empty-cesta-msg');
-    
-    // Filtro de búsqueda
+
     buscarInput.addEventListener('keyup', function() {
-        const texto = this.val().toLowerCase();
+        const texto = this.value.toLowerCase();
         itemsLista.forEach(item => {
             if (item.dataset.nombre.toLowerCase().includes(texto)) {
                 item.style.display = 'flex';
@@ -103,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Agregar insumo a la cesta
     itemsLista.forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const stockMax = parseInt(this.dataset.stock);
 
             const existente = cesta.find(item => item.id === id);
-            
+
             if (existente) {
                 if (existente.cantidad < stockMax) existente.cantidad++;
                 else alert('No puedes usar más del stock disponible.');
@@ -122,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Dibujar la cesta en HTML
     function renderizarCesta() {
         cestaContenedor.innerHTML = '';
         if (cesta.length === 0) {
@@ -133,13 +137,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         cesta.forEach((item, index) => {
             const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center bg-light';
-            
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
             li.innerHTML = `
                 <div>
                     <span class="fw-bold">${item.nombre}</span>
                 </div>
-                <div class="input-group input-group-sm" style="width: 120px;">
+                <div class="input-group input-group-sm flex-nowrap" style="width: 120px;">
                     <button class="btn btn-outline-secondary btn-menos" data-index="${index}">-</button>
                     <input type="text" class="form-control text-center" value="${item.cantidad}" readonly>
                     <button class="btn btn-outline-secondary btn-mas" data-index="${index}">+</button>
@@ -148,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
             cestaContenedor.appendChild(li);
         });
 
-        // Listeners para los botones + y - de la cesta
         document.querySelectorAll('.btn-menos').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -169,11 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Interceptar el envío del formulario
     document.getElementById('btn-guardar-consulta').addEventListener('click', function() {
-        // Convertimos el array a texto JSON y lo metemos al input oculto
         document.getElementById('insumos_usados_input').value = JSON.stringify(cesta);
-        // Enviamos el formulario
         document.getElementById('form-consulta').submit();
     });
 });

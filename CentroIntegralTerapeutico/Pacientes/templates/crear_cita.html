@@ -2,15 +2,21 @@
 {% extends "BaseSinInicio.html" %}
 {% load static %}
 
-{% block title %}Crear Nueva Cita{% endblock %}
+{% block title %}Agendar nueva cita{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/CrearPaciente.css' %}"> {# Puedes reutilizar el CSS si es genérico para formularios #}
+    <link rel="stylesheet" href="{% static 'css/crear_cita_v2.css' %}?v=20260918">
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="mb-4 text-center">Agendar Nueva Cita</h1>
+<div class="container crear-cita-v2">
+    <section class="cc-hero">
+        <div>
+            <p class="cc-kicker">Agenda</p>
+            <h1>Agendar nueva cita</h1>
+            <p>Elige paciente, horario y motivo del consultorio.</p>
+        </div>
+    </section>
 
     {% if messages %}
         <ul class="messages list-unstyled">
@@ -23,24 +29,20 @@
         </ul>
     {% endif %}
 
-    <div class="card p-4 shadow-sm">
-        <h4 class="card-title text-center mb-4">Detalles de la Cita</h4>
+    <div class="cc-toolbar">
+        <a href="{% url 'agenda' %}" class="cc-icon" title="Regresar a la agenda">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="cc-card">
+        <div class="cc-card-head">
+            <h2>Detalles de la cita</h2>
+            <p>Los campos se guardan en la agenda del mes.</p>
+        </div>
         <form method="post">
             {% csrf_token %}
-            
-            {% for field in form %}
-                <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text }}</div>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            
+
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">
                     {% for error in form.non_field_errors %}
@@ -48,9 +50,62 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            
-            <button type="submit" class="btn btn-primary w-100 mt-3">Guardar Cita</button>
-            <a href="{% url 'agenda' %}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+
+            <div class="cc-grid">
+                <div class="cc-wide">
+                    {{ form.paciente.label_tag }}
+                    {{ form.paciente }}
+                    {% if form.paciente.help_text %}<div class="form-text">{{ form.paciente.help_text }}</div>{% endif %}
+                    {% for error in form.paciente.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div>
+                    {{ form.fecha.label_tag }}
+                    {{ form.fecha }}
+                    {% if form.fecha.help_text %}<div class="form-text">{{ form.fecha.help_text }}</div>{% endif %}
+                    {% for error in form.fecha.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div>
+                    {{ form.motivo.label_tag }}
+                    {{ form.motivo }}
+                    {% if form.motivo.help_text %}<div class="form-text">{{ form.motivo.help_text }}</div>{% endif %}
+                    {% for error in form.motivo.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div>
+                    {{ form.hora_inicio.label_tag }}
+                    {{ form.hora_inicio }}
+                    {% if form.hora_inicio.help_text %}<div class="form-text">{{ form.hora_inicio.help_text }}</div>{% endif %}
+                    {% for error in form.hora_inicio.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div>
+                    {{ form.hora_fin.label_tag }}
+                    {{ form.hora_fin }}
+                    {% if form.hora_fin.help_text %}<div class="form-text">{{ form.hora_fin.help_text }}</div>{% endif %}
+                    {% for error in form.hora_fin.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div>
+                    {{ form.estado.label_tag }}
+                    {{ form.estado }}
+                    {% if form.estado.help_text %}<div class="form-text">{{ form.estado.help_text }}</div>{% endif %}
+                    {% for error in form.estado.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="cc-wide">
+                    {{ form.notas.label_tag }}
+                    {{ form.notas }}
+                    {% if form.notas.help_text %}<div class="form-text">{{ form.notas.help_text }}</div>{% endif %}
+                    {% for error in form.notas.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cc-actions">
+                <button type="submit" class="cc-submit">Guardar cita</button>
+                <a href="{% url 'agenda' %}" class="cc-cancel">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

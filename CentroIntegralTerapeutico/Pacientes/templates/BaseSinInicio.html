@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <link rel="stylesheet" href="{% static 'css/cit-alerts.css' %}?v=20260918">
+    <link rel="stylesheet" href="{% static 'css/cit-sesion.css' %}?v=20260918">
     {# Este bloque permitirá a las plantillas hijas inyectar CSS, fuentes y otros elementos #}
     {% block extra_head %}
     {% endblock %}
@@ -25,6 +27,7 @@
 <body>
     <div class="main-wrapper d-flex flex-column min-vh-100">
         {% include 'navbarSinInicio.html' %}
+        {% include 'cit_alerts.html' %}
         <main class="flex-fill">
             {% block content %}
             {% endblock %}
@@ -41,5 +44,23 @@
 
     {# Bloque para scripts adicionales #}
     {% block scripts %}{% endblock %}
+    {% include 'cit_sesion.html' %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const avisos = document.querySelectorAll('#citAlerts .alert, ul.messages .alert, .messages .alert, .alert-dismissible');
+        avisos.forEach(function(el) {
+            if (el.classList.contains('lp-empty') || el.classList.contains('iv-empty')) {
+                return;
+            }
+            setTimeout(function() {
+                if (window.bootstrap && bootstrap.Alert) {
+                    bootstrap.Alert.getOrCreateInstance(el).close();
+                } else {
+                    el.remove();
+                }
+            }, 5000);
+        });
+    });
+    </script>
 </body>
 </html>

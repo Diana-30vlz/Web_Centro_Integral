@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body:has(.ver-consulta-v2) {
+    background:
+        radial-gradient(1100px 380px at 0% -8%, rgba(24, 177, 163, 0.14), transparent 55%),
+        radial-gradient(900px 340px at 100% 0%, rgba(231, 165, 108, 0.12), transparent 50%),
+        #eef6f4;
+}
+
+.ver-consulta-v2 {
+    --cit-teal: #18b1a3;
+    --cit-teal-dark: #0f7f76;
+    --cit-forest: #0c3d2c;
+    --cit-orange: #e7a56c;
+    --cit-ink: #1d2b32;
+    --cit-muted: #667780;
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    padding: 1.6rem 0 3rem;
+    max-width: 860px;
+}
+
+.ver-consulta-v2 .vc-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    border-radius: 1.4rem;
+    color: #fff;
+    background: linear-gradient(135deg, #0c3d2c 0%, #12725f 52%, #18b1a3 100%);
+    box-shadow: 0 18px 40px rgba(12, 61, 44, 0.18);
+    margin-bottom: 1.1rem;
+}
+
+.ver-consulta-v2 .vc-kicker {
+    margin: 0 0 0.2rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.ver-consulta-v2 .vc-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.35rem, 3vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.ver-consulta-v2 .vc-hero p {
+    margin: 0.3rem 0 0;
+    color: rgba(255, 254, 245, 0.82);
+}
+
+.ver-consulta-v2 .vc-badge {
+    flex-shrink: 0;
+    background: rgba(255, 254, 245, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fffef5;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.ver-consulta-v2 .vc-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.ver-consulta-v2 .vc-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+}
+
+.ver-consulta-v2 .vc-icon:hover {
+    background: #dceae7;
+    color: var(--cit-teal-dark);
+}
+
+.ver-consulta-v2 .vc-icon.danger {
+    background: #fdecec;
+    color: #b42318;
+}
+
+.ver-consulta-v2 .vc-icon.danger:hover {
+    background: #f8d7d4;
+    color: #912018;
+}
+
+.ver-consulta-v2 .vc-card {
+    background: #fff;
+    border-radius: 1.35rem;
+    box-shadow: 0 14px 34px rgba(18, 143, 132, 0.08);
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.ver-consulta-v2 .vc-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e8efee;
+}
+
+.ver-consulta-v2 .vc-card-head i {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #d8f3ef;
+    color: var(--cit-teal-dark);
+}
+
+.ver-consulta-v2 .vc-card-head.orange i {
+    background: #f8eadc;
+    color: #c27a3c;
+}
+
+.ver-consulta-v2 .vc-card-head.navy i {
+    background: #e4ebf5;
+    color: #3d5a80;
+}
+
+.ver-consulta-v2 .vc-card-head h2 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: var(--cit-ink);
+}
+
+.ver-consulta-v2 .vc-card-body {
+    padding: 1.15rem 1.25rem 1.3rem;
+}
+
+.ver-consulta-v2 .vc-text {
+    margin: 0;
+    color: var(--cit-ink);
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+.ver-consulta-v2 .vc-empty {
+    margin: 0;
+    color: var(--cit-muted);
+}
+
+.ver-consulta-v2 .vc-insumos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ver-consulta-v2 .vc-insumo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #eef3f2;
+}
+
+.ver-consulta-v2 .vc-insumo:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.ver-consulta-v2 .vc-insumo:first-child {
+    padding-top: 0;
+}
+
+.ver-consulta-v2 .vc-insumo span {
+    color: var(--cit-ink);
+    font-weight: 600;
+}
+
+.ver-consulta-v2 .vc-qty {
+    background: #e7f7f4;
+    color: var(--cit-teal-dark);
+    border-radius: 999px;
+    padding: 0.28rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.ver-consulta-v2 .vc-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.ver-consulta-v2 .vc-back {
+    flex: 1;
+    text-align: center;
+    border-radius: 0.95rem;
+    padding: 0.85rem 1rem;
+    background: var(--cit-teal);
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.ver-consulta-v2 .vc-back:hover {
+    background: var(--cit-teal-dark);
+    color: #fff;
+}
+
+@media (max-width: 575.98px) {
+    .ver-consulta-v2 .vc-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

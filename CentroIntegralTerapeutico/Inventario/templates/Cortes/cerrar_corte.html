@@ -1,102 +1,105 @@
 {% extends "BaseSinInicio.html" %}
+{% load static %}
+
 {% block title %}Cerrar Corte de Caja{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/cortes_v2.css' %}?v=20260918">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-danger text-white">
-                    <h3 class="mb-0"><i class="bi bi-lock"></i> Cerrar Corte de Caja</h3>
+<div class="container cortes-v2 narrow">
+    <section class="cx-hero">
+        <div>
+            <p class="cx-kicker">Cierre de turno</p>
+            <h1>Cerrar corte de caja</h1>
+            <p>Cuenta efectivo, vouchers y transferencias para cerrar.</p>
+        </div>
+    </section>
+
+    <div class="cx-toolbar">
+        <a href="{% url 'corte_activo' %}" class="cx-icon" title="Regresar al corte activo">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="cx-card">
+        <div class="cx-card-head">
+            <h2>Resumen esperado</h2>
+        </div>
+        <div class="cx-card-body">
+            <div class="cx-expected">
+                <div>
+                    <span>Efectivo esperado en caja</span>
+                    <strong>${{ total_esperado_efectivo|floatformat:2 }}</strong>
                 </div>
-                <div class="card-body">
-                    
-                    <div class="alert alert-info">
-                        <h4 class="alert-heading">Resumen Financiero</h4>
-                        <div class="row mt-3">
-                            <div class="col-sm-6">
-                                <p class="mb-1">Total de Ventas: <strong>${{ total_ventas|floatformat:2 }}</strong></p>
-                                <ul class="list-unstyled ms-3 small">
-                                    <li>- Efectivo: ${{ total_efectivo|floatformat:2 }}</li>
-                                    <li>- Tarjeta: ${{ total_tarjeta|floatformat:2 }}</li>
-                                    <li>- Transf.: ${{ total_transferencia|floatformat:2 }}</li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-6 text-sm-end">
-                                <p class="mb-1">Fondo Inicial: <strong>${{ corte.fondo_inicial|floatformat:2 }}</strong></p>
-                            </div>
-                        </div>
-                        <hr>
-                        
-                        <!-- SECCIÓN DE TOTALES ESPERADOS -->
-                        <div class="text-center bg-white p-3 rounded border">
-                            <h4 class="mb-3 text-danger">
-                                <i class="bi bi-cash-stack"></i> EFECTIVO ESPERADO EN CAJA FÍSICA: <strong>${{ total_esperado_efectivo|floatformat:2 }}</strong>
-                            </h4>
-                            <h5 class="mb-2 text-primary">
-                                <i class="bi bi-receipt"></i> Total esperado en pago con tarjeta (Vouchers): <strong>${{ total_tarjeta|floatformat:2 }}</strong>
-                            </h5>
-                            <h5 class="mb-0 text-info" style="color: #0dcaf0;">
-                                <i class="bi bi-phone"></i> Total esperado en transferencia: <strong>${{ total_transferencia|floatformat:2 }}</strong>
-                            </h5>
-                        </div>
-                    </div>
-
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <!-- Caja 1: Efectivo -->
-                        <div class="mb-4">
-                            <label for="{{ form.monto_final_contado.id_for_label }}" class="form-label fw-bold text-danger">
-                                <i class="bi bi-cash"></i> {{ form.monto_final_contado.label }}
-                            </label>
-                            {{ form.monto_final_contado }}
-                            <div class="form-text text-danger mt-1">
-                                <i class="bi bi-exclamation-triangle"></i> Cuenta <strong>únicamente el dinero en efectivo (billetes y monedas)</strong>. No sumes los vouchers.
-                            </div>
-                            {% if form.monto_final_contado.errors %}
-                                <div class="text-danger mt-1 small">{{ form.monto_final_contado.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Caja 2: Tarjeta -->
-                        <div class="mb-4">
-                            <label for="{{ form.monto_final_tarjeta.id_for_label }}" class="form-label fw-bold text-primary">
-                                <i class="bi bi-credit-card"></i> {{ form.monto_final_tarjeta.label }}
-                            </label>
-                            {{ form.monto_final_tarjeta }}
-                            <div class="form-text mt-1">
-                                Suma el total de todos los tickets/vouchers de la terminal bancaria.
-                            </div>
-                            {% if form.monto_final_tarjeta.errors %}
-                                <div class="text-danger mt-1 small">{{ form.monto_final_tarjeta.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Caja 3: Transferencia -->
-                        <div class="mb-4">
-                            <label for="{{ form.monto_final_transferencia.id_for_label }}" class="form-label fw-bold text-info" style="color: #0dcaf0;">
-                                <i class="bi bi-phone"></i> {{ form.monto_final_transferencia.label }}
-                            </label>
-                            {{ form.monto_final_transferencia }}
-                            <div class="form-text mt-1">
-                                Suma el total de las capturas de transferencias recibidas.
-                            </div>
-                            {% if form.monto_final_transferencia.errors %}
-                                <div class="text-danger mt-1 small">{{ form.monto_final_transferencia.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <p class="text-muted small mt-4 border-top pt-3">
-                            Al finalizar, el sistema calculará si hay diferencias (faltantes o sobrantes) en cada método de pago de forma independiente. Esta acción cerrará el turno y no se puede deshacer.
-                        </p>
-                        
-                        <div class="d-grid mt-3">
-                            <button type="submit" class="btn btn-danger btn-lg">Finalizar y Cerrar Corte</button>
-                        </div>
-                    </form>
+                <div>
+                    <span>Tarjeta esperada (vouchers)</span>
+                    <strong>${{ total_tarjeta|floatformat:2 }}</strong>
+                </div>
+                <div>
+                    <span>Transferencia esperada</span>
+                    <strong>${{ total_transferencia|floatformat:2 }}</strong>
                 </div>
             </div>
+            <p class="form-text mb-0">
+                Ventas: ${{ total_ventas|floatformat:2 }}
+                (efectivo ${{ total_efectivo|floatformat:2 }},
+                tarjeta ${{ total_tarjeta|floatformat:2 }},
+                transf. ${{ total_transferencia|floatformat:2 }})
+                · Fondo inicial ${{ corte.fondo_inicial|floatformat:2 }}
+            </p>
+        </div>
+    </div>
+
+    <div class="cx-card">
+        <div class="cx-card-head">
+            <h2>Montos contados</h2>
+        </div>
+        <div class="cx-card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="{{ form.monto_final_contado.id_for_label }}">
+                        <i class="bi bi-cash"></i> {{ form.monto_final_contado.label }}
+                    </label>
+                    {{ form.monto_final_contado }}
+                    <div class="form-text">
+                        Cuenta únicamente el dinero en efectivo. No sumes los vouchers.
+                    </div>
+                    {% if form.monto_final_contado.errors %}
+                        <div class="text-danger mt-1 small">{{ form.monto_final_contado.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.monto_final_tarjeta.id_for_label }}">
+                        <i class="bi bi-credit-card"></i> {{ form.monto_final_tarjeta.label }}
+                    </label>
+                    {{ form.monto_final_tarjeta }}
+                    <div class="form-text">Suma el total de los tickets de la terminal.</div>
+                    {% if form.monto_final_tarjeta.errors %}
+                        <div class="text-danger mt-1 small">{{ form.monto_final_tarjeta.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.monto_final_transferencia.id_for_label }}">
+                        <i class="bi bi-phone"></i> {{ form.monto_final_transferencia.label }}
+                    </label>
+                    {{ form.monto_final_transferencia }}
+                    <div class="form-text">Suma las transferencias recibidas.</div>
+                    {% if form.monto_final_transferencia.errors %}
+                        <div class="text-danger mt-1 small">{{ form.monto_final_transferencia.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <p class="form-text mb-3">
+                    El sistema calcula faltantes o sobrantes por cada método. Esta acción cierra el turno y no se puede deshacer.
+                </p>
+                <button type="submit" class="cx-submit cx-danger">Finalizar y cerrar corte</button>
+            </form>
         </div>
     </div>
 </div>

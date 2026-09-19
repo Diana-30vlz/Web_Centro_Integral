@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body:has(.lista-pacientes-v3) {
+    background:
+        radial-gradient(1100px 380px at 0% -8%, rgba(24, 177, 163, 0.14), transparent 55%),
+        radial-gradient(900px 340px at 100% 0%, rgba(231, 165, 108, 0.12), transparent 50%),
+        #eef6f4;
+}
+
+.lista-pacientes-v3 {
+    --cit-teal: #18b1a3;
+    --cit-teal-dark: #0f7f76;
+    --cit-forest: #0c3d2c;
+    --cit-orange: #e7a56c;
+    --cit-ink: #1d2b32;
+    --cit-muted: #667780;
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    padding: 1.6rem 0 3rem;
+}
+
+.lista-pacientes-v3 .lp-in {
+    animation: lpFromLeft 0.7s ease both;
+}
+
+.lista-pacientes-v3 .lp-d2 {
+    animation-delay: 0.12s;
+}
+
+.lista-pacientes-v3 .lp-card-in {
+    animation: lpFromRight 0.75s ease both;
+    animation-delay: 0.18s;
+}
+
+.lista-pacientes-v3 .lp-hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.5rem;
+    border-radius: 1.4rem;
+    color: #fff;
+    background: linear-gradient(135deg, #0c3d2c 0%, #12725f 52%, #18b1a3 100%);
+    box-shadow: 0 18px 40px rgba(12, 61, 44, 0.18);
+    margin-bottom: 1.1rem;
+}
+
+.lista-pacientes-v3 .lp-kicker {
+    margin: 0 0 0.25rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.lista-pacientes-v3 .lp-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.lista-pacientes-v3 .lp-hero p {
+    margin: 0.35rem 0 0;
+    color: rgba(255, 254, 245, 0.82);
+}
+
+.lista-pacientes-v3 .lp-pill {
+    background: rgba(255, 254, 245, 0.14);
+    border: 1px solid rgba(255, 254, 245, 0.12);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.lista-pacientes-v3 .lp-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.lista-pacientes-v3 .lp-search {
+    flex: 1;
+    position: relative;
+}
+
+.lista-pacientes-v3 .lp-search i {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cit-teal);
+}
+
+.lista-pacientes-v3 .lp-search input {
+    width: 100%;
+    border: 1px solid #d7e4e1;
+    border-radius: 999px;
+    padding: 0.7rem 1rem 0.7rem 2.4rem;
+    background: #fff;
+    color: var(--cit-ink);
+}
+
+.lista-pacientes-v3 .lp-search input:focus {
+    outline: none;
+    border-color: var(--cit-teal);
+    box-shadow: 0 0 0 3px rgba(24, 177, 163, 0.16);
+}
+
+.lista-pacientes-v3 .lp-icon {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #eef4f3;
+    color: var(--cit-teal-dark);
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lista-pacientes-v3 .lp-icon i {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.lista-pacientes-v3 .lp-icon:hover {
+    background: #dceae7;
+    color: var(--cit-teal-dark);
+    transform: translateY(-2px) scale(1.06);
+}
+
+.lista-pacientes-v3 .lp-create {
+    background: var(--cit-teal);
+    color: #fff;
+}
+
+.lista-pacientes-v3 .lp-create:hover {
+    background: var(--cit-teal-dark);
+    color: #fff;
+}
+
+.lista-pacientes-v3 .lp-carnet {
+    background: #2b6cb0;
+    color: #fff;
+}
+
+.lista-pacientes-v3 .lp-carnet:hover {
+    background: #245a94;
+    color: #fff;
+}
+
+.lista-pacientes-v3 .lp-card {
+    background: #fff;
+    border-radius: 1.35rem;
+    box-shadow: 0 14px 34px rgba(18, 143, 132, 0.08);
+    overflow: hidden;
+}
+
+.lista-pacientes-v3 .lp-card-head {
+    padding: 1.05rem 1.3rem;
+    border-bottom: 1px solid #e8efee;
+}
+
+.lista-pacientes-v3 .lp-card-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cit-ink);
+}
+
+.lista-pacientes-v3 .lp-card-head p {
+    margin: 0.25rem 0 0;
+    color: var(--cit-muted);
+    font-size: 0.88rem;
+}
+
+.lista-pacientes-v3 .table {
+    margin: 0;
+}
+
+.lista-pacientes-v3 .table thead th {
+    background: #f4faf9;
+    color: var(--cit-teal-dark);
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.05rem;
+}
+
+.lista-pacientes-v3 .table td,
+.lista-pacientes-v3 .table th {
+    padding: 0.85rem 1.05rem;
+    border-color: #eef3f2;
+    vertical-align: middle;
+    color: var(--cit-ink);
+}
+
+.lista-pacientes-v3 tbody td,
+.lista-pacientes-v3 tbody th {
+    background: #fff;
+    transition: background 0.18s ease;
+}
+
+.lista-pacientes-v3 .lp-row {
+    animation: lpRowIn 0.5s ease both;
+    animation-delay: calc(0.28s + (var(--i, 1) - 1) * 0.07s);
+}
+
+.lista-pacientes-v3.is-searching .lp-row {
+    animation: none;
+}
+
+.lista-pacientes-v3 tbody tr:hover td,
+.lista-pacientes-v3 tbody tr:hover th {
+    background: #e7f7f4;
+}
+
+.lista-pacientes-v3 .lp-patient {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.lista-pacientes-v3 .lp-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #d8f3ef;
+    border: 2px solid #c5e8e2;
+    flex-shrink: 0;
+    display: block;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lista-pacientes-v3 tbody tr:hover .lp-avatar {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px rgba(24, 177, 163, 0.12);
+}
+
+.lista-pacientes-v3 .lp-name {
+    font-weight: 700;
+    color: var(--cit-ink);
+}
+
+.lista-pacientes-v3 .lp-meta {
+    color: var(--cit-muted);
+    font-size: 0.82rem;
+}
+
+.lista-pacientes-v3 .lp-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.35rem;
+}
+
+.lista-pacientes-v3 .lp-actions .btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.lista-pacientes-v3 .lp-actions .btn:hover {
+    transform: translateY(-2px) scale(1.08);
+}
+
+.lista-pacientes-v3 .lp-btn-carnet { background: var(--cit-teal); }
+.lista-pacientes-v3 .lp-btn-carnet:hover { background: var(--cit-teal-dark); color: #fff; }
+.lista-pacientes-v3 .lp-btn-edit { background: #3aa0b8; }
+.lista-pacientes-v3 .lp-btn-edit:hover { background: #2d8296; color: #fff; }
+.lista-pacientes-v3 .lp-btn-consulta { background: #2f9e6c; }
+.lista-pacientes-v3 .lp-btn-consulta:hover { background: #247a53; color: #fff; }
+.lista-pacientes-v3 .lp-btn-exp { background: #6b7a82; }
+.lista-pacientes-v3 .lp-btn-exp:hover { background: #556269; color: #fff; }
+.lista-pacientes-v3 .lp-btn-del { background: #c75b5b; }
+.lista-pacientes-v3 .lp-btn-del:hover { background: #a84646; color: #fff; }
+
+.lista-pacientes-v3 .lp-empty {
+    margin: 0;
+    padding: 1.4rem;
+    text-align: center;
+    color: var(--cit-teal-dark);
+}
+
+@keyframes lpFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes lpFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(32px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes lpRowIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lista-pacientes-v3 .lp-in,
+    .lista-pacientes-v3 .lp-card-in,
+    .lista-pacientes-v3 .lp-row {
+        animation: none;
+    }
+
+    .lista-pacientes-v3 .lp-icon:hover,
+    .lista-pacientes-v3 .lp-actions .btn:hover,
+    .lista-pacientes-v3 tbody tr:hover .lp-avatar {
+        transform: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .lista-pacientes-v3 .lp-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .lista-pacientes-v3 .lp-search {
+        order: 3;
+        width: 100%;
+        flex: 1 0 100%;
+    }
+
+    .lista-pacientes-v3 .lp-hero {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

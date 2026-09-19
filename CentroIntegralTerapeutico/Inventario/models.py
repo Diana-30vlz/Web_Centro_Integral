@@ -29,7 +29,15 @@ class Tag(models.Model):
 # --- Modelo Medicamento (Modificado) ---
 class Medicamento(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=200, unique=True, verbose_name="Nombre del Medicamento")
+    doctor = models.ForeignKey(
+        'Pacientes.Doctor',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='medicamentos',
+        verbose_name="Doctor dueño",
+    )
+    nombre = models.CharField(max_length=200, verbose_name="Nombre del Medicamento")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción")
     
     fabricante = models.CharField(max_length=100, blank=True, null=True, verbose_name="Fabricante")
@@ -68,6 +76,9 @@ class Medicamento(models.Model):
         verbose_name = "Medicamento"
         verbose_name_plural = "Medicamentos"
         ordering = ['nombre']
+        constraints = [
+            models.UniqueConstraint(fields=['doctor', 'nombre'], name='uniq_medicamento_doctor_nombre'),
+        ]
         
         
 # --- NUEVOS MODELOS PARA EL PUNTO DE VENTA ---
@@ -127,6 +138,14 @@ class Venta(models.Model):
     """Representa una transacción de venta."""
     corte = models.ForeignKey(CorteDeCaja, on_delete=models.SET_NULL, null=True, blank=True, related_name='ventas')
 
+    doctor = models.ForeignKey(
+        'Pacientes.Doctor',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ventas',
+        verbose_name="Doctor dueño",
+    )
     farmaceuta = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ventas')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_finalizacion = models.DateTimeField(null=True, blank=True)

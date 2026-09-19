@@ -293,7 +293,9 @@ class CitaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        pacientes = kwargs.pop('pacientes', None)
         super().__init__(*args, **kwargs)
+        self.fields['paciente'].queryset = pacientes if pacientes is not None else Paciente.objects.none()
 
         # Si estamos editando una cita existente, prellenar las fechas y horas correctamente
         if self.instance and self.instance.pk:
@@ -308,6 +310,17 @@ class CitaForm(forms.ModelForm):
 
 
 
+
+
+class CitaFormAgenda(CitaForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        menu = [opcion for opcion in Cita.MOTIVO_CHOICES if opcion[0] not in Cita.MOTIVO_OCULTOS_MENU]
+        motivo_actual = self.instance.motivo if self.instance and self.instance.pk else None
+        if motivo_actual and motivo_actual in Cita.MOTIVO_OCULTOS_MENU:
+            extra = [opcion for opcion in Cita.MOTIVO_CHOICES if opcion[0] == motivo_actual]
+            menu = extra + menu
+        self.fields['motivo'].choices = menu
 
 
 class ConsentimientoInformadoRealForm(forms.ModelForm):

@@ -106,6 +106,11 @@ class FarmaciaProfile(models.Model):
         related_name="farmacias",
         verbose_name="Doctor Asociado"
     )
+    aceptada = models.BooleanField(
+        default=False,
+        verbose_name="Aceptada por el doctor",
+        help_text="La farmacia no puede entrar al sistema hasta que el doctor acepte la relación.",
+    )
     # ... otros campos específicos de la farmacia (los que tengas o los que vayas a añadir) ...
 
     def __str__(self):
@@ -185,6 +190,15 @@ class Paciente(models.Model):
         """Edad calculada al vuelo (propiedad de solo lectura)."""
         return self.calcular_edad()
 
+    @property
+    def avatar_genero(self):
+        avatares = {
+            'Masculino': 'img/avatar-masculino.svg',
+            'Femenino': 'img/avatar-femenino.svg',
+            'Otro': 'img/avatar-otro.svg',
+        }
+        return avatares.get(self.genero, 'img/avatar-otro.svg')
+
     def save(self, *args, **kwargs):
         """Actualiza el campo 'edad' en la BD antes de guardar (si hay fecha)."""
         # Asigna al campo del modelo 'edad' — NO debe existir una @property llamada 'edad'
@@ -222,7 +236,31 @@ class Cita(models.Model):
         ('Terapia', 'Sesión de Terapia'),
         ('Suero', 'Suero'),
         ('Otro', 'Otro'),
+        ('Psicologo', 'Psicologo'),
+        ('Dra. Diana', 'Dra. Diana'),
+        ('Silla Pelvica', 'Silla Pelvica'),
+        ('Terapia con CO2', 'Terapia con CO2'),
+        ('Dentista', 'Dentista'),
+        ('Consulta Psicologica', 'Consulta Psicologica'),
+        ('Microscopia', 'Microscopia'),
+        ('Podologia', 'Podología'),
     ]
+    MOTIVO_OCULTOS_MENU = ('Seguimiento',)
+    MOTIVO_CSS = {
+        'Consulta': 'consulta',
+        'Seguimiento': 'seguimiento',
+        'Terapia': 'terapia',
+        'Suero': 'suero',
+        'Otro': 'otro',
+        'Psicologo': 'psicologo',
+        'Dra. Diana': 'dra-diana',
+        'Silla Pelvica': 'silla-pelvica',
+        'Terapia con CO2': 'terapia-co2',
+        'Dentista': 'dentista',
+        'Consulta Psicologica': 'consulta-psicologica',
+        'Microscopia': 'microscopia',
+        'Podologia': 'podologia',
+    }
     motivo = models.CharField(
         max_length=50,
         choices=MOTIVO_CHOICES,
@@ -271,6 +309,10 @@ class Cita(models.Model):
     def __str__(self):
         doctor_str = self.doctor.username if self.doctor else "Sin Doctor"
         return f"Cita de {self.paciente.nombre} con {doctor_str} el {self.fecha} a las {self.hora_inicio}"
+
+    @property
+    def motivo_css(self):
+        return self.MOTIVO_CSS.get(self.motivo, 'otro')
 
     # Puedes añadir métodos para validar la hora o duración si lo necesitas más adelante
     def clean(self):

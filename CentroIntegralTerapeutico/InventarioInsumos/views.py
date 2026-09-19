@@ -4,13 +4,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Insumo
 from .forms import InsumoForm
+from Pacientes.alcance import doctor_del_usuario
+
+
+def _insumos_consultorio(request):
+    doctor = doctor_del_usuario(request.user)
+    if not doctor:
+        return Insumo.objects.none()
+    return Insumo.objects.filter(doctor=doctor)
+
 
 @login_required
 def lista_insumos(request):
     # Esta vista es accesible para ambos, no necesita cambios de permisos.
     is_farmacia = request.user.groups.filter(name='Farmacia').exists()
     is_doctora = request.user.groups.filter(name='Doctora').exists()
-    insumos = Insumo.objects.all().order_by('nombre')
+    insumos = _insumos_consultorio(request).order_by('nombre')
     context = {
         'insumos': insumos,
         'is_farmacia': is_farmacia,
@@ -30,7 +39,10 @@ def crear_insumo(request):
     if request.method == 'POST':
         form = InsumoForm(request.POST)
         if form.is_valid():
-            form.save()
+            insumo = form.save(commit=False)
+            insumo.doctor = doctor_del_usuario(request.user)
+            insumo.save()
+            form.save_m2m()
             messages.success(request, 'Insumo añadido al inventario exitosamente.')
             return redirect('lista_insumos')
     else:
@@ -53,7 +65,7 @@ def editar_insumo(request, pk):
         return redirect('lista_insumos')
     # --- FIN: Validación de Permisos ---
 
-    insumo = get_object_or_404(Insumo, pk=pk)
+    insumo = get_object_or_404(_insumos_consultorio(request), pk=pk)
     if request.method == 'POST':
         form = InsumoForm(request.POST, instance=insumo)
         if form.is_valid():
@@ -79,7 +91,7 @@ def eliminar_insumo(request, pk):
         return redirect('lista_insumos')
     # --- FIN: Validación de Permisos ---
 
-    insumo = get_object_or_404(Insumo, pk=pk)
+    insumo = get_object_or_404(_insumos_consultorio(request), pk=pk)
     if request.method == 'POST':
         insumo.delete()
         messages.success(request, 'Insumo eliminado del inventario.')
@@ -133,7 +145,7 @@ def modificar_cantidad_insumo(request, pk):
 
     try:
         # 2. Obtener el insumo y la acción (desde el JavaScript)
-        insumo = get_object_or_404(Insumo, pk=pk)
+        insumo = get_object_or_404(_insumos_consultorio(request), pk=pk)
         action = request.POST.get('action') # 'aumentar' o 'disminuir'
 
         # 3. Ejecutar la lógica

@@ -1,0 +1,64 @@
+{% load static %}
+<audio id="citMusic" loop preload="auto">
+    <source src="{% static 'audio/cit-ambiente.wav' %}" type="audio/wav">
+</audio>
+<button type="button" class="cit-music-btn" id="citMusicBtn" aria-label="Música de ambiente">
+    <i class="bi bi-volume-up-fill" id="citMusicIcon"></i>
+</button>
+<style>
+.cit-music-btn {
+    position: fixed;
+    right: 1.1rem;
+    bottom: 1.1rem;
+    z-index: 1085;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #b7ddd7;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #0f7f76;
+    box-shadow: 0 10px 20px rgba(12, 61, 44, 0.1);
+    backdrop-filter: blur(10px);
+}
+.cit-music-btn.is-off {
+    color: #8eb4b8;
+    box-shadow: none;
+}
+</style>
+<script>
+(function() {
+    const audio = document.getElementById('citMusic');
+    const btn = document.getElementById('citMusicBtn');
+    const icon = document.getElementById('citMusicIcon');
+    if (!audio || !btn) return;
+    audio.volume = 0.2;
+    let off = sessionStorage.getItem('citMusicOff') === '1';
+
+    function paint() {
+        btn.classList.toggle('is-off', off);
+        icon.className = off ? 'bi bi-volume-mute-fill' : 'bi bi-volume-up-fill';
+    }
+
+    function play() {
+        if (off) return;
+        audio.play().catch(function() {});
+    }
+
+    paint();
+    play();
+    document.addEventListener('click', play, { once: true });
+    document.addEventListener('keydown', play, { once: true });
+
+    btn.addEventListener('click', function(event) {
+        event.stopPropagation();
+        off = !off;
+        sessionStorage.setItem('citMusicOff', off ? '1' : '0');
+        if (off) {
+            audio.pause();
+        } else {
+            audio.play().catch(function() {});
+        }
+        paint();
+    });
+})();
+</script>
