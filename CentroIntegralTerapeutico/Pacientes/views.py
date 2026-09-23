@@ -852,7 +852,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
 
         paciente_id = self.kwargs.get('paciente_id')
         if paciente_id:
-            context['paciente'] = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
+            context['paciente'] = get_object_or_404(pacientes_del_consultorio(self.request.user), pk=paciente_id)
         # Puedes añadir contexto extra aquí, por ejemplo el nombre del paso actual
         context['step_title'] = self.steps.current
         print(f"[Wizard] get_context_data para step: {self.steps.current}")
@@ -868,7 +868,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
         paciente_id = self.kwargs.get('paciente_id')
         if paciente_id:
             try:
-                paciente = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
+                paciente = get_object_or_404(pacientes_del_consultorio(self.request.user), pk=paciente_id)
                 if paciente.genero == 'Masculino' and 'ginecologico' in form_list: # <-- ¡La corrección es aquí!
                     del form_list['ginecologico']
                     print(f"[Wizard] Omitiendo formulario ginecologico para paciente masculino")
@@ -886,7 +886,7 @@ class CuestionarioHistoriaClinicaWizard(SessionWizardView):
             form_data.update(form.cleaned_data)
 
         paciente_id = self.kwargs.get('paciente_id')
-        paciente_obj = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
+        paciente_obj = get_object_or_404(pacientes_del_consultorio(self.request.user), pk=paciente_id)
 
         print(f"[Wizard] Creando HistoriaClinica para paciente {paciente_id}")
         HistoriaClinica.objects.create(
@@ -929,7 +929,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         # Obtenemos el objeto paciente para pasarlo al template
         paciente_id = self.kwargs.get('paciente_id')
-        context['paciente'] = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
+        context['paciente'] = get_object_or_404(pacientes_del_consultorio(self.request.user), pk=paciente_id)
 
         # Título para cada paso en la plantilla
         step_titles = {
@@ -949,7 +949,7 @@ class CuestionarioMusculoEsqueleticoWizard(SessionWizardView):
 
         # Obtiene el paciente y crea la instancia del modelo
         paciente_id = self.kwargs.get('paciente_id')
-        paciente_obj = get_object_or_404(pacientes_del_consultorio(request.user), pk=paciente_id)
+        paciente_obj = get_object_or_404(pacientes_del_consultorio(self.request.user), pk=paciente_id)
 
         # Crea el objeto de HistoriaClinicaMusculoEsqueletico con los datos combinados
         HistoriaClinicaMusculoEsqueletico.objects.create(
