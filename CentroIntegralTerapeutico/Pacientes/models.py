@@ -245,7 +245,7 @@ class Cita(models.Model):
         ('Microscopia', 'Microscopia'),
         ('Podologia', 'Podología'),
     ]
-    MOTIVO_OCULTOS_MENU = ('Seguimiento',)
+    MOTIVO_OCULTOS_MENU = ()
     MOTIVO_CSS = {
         'Consulta': 'consulta',
         'Seguimiento': 'seguimiento',
