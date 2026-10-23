@@ -244,6 +244,8 @@ class Cita(models.Model):
         ('Consulta Psicologica', 'Consulta Psicologica'),
         ('Microscopia', 'Microscopia'),
         ('Podologia', 'Podología'),
+        ('PRP', 'PRP'),
+        ('Hidrolipoclasia', 'Hidrolipoclasia'),
     ]
     MOTIVO_OCULTOS_MENU = ()
     MOTIVO_CSS = {
@@ -260,6 +262,8 @@ class Cita(models.Model):
         'Consulta Psicologica': 'consulta-psicologica',
         'Microscopia': 'microscopia',
         'Podologia': 'podologia',
+        'PRP': 'prp',
+        'Hidrolipoclasia': 'hidrolipoclasia',
     }
     motivo = models.CharField(
         max_length=50,
