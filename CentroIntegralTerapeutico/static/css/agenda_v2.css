@@ -257,6 +257,8 @@ body:has(.agenda-v2) {
 .agenda-v2 .ag-chip.consulta-psicologica { background: #f3e4f6; color: #7a3e8a; }
 .agenda-v2 .ag-chip.microscopia { background: #f7efc9; color: #8a6d12; }
 .agenda-v2 .ag-chip.podologia { background: #f4e2d6; color: #9a4b2c; }
+.agenda-v2 .ag-chip.prp { background: #fde4e4; color: #b42318; }
+.agenda-v2 .ag-chip.hidrolipoclasia { background: #e3f4e8; color: #1b6b45; }
 
 .agenda-v2 .list-group-item.motivo-consulta { border-left: 4px solid #18b1a3; }
 .agenda-v2 .list-group-item.motivo-seguimiento { border-left: 4px solid #6b7a82; }
@@ -271,6 +273,8 @@ body:has(.agenda-v2) {
 .agenda-v2 .list-group-item.motivo-consulta-psicologica { border-left: 4px solid #8e5a9a; }
 .agenda-v2 .list-group-item.motivo-microscopia { border-left: 4px solid #c9a227; }
 .agenda-v2 .list-group-item.motivo-podologia { border-left: 4px solid #c46a45; }
+.agenda-v2 .list-group-item.motivo-prp { border-left: 4px solid #c0392b; }
+.agenda-v2 .list-group-item.motivo-hidrolipoclasia { border-left: 4px solid #2f9e6c; }
 
 .agenda-v2 .ag-chip:hover {
     filter: brightness(0.97);

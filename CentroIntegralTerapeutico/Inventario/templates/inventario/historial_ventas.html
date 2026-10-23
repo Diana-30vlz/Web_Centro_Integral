@@ -154,7 +154,11 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <strong>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</strong>
+                                {% if venta.farmaceuta %}
+                                    <strong>{{ venta.farmaceuta.get_full_name|default:venta.farmaceuta.username }}</strong>
+                                {% else %}
+                                    <strong>Sin encargado</strong>
+                                {% endif %}
                             </td>
                             <td class="text-end fw-bold">${{ venta.total|floatformat:2 }}</td>
                             <td class="text-center">
